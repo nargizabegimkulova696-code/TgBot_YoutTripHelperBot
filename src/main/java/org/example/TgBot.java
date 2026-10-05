@@ -22,6 +22,11 @@ public class TgBot extends TelegramLongPollingBot{
     private final Logger log = LoggerFactory.getLogger("TgBot");
 
     /**
+     * Поле логики бота
+     */
+    private final BotLogic botLogic = new BotLogic();
+
+    /**
      * Конструктор TgBot присваивает значению полю botUsername и передает token в конструктор родителя
      * @param username
      * @param token
@@ -59,26 +64,9 @@ public class TgBot extends TelegramLongPollingBot{
         String text = message.getText();
         long chatId = message.getChatId();
 
-        String answer = messageText(text);
+        String answer = botLogic.makeMessage(text);
 
         sendMessage(chatId, answer);
-    }
-
-    /**
-     * Метод создан для создания сообщения в ответ пользователю
-     * @param text
-     * @return String
-     */
-    private String messageText(String text){
-        String answer;
-
-        if (text.equals("/start") || text.equals("/start@")){
-            answer = "Привет, я Эхо-Бот, отправь мне свое сообщение и я повторю его за тобой!";
-        }else{
-            answer = "Вы ввели " + "«" + text + "»";
-        }
-
-        return answer;
     }
 
     /**
