@@ -1,12 +1,12 @@
 package org.example;
 
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 /**
  * В классе TgBot описана логика работы Эхо-Бота
@@ -15,11 +15,11 @@ public class TgBot extends TelegramLongPollingBot{
     /**
      * Поле botUsername создано для хранения имени бота
      */
-    private String botUsername;
+    private final String botUsername;
     /**
      * Поле log создано для вывода ошибок в консоль при отправке ботом сообщения
      */
-    private Logger log = LoggerFactory.getLogger("TgBot");
+    private final Logger log = LoggerFactory.getLogger("TgBot");
 
     /**
      * Конструктор TgBot присваивает значению полю botUsername и передает token в конструктор родителя
