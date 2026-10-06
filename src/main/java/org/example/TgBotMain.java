@@ -1,9 +1,12 @@
 package org.example;
 
 import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
+/**
+ * Точка входа в программу для запуска тг бота
+ */
 public class TgBotMain{
     public static void main(String[] args) throws TelegramApiException{
         ConfigTgBot config = new ConfigTgBot();

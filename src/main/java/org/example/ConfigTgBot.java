@@ -29,18 +29,10 @@ public class ConfigTgBot {
         }
     }
 
-    /**
-     * Метод, который возвращает имя бота
-     * @return String
-     */
     public String getBotName(){
         return properties.getProperty("tgBotName");
     }
 
-    /**
-     * Метод, который возвращает токен бота
-     * @return String
-     */
     public String getBotToken(){
         return properties.getProperty("tgBotToken");
     }
