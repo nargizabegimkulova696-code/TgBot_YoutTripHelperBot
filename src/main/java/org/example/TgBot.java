@@ -28,27 +28,17 @@ public class TgBot extends TelegramLongPollingBot{
 
     /**
      * Конструктор TgBot присваивает значению полю botUsername и передает token в конструктор родителя
-     * @param username
-     * @param token
      */
     TgBot(String username, String token){
         super(token);
         botUsername = username;
     }
 
-    /**
-     * Метод создан для возврата имени бота
-     * @return String
-     */
     @Override
     public String getBotUsername(){
         return botUsername;
     }
 
-    /**
-     * Метод создан для принятия и обработки событий от тг
-     * @param update Update received
-     */
     @Override
     public void onUpdateReceived(Update update){
         if(update.getMessage() == null){
@@ -71,8 +61,6 @@ public class TgBot extends TelegramLongPollingBot{
 
     /**
      * Метод создан для отправки ответного сообщения
-     * @param chatId
-     * @param answer
      */
     private void sendMessage(long chatId, String answer){
         SendMessage reply = new SendMessage();

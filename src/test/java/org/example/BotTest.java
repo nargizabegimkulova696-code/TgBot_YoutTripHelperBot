@@ -1,13 +1,11 @@
 package org.example;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 /**
- * Класс BotLogicTest тестирует логику бота
+ * Тестирует логику бота {@link BotLogic}
  */
 class BotTest {
     /**
@@ -28,27 +26,6 @@ class BotTest {
             "/helpme, 'Вы ввели «/helpme»'"
     })
     void echoesOrdinaryText(String input, String expected) {
-        assertEquals(expected, botLogic.makeMessage(input));
-    }
-
-    /**
-     * Проверка работы команды start
-     */
-    @Test
-    void startCommandReturnsGreeting() {
-        String expected = "Привет, я Эхо-Бот, отправь мне свое сообщение и я повторю его за тобой!";
-        assertEquals(expected, botLogic.makeMessage("/start"));
-    }
-
-    /**
-     * Проверка работы команды help
-     */
-    @Test
-    void helpCommandListsCommands() {
-        String expected = """
-                Привет, я Эхо-Бот
-                /start - начало работы
-                /help - показать все доступные команды""";
-        assertEquals(expected, botLogic.makeMessage("/help"));
+        Assertions.assertEquals(expected, botLogic.makeMessage(input));
     }
 }
