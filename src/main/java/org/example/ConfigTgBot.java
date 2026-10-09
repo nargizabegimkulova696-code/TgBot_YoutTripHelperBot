@@ -4,12 +4,11 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * Класс, который предоставляет доступ к токену и имени бота, создан для конфигурации бота
+ * Предоставляет доступ к токену и имени бота, создан для конфигурации бота
  */
-
 public class ConfigTgBot {
     /**
-     * Поле properties создано для хранения данных бота в виде пары: "ключ - значение"
+     * Создано для хранения данных бота в виде пары: "ключ - значение"
      */
     private Properties properties;
 
@@ -29,10 +28,16 @@ public class ConfigTgBot {
         }
     }
 
+    /**
+     * возвращает имя тг-бота
+     */
     public String getBotName(){
         return properties.getProperty("tgBotName");
     }
 
+    /**
+     * возвращает токен тг-бота
+     */
     public String getBotToken(){
         return properties.getProperty("tgBotToken");
     }

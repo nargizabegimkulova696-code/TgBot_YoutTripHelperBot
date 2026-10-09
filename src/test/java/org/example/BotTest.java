@@ -25,7 +25,7 @@ class BotTest {
             "start, 'Вы ввели «start»'",
             "/helpme, 'Вы ввели «/helpme»'"
     })
-    void echoesOrdinaryText(String input, String expected) {
+    void testEchoesOrdinaryText(String input, String expected) {
         Assertions.assertEquals(expected, botLogic.makeMessage(input));
     }
 }

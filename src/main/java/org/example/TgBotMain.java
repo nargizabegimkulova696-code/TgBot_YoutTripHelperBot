@@ -11,7 +11,7 @@ public class TgBotMain{
     public static void main(String[] args) throws TelegramApiException{
         ConfigTgBot config = new ConfigTgBot();
 
-        //создаем имя и токен для конструктора TgBot
+        //получаем из настроек имя и токен для конструктора TgBot
         String tgBotName = config.getBotName();
         String tgBotToken = config.getBotToken();
 
