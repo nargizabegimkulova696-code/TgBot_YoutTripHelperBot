@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 /**
- * В классе TgBot описана логика работы Эхо-Бота
+ * Реализует работу с telegram API
  */
 public class TgBot extends TelegramLongPollingBot{
     /**
