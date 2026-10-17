@@ -1,4 +1,4 @@
-package org.example.session;
+package org.example.DialogService;
 
 /**
  * Состояние диалога бота с пользователем.
@@ -9,11 +9,16 @@ public enum DialogState {
      */
     WAITING_FOR_CITY,
     /**
-     * Город выбран, и сейчас меню
+     * Город выбран, ждет выбора категории
      */
     CITY_SELECTED,
     /**
      * Бот ждёт, что пользователь введёт период дат для погоды
      */
-    WAITING_FOR_DATES
+    CAT_WEATHER,
+    /**
+     * Бот ждет, выбора следующей категории
+     */
+    CAT_ABOUT_CITY
+
 }

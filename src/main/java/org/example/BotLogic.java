@@ -1,8 +1,11 @@
 package org.example;
 
-import org.example.session.BotSession;
-import org.example.session.DialogState;
-import org.example.session.SessionStorage;
+import org.example.Catalog.CityCatalog;
+import org.example.DialogService.DialogResponse;
+import org.example.DialogService.DialogState;
+import org.example.SearchCityByName.CityValidator;
+import org.example.Session.BotSession;
+import org.example.Session.SessionStorage;
 
 /**
  * Логика работы бота, которая не зависит от API
@@ -16,26 +19,30 @@ public class BotLogic {
     /**
      * Константные сообщения для команд /start
      */
-    private static final String START_MESSAGE = "Привет, я Эхо-Бот, " + "отправь мне свое сообщение и я повторю его за тобой!";
+    private static final String START_MESSAGE = "Привет, я бот — помощник в путешествиях. В какой город вы хотели бы отправиться?";
 
     /**
      * Константные сообщения для команд /help
      */
     private static final String HELP_MESSAGE = """
             Я бот — помощник в путешествиях
+            
             /start - начало работы
             /help - показать все доступные команды
+            
             Доступные команды после выбора города:
-            /about_city - краткая сводка о городе
-            /weather - погода в городе
-            /back - вернуться к списку команд""";
+            about_city - краткая сводка о городе
+            weather - погода в городе
+            back - вернуться к списку команд""";
 
+    private final CityValidator validator;
 
     /**
      * Создаёт логику бота, работающую с переданным хранилищем сессий
      */
-    public BotLogic(SessionStorage sessionStorage) {
+    public BotLogic(SessionStorage sessionStorage, CityCatalog catalog) {
         this.sessionStorage = sessionStorage;
+        this.validator = new CityValidator(catalog);
     }
 
     /**
@@ -44,18 +51,35 @@ public class BotLogic {
      * @param text   текст сообщения, которое отправил пользователь
      * @return ответ бота
      */
-    public String makeMessage(long chatId, String text) {
-
-        String answer;
+    public DialogResponse makeMessage(String text, long chatId) {
+        BotSession session = sessionStorage.getSession(chatId);
+        DialogResponse response = new DialogResponse();
 
         switch (text) {
-            case "/start" -> answer = START_MESSAGE;
-            case "/help" -> answer = HELP_MESSAGE;
-            default -> answer = "Команда «%s» не найдена. Напишите /help, чтобы увидеть список команд".formatted(text);
+            case "/start" -> {
+                response.setAnswer(START_MESSAGE);
+                session.setState(DialogState.WAITING_FOR_CITY);
+                response.changeKeyboardState(session.getState());
+            }
+            case "/help" -> {
+                response.setAnswer(HELP_MESSAGE);
+                session.setState(DialogState.WAITING_FOR_CITY);
+                response.changeKeyboardState(session.getState());
+            }
+            default -> {
+                if (validator.contain(text)) {
+                    response.setAnswer("Выберете категорию для города " + text + ":");
+                    session.setCity(text);
+                    session.setState(DialogState.CITY_SELECTED);
+                    response.changeKeyboardState(session.getState());
+                } else {
+                    response.setAnswer("Информации о городе не найдено");
+                    session.setState(DialogState.WAITING_FOR_CITY);
+                    response.changeKeyboardState(session.getState());
+                }
+            }
         }
 
-        return answer;
+        return response;
     }
-
-
 }
