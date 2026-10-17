@@ -3,6 +3,7 @@ package org.example;
 import org.example.CityResponse.Button;
 import org.example.CityResponse.DialogResponse;
 import org.example.SearchCityByName.CityCatalog;
+import org.example.session.SessionStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -20,6 +21,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
 import java.util.List;
+
+
 
 /**
  * Реализует работу с telegram API
@@ -45,7 +48,7 @@ public class TgBot extends TelegramLongPollingBot{
     TgBot(String username, String token, CityCatalog catalog) {
         super(token);
         botUsername = username;
-        botLogic = new BotLogic(catalog);
+        botLogic = new BotLogic(new SessionStorage(), catalog);
         menuRegistration();
     }
 
@@ -74,7 +77,7 @@ public class TgBot extends TelegramLongPollingBot{
         String text = message.getText();
         long chatId = message.getChatId();
 
-        DialogResponse answer = botLogic.makeMessage(text);
+        DialogResponse answer = botLogic.makeMessage(chatId, text);
 
         SendMessage response = toSendMessage(chatId, answer);
 
