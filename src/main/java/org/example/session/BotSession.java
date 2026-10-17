@@ -1,4 +1,4 @@
-package org.example;
+package org.example.session;
 
 
 /**
@@ -16,7 +16,7 @@ public class BotSession {
     private String city;
 
     /**
-     * Конструктор сессии по умолчанию, когда не задан город
+     * Конструктор сессии изначальный, без заданного бота
      */
     public BotSession(){
         this.state = DialogState.WAITING_FOR_CITY;
@@ -25,8 +25,6 @@ public class BotSession {
 
     /**
      * Возвращает текущее состояние диалога.
-     *
-     * @return текущее состояние диалога
      */
     public DialogState getState() {
         return state;
@@ -34,8 +32,6 @@ public class BotSession {
 
     /**
      * Устанавливает состояние диалога.
-     *
-     * @param state новое состояние диалога
      */
     public void setState(DialogState state) {
         this.state = state;
@@ -43,8 +39,6 @@ public class BotSession {
 
     /**
      * Возвращает город, выбранный пользователем.
-     *
-     * @return выбранный город или null, если город ещё не выбран
      */
     public String getCity() {
         return city;
@@ -52,8 +46,6 @@ public class BotSession {
 
     /**
      * Устанавливает город, выбранный пользователем.
-     *
-     * @param city название выбранного города
      */
     public void setCity(String city) {
         this.city = city;
