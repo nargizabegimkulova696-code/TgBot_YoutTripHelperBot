@@ -1,7 +1,5 @@
 package org.example.Catalog;
 
-import org.example.SearchCityByName.City;
-import org.example.SearchCityByName.CityCatalog;
 import org.example.SearchCityByName.ToNormalStr;
 
 import java.io.BufferedReader;
@@ -11,10 +9,23 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Считывает данные из csv файла и создает на основе этих данных словарь
+ */
 public class CsvCityCatalog implements CityCatalog {
-    private final Map<String, City> cities = new HashMap<>();
+    /**
+     * Словарь, в котором ключ - название города, значение - название города
+     */
+    private final Map<String, String> cities = new HashMap<>();
+
+    /**
+     * Нормализация строки
+     */
     private final ToNormalStr toNormal = new ToNormalStr();
 
+    /**
+     * В конструкторе реализуется чтение данных из файла и инициализация словаря
+     */
     public CsvCityCatalog(InputStreamReader input) throws IOException {
         BufferedReader reader = new BufferedReader(input);
         String line;
@@ -24,19 +35,14 @@ public class CsvCityCatalog implements CityCatalog {
                 continue;
             }
 
-            String[] city = line.split(";");
+            String name = toNormal.normal(line);
 
-            String name = toNormal.normal(city[0]);
-            int population = Integer.parseInt(city[1]);
-
-            cities.put(name, new City(name, population));
+            cities.put(name, line);
         }
     }
 
     @Override
-    public City findCity(String normalized) {
+    public String findCity(String normalized) {
         return cities.get(normalized);
     }
-
-    ;
 }

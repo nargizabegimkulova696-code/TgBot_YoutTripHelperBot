@@ -1,9 +1,10 @@
-package org.example;
+package org.example.TelegramBot;
 
-import org.example.CityResponse.Button;
-import org.example.CityResponse.DialogResponse;
-import org.example.SearchCityByName.CityCatalog;
-import org.example.session.SessionStorage;
+import org.example.BotLogic;
+import org.example.Catalog.CityCatalog;
+import org.example.DialogService.Button;
+import org.example.DialogService.DialogResponse;
+import org.example.Session.SessionStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -21,7 +22,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 
 /**
@@ -45,9 +45,10 @@ public class TgBot extends TelegramLongPollingBot{
     /**
      * Конструктор TgBot присваивает значению полю botUsername и передает token в конструктор родителя
      */
-    TgBot(String username, String token, CityCatalog catalog) {
+    public TgBot(String username, String token, CityCatalog catalog) {
         super(token);
         botUsername = username;
+
         botLogic = new BotLogic(new SessionStorage(), catalog);
         menuRegistration();
     }
@@ -77,7 +78,7 @@ public class TgBot extends TelegramLongPollingBot{
         String text = message.getText();
         long chatId = message.getChatId();
 
-        DialogResponse answer = botLogic.makeMessage(chatId, text);
+        DialogResponse answer = botLogic.makeMessage(text, chatId);
 
         SendMessage response = toSendMessage(chatId, answer);
 
@@ -85,6 +86,9 @@ public class TgBot extends TelegramLongPollingBot{
 
     }
 
+    /**
+     * Создание меню в тг-боте
+     */
     private void menuRegistration() {
         List<BotCommand> commands = new ArrayList<>();
         commands.add(new BotCommand("start", "начать"));
@@ -101,6 +105,9 @@ public class TgBot extends TelegramLongPollingBot{
 
     }
 
+    /**
+     * Ответ на нажатие Inline кнопки
+     */
     private void handleCallback(CallbackQuery callback) {
         AnswerCallbackQuery answer = new AnswerCallbackQuery();
         answer.setCallbackQueryId(callback.getId());
@@ -113,6 +120,9 @@ public class TgBot extends TelegramLongPollingBot{
         }
     }
 
+    /**
+     * Создание Inline клавиатуры
+     */
     private List<List<InlineKeyboardButton>> createKeyboard(List<List<Button>> fakeKeyboard) {
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
 
@@ -134,11 +144,14 @@ public class TgBot extends TelegramLongPollingBot{
         return keyboard;
     }
 
+    /**
+     * Создание ответного сообщение для телеграма
+     */
     private SendMessage toSendMessage(long chatId, DialogResponse reply) {
         SendMessage message = new SendMessage();
 
         message.setChatId(chatId);
-        message.setText(reply.getTextMessage());
+        message.setText(reply.getAnswer());
 
         if (reply.hasButtons()) {
             InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();

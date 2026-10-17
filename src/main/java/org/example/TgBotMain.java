@@ -1,7 +1,10 @@
 package org.example;
 
-import org.example.Catalog.CatalogLoader;
-import org.example.Catalog.CsvCityCatalog;
+import org.example.Catalog.CityCatalog;
+import org.example.LoaderOfCatalog.CatalogLoader;
+import org.example.LoaderOfCatalog.CsvCatalogLoader;
+import org.example.TelegramBot.ConfigTgBot;
+import org.example.TelegramBot.TgBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
@@ -19,9 +22,9 @@ public class TgBotMain{
         String tgBotName = config.getBotName();
         String tgBotToken = config.getBotToken();
 
-        CatalogLoader loader = new CatalogLoader();
+        CatalogLoader loader = new CsvCatalogLoader();
         try {
-            CsvCityCatalog catalog = loader.load();
+            CityCatalog catalog = loader.load();
             TgBot echoBot = new TgBot(tgBotName, tgBotToken, catalog);
 
             //связали бота с тг
