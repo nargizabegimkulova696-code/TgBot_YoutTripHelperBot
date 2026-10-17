@@ -1,5 +1,6 @@
 package org.example;
 
+import org.example.session.SessionStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -7,6 +8,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+
 
 /**
  * Реализует работу с telegram API
@@ -24,7 +27,7 @@ public class TgBot extends TelegramLongPollingBot{
     /**
      * Поле логики бота
      */
-    private final BotLogic botLogic = new BotLogic();
+    private final BotLogic botLogic = new BotLogic(new SessionStorage());
 
     /**
      * Конструктор TgBot присваивает значению полю botUsername и передает token в конструктор родителя
@@ -54,7 +57,7 @@ public class TgBot extends TelegramLongPollingBot{
         String text = message.getText();
         long chatId = message.getChatId();
 
-        String answer = botLogic.makeMessage(text);
+        String answer = botLogic.makeMessage(chatId, text);
 
         sendMessage(chatId, answer);
     }
