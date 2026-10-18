@@ -1,5 +1,7 @@
-package org.example.session;
+package org.example.Session;
 
+
+import org.example.DialogService.DialogState;
 
 /**
  * Сессия одного пользователя: запоминает состояние и название города
@@ -50,5 +52,4 @@ public class BotSession {
     public void setCity(String city) {
         this.city = city;
     }
-
 }
