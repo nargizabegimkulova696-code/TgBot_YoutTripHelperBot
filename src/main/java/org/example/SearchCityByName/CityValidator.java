@@ -18,6 +18,10 @@ public class CityValidator {
         this.catalog = catalog;
     }
 
+    public CityCatalog getCatalog() {
+        return catalog;
+    }
+
     /**
      * Проверка на хранения города введенного пользователе в списке допустимых городов
      */
