@@ -12,11 +12,6 @@ public class CityValidator {
     private final CityCatalog catalog;
 
     /**
-     * Нормализация строки
-     */
-    private final ToNormalStr toNormal = new ToNormalStr();
-
-    /**
      * Инициализация каталога
      */
     public CityValidator(CityCatalog catalog) {
@@ -26,13 +21,8 @@ public class CityValidator {
     /**
      * Проверка на хранения города введенного пользователе в списке допустимых городов
      */
-    public boolean contain(String cityName) {
-        if (cityName == null) {
-            return false;
-        }
-
-        String normalCity = toNormal.normal(cityName);
-
-        return catalog.findCity(normalCity) != null;
+    public String contain(String cityName) {
+        String city = catalog.findCity(cityName);
+        return city == null ? "" : city;
     }
 }

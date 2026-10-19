@@ -1,16 +1,14 @@
 package org.example.TelegramBot;
 
 import org.example.BotLogic;
-import org.example.Catalog.CityCatalog;
 import org.example.DialogService.Button;
 import org.example.DialogService.DialogResponse;
-import org.example.Session.SessionStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -45,11 +43,12 @@ public class TgBot extends TelegramLongPollingBot{
     /**
      * Конструктор TgBot присваивает значению полю botUsername и передает token в конструктор родителя
      */
-    public TgBot(String username, String token, CityCatalog catalog) {
+    public TgBot(String username, String token, BotLogic botLogic) {
         super(token);
-        botUsername = username;
 
-        botLogic = new BotLogic(new SessionStorage(), catalog);
+        botUsername = username;
+        this.botLogic = botLogic;
+
         menuRegistration();
     }
 
@@ -65,24 +64,9 @@ public class TgBot extends TelegramLongPollingBot{
             return;
         }
 
-        if(update.getMessage() == null){
-            return;
+        if (update.getMessage() != null && update.getMessage().hasText()) {
+            sendMessage(update.getMessage());
         }
-
-        Message message = update.getMessage();
-
-        if(!message.hasText()){
-            return;
-        }
-
-        String text = message.getText();
-        long chatId = message.getChatId();
-
-        DialogResponse answer = botLogic.makeMessage(text, chatId);
-
-        SendMessage response = toSendMessage(chatId, answer);
-
-        sendMessage(response);
 
     }
 
@@ -106,24 +90,66 @@ public class TgBot extends TelegramLongPollingBot{
     }
 
     /**
+     * Создание ответного сообщение для телеграма
+     */
+    private void sendMessage(Message inputMessage) {
+        String text = inputMessage.getText();
+        Long chatId = inputMessage.getChatId();
+
+        DialogResponse response = botLogic.makeMessage(text, chatId);
+
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText(response.getAnswer());
+
+        if (response.hasButtons()) {
+            InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
+
+            keyboard.setKeyboard(createTGKeyboard(response.getListOfCommands()));
+
+            message.setReplyMarkup(keyboard);
+        }
+
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            log.error("Не удалось отправить сообщение", e);
+        }
+    }
+
+    /**
      * Ответ на нажатие Inline кнопки
      */
     private void handleCallback(CallbackQuery callback) {
-        AnswerCallbackQuery answer = new AnswerCallbackQuery();
-        answer.setCallbackQueryId(callback.getId());
-        answer.setText("Ответ скоро поступит");
+        long chatId = callback.getMessage().getChatId();
+        int messageId = callback.getMessage().getMessageId();
+        String data = callback.getData();
+
+        DialogResponse response = botLogic.makeMessage(data, chatId);
+
+        EditMessageText editMessage = new EditMessageText();
+        editMessage.setText(response.getAnswer());
+        editMessage.setChatId(chatId);
+        editMessage.setMessageId(messageId);
+
+        if (response.hasButtons()) {
+            InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
+            keyboard.setKeyboard(createTGKeyboard(response.getListOfCommands()));
+
+            editMessage.setReplyMarkup(keyboard);
+        }
 
         try {
-            execute(answer);
+            execute(editMessage);
         } catch (TelegramApiException e) {
-            log.error("не удалось отправить ответ на Inline кнопку");
+            log.error("Не удалось ответить на inline-кнопку ", e);
         }
     }
 
     /**
      * Создание Inline клавиатуры
      */
-    private List<List<InlineKeyboardButton>> createKeyboard(List<List<Button>> fakeKeyboard) {
+    private List<List<InlineKeyboardButton>> createTGKeyboard(List<List<Button>> fakeKeyboard) {
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
 
         for (List<Button> buttonRows : fakeKeyboard) {
@@ -142,36 +168,5 @@ public class TgBot extends TelegramLongPollingBot{
         }
 
         return keyboard;
-    }
-
-    /**
-     * Создание ответного сообщение для телеграма
-     */
-    private SendMessage toSendMessage(long chatId, DialogResponse reply) {
-        SendMessage message = new SendMessage();
-
-        message.setChatId(chatId);
-        message.setText(reply.getAnswer());
-
-        if (reply.hasButtons()) {
-            InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
-
-            keyboard.setKeyboard(createKeyboard(reply.getListOfCommands()));
-
-            message.setReplyMarkup(keyboard);
-        }
-
-        return message;
-    }
-
-    /**
-     * Метод создан для отправки ответного сообщения
-     */
-    private void sendMessage(SendMessage message) {
-        try{
-            execute(message);
-        } catch (TelegramApiException e) {
-            log.error("Не удалось отправить сообщение", e);
-        }
     }
 }

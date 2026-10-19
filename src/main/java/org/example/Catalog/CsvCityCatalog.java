@@ -1,7 +1,5 @@
 package org.example.Catalog;
 
-import org.example.SearchCityByName.ToNormalStr;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,11 +17,6 @@ public class CsvCityCatalog implements CityCatalog {
     private final Map<String, String> cities = new HashMap<>();
 
     /**
-     * Нормализация строки
-     */
-    private final ToNormalStr toNormal = new ToNormalStr();
-
-    /**
      * В конструкторе реализуется чтение данных из файла и инициализация словаря
      */
     public CsvCityCatalog(InputStreamReader input) throws IOException {
@@ -31,18 +24,32 @@ public class CsvCityCatalog implements CityCatalog {
         String line;
 
         while ((line = reader.readLine()) != null) {
-            if (line.trim().isEmpty()) {
-                continue;
+            String key = normal(line);
+
+            if (!key.isEmpty()) {
+                cities.put(key, line);
             }
-
-            String name = toNormal.normal(line);
-
-            cities.put(name, line);
         }
     }
 
+    private String normal(String str) {
+
+        if (str == null || str.isBlank()) {
+            return "";
+        }
+
+        String result = str
+                .toLowerCase()
+                .replace('ё', 'е')
+                .replace('-', ' ')
+                .replaceAll("\\s+", " ")
+                .trim();
+
+        return result;
+    }
+
     @Override
-    public String findCity(String normalized) {
-        return cities.get(normalized);
+    public String findCity(String nameCity) {
+        return cities.get(normal(nameCity));
     }
 }
