@@ -1,5 +1,7 @@
 package org.example.DialogService;
 
+import org.example.Session.DialogState;
+
 import java.util.ArrayList;
 import java.util.List;
 
