@@ -134,7 +134,6 @@ public class OpenMeteoWeather implements WeatherProvider {
         return days;
     }
 
-
     /**
      * Переводит код погоды в краткое описание
      */
