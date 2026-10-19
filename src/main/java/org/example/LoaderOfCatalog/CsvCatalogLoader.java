@@ -17,7 +17,7 @@ public class CsvCatalogLoader implements CatalogLoader {
         InputStream stream = getClass().getResourceAsStream("/cities.csv");
 
         if (stream == null) {
-            throw new IOException("Файл cities.csv не найден в resources");
+            throw new IOException("Файл cities.csv не найден");
         }
 
         try (InputStreamReader input = new InputStreamReader(stream, StandardCharsets.UTF_8)) {

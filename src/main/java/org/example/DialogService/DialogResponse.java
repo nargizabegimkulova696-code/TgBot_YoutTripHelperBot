@@ -12,18 +12,25 @@ public class DialogResponse {
     /**
      * Текстовое сообщение
      */
-    private String answer;
+    private final String answer;
 
     /**
      * Список категорий, доступный после выбора города
      */
-    private final List<List<Button>> listOfCommands = new ArrayList<>();
+    private final List<List<Button>> listOfCommands;
 
     /**
      * Создание текстового сообщения, которое получит пользователь в ответ
      */
-    public void setAnswer(String answer) {
+
+    public DialogResponse(String answer) {
         this.answer = answer;
+        listOfCommands = new ArrayList<>();
+    }
+
+    public DialogResponse(String answer, List<List<Button>> listOfCommands) {
+        this.answer = answer;
+        this.listOfCommands = listOfCommands;
     }
 
     /**
@@ -41,44 +48,9 @@ public class DialogResponse {
     }
 
     /**
-     * Очистка списка категорий
-     */
-    public void clearListOfCommands() {
-        listOfCommands.clear();
-    }
-
-    /**
      * Проверка на пустоту списка категорий
      */
     public boolean hasButtons() {
         return !listOfCommands.isEmpty();
-    }
-
-    /**
-     * Изменение списка категорий в зависимости от состояния пользователя
-     */
-    public void changeKeyboardState(DialogState dialog) {
-        switch (dialog) {
-            case WAITING_FOR_CITY -> {
-                clearListOfCommands();
-            }
-            case CAT_ABOUT_CITY -> {
-            }
-            case CAT_WEATHER -> {
-            }
-            case CITY_SELECTED -> {
-                clearListOfCommands();
-                ;
-
-                List<Button> command1 = new ArrayList<>();
-                command1.add(new Button("about city", "cat:about_city"));
-
-                List<Button> command2 = new ArrayList<>();
-                command2.add(new Button("weather", "cat:weather"));
-
-                this.listOfCommands.add(command1);
-                this.listOfCommands.add(command2);
-            }
-        }
     }
 }
