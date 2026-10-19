@@ -2,9 +2,9 @@ package org.example;
 
 import org.example.Catalog.CityCatalog;
 import org.example.DialogService.DialogResponse;
-import org.example.DialogService.DialogState;
 import org.example.SearchCityByName.CityValidator;
 import org.example.Session.BotSession;
+import org.example.Session.DialogState;
 import org.example.Session.SessionStorage;
 
 /**

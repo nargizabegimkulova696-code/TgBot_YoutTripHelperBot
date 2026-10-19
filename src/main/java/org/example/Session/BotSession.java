@@ -1,8 +1,6 @@
 package org.example.Session;
 
 
-import org.example.DialogService.DialogState;
-
 /**
  * Сессия одного пользователя: запоминает состояние и название города
  */

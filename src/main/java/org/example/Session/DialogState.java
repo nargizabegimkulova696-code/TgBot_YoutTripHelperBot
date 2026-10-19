@@ -1,4 +1,4 @@
-package org.example.DialogService;
+package org.example.Session;
 
 /**
  * Состояние диалога бота с пользователем.
