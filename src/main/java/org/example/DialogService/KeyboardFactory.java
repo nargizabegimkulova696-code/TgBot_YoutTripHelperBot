@@ -17,7 +17,7 @@ public class KeyboardFactory {
                 rowOfButton1.add(new Button("about city", "cat:about_city"));
 
                 List<Button> rowOfButton2 = new ArrayList<>();
-                rowOfButton2.add(new Button("weather", "cat:about_city"));
+                rowOfButton2.add(new Button("weather", "cat:weather"));
 
                 List<Button> rowOfButton3 = new ArrayList<>();
                 rowOfButton3.add(new Button("back", "cat:back"));

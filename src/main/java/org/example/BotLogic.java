@@ -6,6 +6,8 @@ import org.example.SearchCityByName.CityValidator;
 import org.example.Session.BotSession;
 import org.example.Session.DialogState;
 import org.example.Session.SessionStorage;
+import org.example.Weather.OpenMeteoWeather;
+import org.example.Weather.WeatherDialog;
 
 /**
  * Логика работы бота, которая не зависит от API
@@ -20,6 +22,7 @@ public class BotLogic {
      * Константные сообщения для команд /start
      */
     private static final String START_MESSAGE = "Привет, я бот — помощник в путешествиях. В какой город вы хотели бы отправиться?";
+
 
     /**
      * Константные сообщения для команд /help
@@ -36,6 +39,10 @@ public class BotLogic {
             back - вернуться к списку команд""";
 
     private static final String NOT_FOUNT_CITY = "Информации о городе не найдено";
+
+
+    private static final String WRONG_INTERACTION = "Чтобы воспользоваться ботом, нажми на нужную кнопку, " +
+            "чтобы получить информацию или нажми back, чтобы вернуться к выбору города.";
 
     private final CityValidator validator;
 
@@ -56,6 +63,7 @@ public class BotLogic {
     public DialogResponse makeMessage(String text, long chatId) {
         BotSession session = sessionStorage.getSession(chatId);
         BackCommand toBack = new BackCommand();
+        WeatherDialog weatherDialog = new WeatherDialog(new OpenMeteoWeather());
 
         DialogResponse response;
         KeyboardFactory keyboard = new KeyboardFactory();
@@ -74,17 +82,33 @@ public class BotLogic {
                 response = toBack.back(session);
             }
 
-            default -> {
-                if (!validator.contain(text).isEmpty()) {
-                    session.setState(DialogState.CITY_SELECTED);
-                    session.setCity(validator.contain(text));
+            case "cat:weather" -> {
+                response = weatherDialog.start(session);
 
-                    response = new DialogResponse("Выберете категорию для города " + validator.contain(text) + ":",
-                            keyboard.build(session.getState()));
-                } else {
-                    session.setState(DialogState.WAITING_FOR_CITY);
-                    response = new DialogResponse(NOT_FOUNT_CITY);
+            }
+
+            default -> {
+                switch (session.getState()) {
+                    case CAT_WEATHER -> {
+                        response = weatherDialog.handleDates(text, session);
+                    }
+                    case WAITING_FOR_CITY -> {
+                        if (!validator.contain(text).isEmpty()) {
+                            session.setState(DialogState.CITY_SELECTED);
+                            session.setCity(validator.contain(text));
+
+                            response = new DialogResponse("Выберете категорию для города "
+                                    + validator.contain(text) + ":",
+                                    keyboard.build(session.getState()));
+                        } else {
+                            response = new DialogResponse(NOT_FOUNT_CITY);
+                        }
+                    }
+                    default -> {
+                        response = new DialogResponse(WRONG_INTERACTION);
+                    }
                 }
+
             }
         }
 
