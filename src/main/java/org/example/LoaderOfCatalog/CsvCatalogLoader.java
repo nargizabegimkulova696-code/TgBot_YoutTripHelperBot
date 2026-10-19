@@ -14,10 +14,10 @@ import java.nio.charset.StandardCharsets;
 public class CsvCatalogLoader implements CatalogLoader {
     @Override
     public CityCatalog load() throws IOException {
-        InputStream stream = getClass().getResourceAsStream("/cities.csv");
+        InputStream stream = getClass().getResourceAsStream("/city_info.csv");
 
         if (stream == null) {
-            throw new IOException("Файл cities.csv не найден");
+            throw new IOException("Файл /city_info.csv не найден");
         }
 
         try (InputStreamReader input = new InputStreamReader(stream, StandardCharsets.UTF_8)) {

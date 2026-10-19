@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.AboutCity.AboutCity;
+import org.example.BackCommand.BackCommand;
 import org.example.DialogService.DialogResponse;
 import org.example.DialogService.KeyboardFactory;
 import org.example.SearchCityByName.CityValidator;
@@ -64,6 +66,7 @@ public class BotLogic {
         BotSession session = sessionStorage.getSession(chatId);
         BackCommand toBack = new BackCommand();
         WeatherDialog weatherDialog = new WeatherDialog(new OpenMeteoWeather());
+        AboutCity aboutCity = new AboutCity(validator.getCatalog());
 
         DialogResponse response;
         KeyboardFactory keyboard = new KeyboardFactory();
@@ -85,6 +88,12 @@ public class BotLogic {
             case "cat:weather" -> {
                 response = weatherDialog.start(session);
 
+            }
+
+            case "cat:about_city" -> {
+                session.setState(DialogState.CAT_ABOUT_CITY);
+                response = new DialogResponse(aboutCity.describe(session.getCity()),
+                        keyboard.build(session.getState()));
             }
 
             default -> {
