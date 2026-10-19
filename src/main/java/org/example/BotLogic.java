@@ -1,10 +1,10 @@
 package org.example;
 
-import org.example.Catalog.CityCatalog;
 import org.example.DialogService.DialogResponse;
-import org.example.DialogService.DialogState;
+import org.example.DialogService.KeyboardFactory;
 import org.example.SearchCityByName.CityValidator;
 import org.example.Session.BotSession;
+import org.example.Session.DialogState;
 import org.example.Session.SessionStorage;
 
 /**
@@ -35,14 +35,15 @@ public class BotLogic {
             weather - погода в городе
             back - вернуться к списку команд""";
 
-    private final CityValidator validator;
+    private static final String NOT_FOUNT_CITY = "Информации о городе не найдено";
 
+    private final CityValidator validator;
     /**
      * Создаёт логику бота, работающую с переданным хранилищем сессий
      */
-    public BotLogic(SessionStorage sessionStorage, CityCatalog catalog) {
+    public BotLogic(SessionStorage sessionStorage, CityValidator validator) {
         this.sessionStorage = sessionStorage;
-        this.validator = new CityValidator(catalog);
+        this.validator = validator;
     }
 
     /**
@@ -53,29 +54,35 @@ public class BotLogic {
      */
     public DialogResponse makeMessage(String text, long chatId) {
         BotSession session = sessionStorage.getSession(chatId);
-        DialogResponse response = new DialogResponse();
+        BackCommand toBack = new BackCommand();
+
+        DialogResponse response;
+        KeyboardFactory keyboard = new KeyboardFactory();
 
         switch (text) {
             case "/start" -> {
-                response.setAnswer(START_MESSAGE);
                 session.setState(DialogState.WAITING_FOR_CITY);
-                response.changeKeyboardState(session.getState());
+                response = new DialogResponse(START_MESSAGE);
             }
             case "/help" -> {
-                response.setAnswer(HELP_MESSAGE);
                 session.setState(DialogState.WAITING_FOR_CITY);
-                response.changeKeyboardState(session.getState());
+                response = new DialogResponse(HELP_MESSAGE);
             }
+
+            case "cat:back" -> {
+                response = toBack.back(session);
+            }
+
             default -> {
-                if (validator.contain(text)) {
-                    response.setAnswer("Выберете категорию для города " + text + ":");
-                    session.setCity(text);
+                if (!validator.contain(text).isEmpty()) {
                     session.setState(DialogState.CITY_SELECTED);
-                    response.changeKeyboardState(session.getState());
+                    session.setCity(validator.contain(text));
+
+                    response = new DialogResponse("Выберете категорию для города " + validator.contain(text) + ":",
+                            keyboard.build(session.getState()));
                 } else {
-                    response.setAnswer("Информации о городе не найдено");
                     session.setState(DialogState.WAITING_FOR_CITY);
-                    response.changeKeyboardState(session.getState());
+                    response = new DialogResponse(NOT_FOUNT_CITY);
                 }
             }
         }

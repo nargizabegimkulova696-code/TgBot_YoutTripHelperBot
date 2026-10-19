@@ -1,12 +1,10 @@
 package org.example;
 
-import org.example.session.BotSession;
-import org.example.session.DialogState;
-import org.example.session.SessionStorage;
+import org.example.Session.BotSession;
+import org.example.Session.DialogState;
+import org.example.Session.SessionStorage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.stream.IntStream;
 

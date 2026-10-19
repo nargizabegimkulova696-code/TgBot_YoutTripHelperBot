@@ -7,5 +7,5 @@ public interface CityCatalog {
     /**
      * Возврат города по его названию
      */
-    public String findCity(String normalized);
+    public String findCity(String nameCity);
 }
