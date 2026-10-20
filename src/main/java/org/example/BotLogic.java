@@ -72,7 +72,6 @@ public class BotLogic {
 
         Back toBack = new Back();
         WeatherDialog weatherDialog = new WeatherDialog(new OpenMeteoWeather());
-        //AboutCity aboutCity = new AboutCity(validator.getCatalog());
 
         DialogResponse response;
         KeyboardFactory keyboard = new KeyboardFactory();

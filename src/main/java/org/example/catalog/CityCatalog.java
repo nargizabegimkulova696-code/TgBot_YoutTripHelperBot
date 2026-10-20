@@ -3,7 +3,7 @@ package org.example.catalog;
 import java.util.List;
 
 /**
- * Интерфейс, созданный для работы с каталогами данных
+ * Интерфейс, созданный для работы с каталогами и их данными
  */
 public interface CityCatalog {
 
