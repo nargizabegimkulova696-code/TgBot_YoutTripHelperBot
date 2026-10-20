@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * Тесты: отдельные сессии пользователей ({@link SessionStorage}),
- * Команды /help, /about_city и /weather, которые обрабатывает {@link BotLogic}
+ * Команда /help, кнопки: about_city и weather, которые обрабатывает {@link BotLogic}
  * Прогноз погоды проверяется через {@link WeatherDialog}
  */
 class SessionsAndCommandsTest {
@@ -44,7 +44,7 @@ class SessionsAndCommandsTest {
     private final BotLogic logic;
 
     /**
-     * Собирает логику с тестовым каталогом
+     * Инициализация логики и тестируемого каталога
      */
     SessionsAndCommandsTest() throws IOException {
         CityCatalog catalog = new CsvCityCatalog(new InputStreamReader(
@@ -80,7 +80,7 @@ class SessionsAndCommandsTest {
     }
 
     /**
-     * /about_city показывает название и другие данные из каталога
+     * About_city показывает название и другие данные из каталога
      */
     @Test
     void testAboutCityShowsCatalog() {
@@ -97,7 +97,7 @@ class SessionsAndCommandsTest {
     }
 
     /**
-     * Если у города нет данных, то показывается только название
+     * Если о городе нет данных, то показано только название
      */
     @Test
     void testThatCityIsOutcast() {
@@ -107,18 +107,18 @@ class SessionsAndCommandsTest {
     }
 
     /**
-     * /weather до выбора города просит выбрать город
+     * Weather до выбора города просит выбрать город
      */
     @Test
     void testWeatherWithoutCityAsksForCity() {
         DialogResponse response = logic.makeMessage("cat:weather", 1L);
 
-        Assertions.assertEquals("Сначала выберите город. Напишите его название.", response.getAnswer());
+        Assertions.assertEquals("Сначала выберите город, для этого напишите его название)", response.getAnswer());
         Assertions.assertEquals(DialogState.WAITING_FOR_CITY, storage.getSession(1L).getState());
     }
 
     /**
-     * Если неверный формат даты, то ответ и бот остаётся в режиме погоды
+     * Если неверный формат даты, то пользователь остаётся в категории погоды
      */
     @Test
     void testWeatherRejectsWrongFormat() {
@@ -134,7 +134,7 @@ class SessionsAndCommandsTest {
     }
 
     /**
-     * Период длиннее 14 дней отклоняетс
+     * Период длиннее 14 дней отклоняется
      */
     @Test
     void testWeatherRejectsTooLongPeriod() {
@@ -147,13 +147,15 @@ class SessionsAndCommandsTest {
     }
 
     /**
-     * Формат прогноза проверяем на fake-WeatherProvider
+     * Формат ответного сообщения прогноза погоды, который проверяется на fake-WeatherProvider
      */
     @Test
     void testWeatherFormatsForecast() {
         LocalDate day = LocalDate.now().plusDays(1);
+
         WeatherProvider provider = (city, from, to) ->
                 List.of(new WeatherProvider.Day(day, -1.0, 7.0, "дождь"));
+
         BotSession session = new BotSession();
         session.setCity("Москва");
         session.setState(DialogState.CAT_WEATHER);

@@ -5,7 +5,16 @@ import org.example.Session.DialogState;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Класс инициализирует список категорий, доступных пользователю после выбора города
+ */
 public class KeyboardFactory {
+    /**
+     * Метод создает список, состоящий из доступных пользователю категорий
+     *
+     * @param state - по состоянию пользователя определяется какой список категорий ему доступен на текущем
+     *              уровне диалога с ботом
+     */
     public List<List<Button>> build(DialogState state) {
         List<List<Button>> newKeyboard = new ArrayList<>();
 

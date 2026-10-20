@@ -1,7 +1,7 @@
 package org.example.DialogService;
 
 /**
- * Хранит данные о inline кнопке
+ * Хранит данные об inline кнопке
  */
 public class Button {
     /**

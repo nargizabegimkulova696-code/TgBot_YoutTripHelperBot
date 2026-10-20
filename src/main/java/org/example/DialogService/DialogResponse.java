@@ -1,12 +1,10 @@
 package org.example.DialogService;
 
-import org.example.Session.DialogState;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Хранит информацию об ответном сообщении пользователю
+ * Хранит ответное сообщение пользователю
  */
 public class DialogResponse {
     /**
@@ -22,12 +20,14 @@ public class DialogResponse {
     /**
      * Создание текстового сообщения, которое получит пользователь в ответ
      */
-
     public DialogResponse(String answer) {
         this.answer = answer;
         listOfCommands = new ArrayList<>();
     }
 
+    /**
+     * Создание ответного сообщения: текст сообщения + список категорий, которое получит пользователь в ответ
+     */
     public DialogResponse(String answer, List<List<Button>> listOfCommands) {
         this.answer = answer;
         this.listOfCommands = listOfCommands;
