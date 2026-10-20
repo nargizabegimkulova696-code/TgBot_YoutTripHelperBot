@@ -1,4 +1,4 @@
-package org.example.DialogService;
+package org.example.response;
 
 import java.util.ArrayList;
 import java.util.List;

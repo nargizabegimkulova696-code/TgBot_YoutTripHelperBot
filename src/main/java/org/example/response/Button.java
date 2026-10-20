@@ -1,4 +1,4 @@
-package org.example.DialogService;
+package org.example.response;
 
 /**
  * Хранит данные об inline кнопке

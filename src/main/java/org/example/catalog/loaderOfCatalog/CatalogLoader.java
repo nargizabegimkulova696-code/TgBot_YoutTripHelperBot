@@ -1,6 +1,6 @@
-package org.example.LoaderOfCatalog;
+package org.example.catalog.loaderOfCatalog;
 
-import org.example.Catalog.CityCatalog;
+import org.example.catalog.CityCatalog;
 
 import java.io.IOException;
 

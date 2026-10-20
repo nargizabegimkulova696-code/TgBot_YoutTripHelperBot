@@ -1,8 +1,8 @@
-package org.example.TelegramBot;
+package org.example.telegramBot;
 
 import org.example.BotLogic;
-import org.example.DialogService.Button;
-import org.example.DialogService.DialogResponse;
+import org.example.response.Button;
+import org.example.response.DialogResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;

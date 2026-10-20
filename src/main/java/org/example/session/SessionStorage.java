@@ -1,4 +1,4 @@
-package org.example.Session;
+package org.example.session;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

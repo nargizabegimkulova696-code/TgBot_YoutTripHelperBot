@@ -1,4 +1,6 @@
-package org.example.Catalog;
+package org.example.catalog;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -49,8 +51,15 @@ public class CsvCityCatalog implements CityCatalog {
                         + ", найдено " + parts.length);
             }
 
-            Info info = new Info(parts[0].trim(), parts[1].trim(), parts[2].trim(), parts[3].trim(),
-                    parts[4].trim(), parts[5].trim(), parseFacts(parts[6]));
+            String name = parts[0].trim();
+            String status = parts[1].trim();
+            String population = parts[2].trim();
+            String area = parts[3].trim();
+            String description = parts[4].trim();
+            String climate = parts[5].trim();
+            List<String> facts = parseFacts(parts[6].trim());
+
+            Info info = new Info(name, status, population, area, description, climate, facts);
 
             String key = normal(info.name());
 
@@ -84,7 +93,7 @@ public class CsvCityCatalog implements CityCatalog {
      */
     private String normal(String str) {
 
-        if (str == null || str.isBlank()) {
+        if (!StringUtils.isNotBlank(str)) {
             return "";
         }
 
