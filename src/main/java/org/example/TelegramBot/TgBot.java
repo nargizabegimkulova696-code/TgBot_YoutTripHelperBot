@@ -90,7 +90,7 @@ public class TgBot extends TelegramLongPollingBot{
     }
 
     /**
-     * Создание ответного сообщение для телеграма
+     * Создание ответного сообщения, если от пользователя пришло текстовое сообщение
      */
     private void sendMessage(Message inputMessage) {
         String text = inputMessage.getText();
@@ -118,7 +118,7 @@ public class TgBot extends TelegramLongPollingBot{
     }
 
     /**
-     * Ответ на нажатие Inline кнопки
+     * Создание ответного сообщения при нажатии на Inline кнопки
      */
     private void handleCallback(CallbackQuery callback) {
         long chatId = callback.getMessage().getChatId();
@@ -147,7 +147,7 @@ public class TgBot extends TelegramLongPollingBot{
     }
 
     /**
-     * Создание Inline клавиатуры
+     * Создания inline-клавиатуры из списка категорий
      */
     private List<List<InlineKeyboardButton>> createTGKeyboard(List<List<Button>> fakeKeyboard) {
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();

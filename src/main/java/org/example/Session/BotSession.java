@@ -2,7 +2,7 @@ package org.example.Session;
 
 
 /**
- * Сессия одного пользователя: запоминает состояние и название города
+ * Сессия одного пользователя: хранит текущее состояние и название города
  */
 public class BotSession {
     /**
@@ -24,28 +24,28 @@ public class BotSession {
     }
 
     /**
-     * Возвращает текущее состояние диалога.
+     * Возврат текущего состояния диалога.
      */
     public DialogState getState() {
         return state;
     }
 
     /**
-     * Устанавливает состояние диалога.
+     * Смена состояния диалога.
      */
     public void setState(DialogState state) {
         this.state = state;
     }
 
     /**
-     * Возвращает город, выбранный пользователем.
+     * Возврат города, выбранный пользователем.
      */
     public String getCity() {
         return city;
     }
 
     /**
-     * Устанавливает город, выбранный пользователем.
+     * Смена города, выбранного пользователем.
      */
     public void setCity(String city) {
         this.city = city;

@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Команда /about_city, которая дает краткую сводку про город.
+ * Inline-кнопка about_city - возвращает краткое описание города.
  * Данные берутся из каталога городов {@link CityCatalog}, а ответ собирается из блоков.
  */
 public class AboutCity {
     /**
-     * Каталог, из которого берутся справки о городах
+     * Каталог, из которого берутся данные о городах
      */
     private final CityCatalog catalog;
 
@@ -22,14 +22,14 @@ public class AboutCity {
     public static final String NOT_FOUND = "Информации о городе не найдено";
 
     /**
-     * Создаёт сводку на основе готового каталога
+     * Каталог - содержит краткое описание городов, которое распределено по блокам
      */
     public AboutCity(CityCatalog catalog) {
         this.catalog = catalog;
     }
 
     /**
-     * Возвращает текст сводки о городе
+     * Возврат текстового сообщения, содержащее краткое описание города
      */
     public String describe(String city) {
         Info info = catalog.findInfo(city);
@@ -40,7 +40,7 @@ public class AboutCity {
     }
 
     /**
-     * Склеивает блоки, пропуская пустые
+     * Форматирование блоков - склеивание непустых блоков, содержащих информацию о городе
      */
     private String format(Info info) {
         List<String> blocks = new ArrayList<>();
@@ -71,7 +71,6 @@ public class AboutCity {
         }
 
         // 5. Интересные факты
-        // 5. Интересные факты
         if (info.facts() != null && !info.facts().isEmpty()) {
             blocks.add("Интересные факты:\n— " + String.join("\n— ", info.facts()));
         }
@@ -80,7 +79,7 @@ public class AboutCity {
     }
 
     /**
-     * Добавляет блок, если в нём есть текст
+     * Добавляет в список блоков, содержащих информацию о городе, непустой блок
      */
     private void addBlock(List<String> blocks, String text) {
         if (has(text)) {
@@ -89,7 +88,7 @@ public class AboutCity {
     }
 
     /**
-     * Проверяет, что в строке есть текст
+     * Перед добавлением в список блоков проверка, что строка в блоке непустая
      */
     private boolean has(String text) {
         return text != null && !text.isBlank();

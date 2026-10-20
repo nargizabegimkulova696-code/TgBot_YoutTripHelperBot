@@ -2,24 +2,27 @@ package org.example.Weather;
 
 import org.example.DialogService.DialogResponse;
 import org.example.DialogService.KeyboardFactory;
+
 import org.example.Session.BotSession;
 import org.example.Session.DialogState;
 
 import java.io.IOException;
+
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Диалог команды /weather
+ * Диалог с inline-кнопкой weather
  */
 public class WeatherDialog {
     /**
-     * Максимальная длина периода включая сегодня
+     * Максимальная длина периода прогноза, включая сегодня
      */
     private final int MAX_DAYS = 14;
 
@@ -35,7 +38,7 @@ public class WeatherDialog {
     private final DateTimeFormatter DAY_MONTH = DateTimeFormatter.ofPattern("dd.MM");
 
     /**
-     * Источник прогноза, чтобы могло работать без API
+     * Источник прогноза погоды, чтобы класс функционировал без подключения API
      */
     private final WeatherProvider provider;
 
@@ -46,46 +49,41 @@ public class WeatherDialog {
     /**
      * Начало диалога: проверяет, что город уже выбран, и просит ввести период.
      * Если города нет, остаёмся в текущем состоянии и просим выбрать город.
-     *
      * @param session сессия пользователя (город и состояние диалога)
-     * @return ответ бота и новое состояние клавиатуры
+     * @return ответ от бота (текстовое сообщение + inline-клавиатура)
      */
     public DialogResponse start(BotSession session) {
         DialogResponse response;
         KeyboardFactory keyboard = new KeyboardFactory();
 
         if (session.getCity() == null) {
-            response = new DialogResponse("Сначала выберите город. Напишите его название.");
+            response = new DialogResponse("Сначала выберите город, для этого напишите его название)");
             return response;
         }
 
         session.setState(DialogState.CAT_WEATHER);
         response = new DialogResponse("На какие даты вас интересует погода? Напишите период в формате дд.мм - дд.мм. "
                 + "Длина периода не больше " + MAX_DAYS + " дней.", keyboard.build(session.getState()));
-        // Переходим в состояние ожидания дат: следующее сообщение придёт в handleDate
         return response;
     }
 
     /**
-     * Ввод периода дат.
-     * Если ввод некорректный - просит пользователя ввести заново, иначе возвращает результат
-     *
-     * @param text    сообщение пользователя с периодом
+     * Обработка случаев связанных с введенным периодом дат
+     * Если ввод некорректный - просит пользователя ввести заново, иначе возвращаем результат
+     * @param text сообщение пользователя в формате дд.мм - дд.мм
      * @param session сессия пользователя
-     * @return прогноз или сообщение о том, что пошло не так
+     * @return сообщение: (прогноз погоды или сообщение о том, что пошло не так) + inline-клавиатура
      */
     public DialogResponse handleDates(String text, BotSession session) {
-        DialogResponse response;
         KeyboardFactory keyboard = new KeyboardFactory();
 
         Matcher matcher = PERIOD.matcher(text.trim());
         if (!matcher.matches()) {
-            response = new DialogResponse("Некорректный ввод.\n " +
+            return new DialogResponse("Некорректный ввод.\n " +
                     "Напишите период в формате дд.мм - дд.мм, например 12.10 - 18.10.");
-            return response;
         }
 
-        // Обработка разных случаев с неведенным годом
+        // Обработка различных случаев, учитывая не введенный год
         LocalDate today = LocalDate.now();
         LocalDate from;
         LocalDate to;
@@ -99,36 +97,30 @@ public class WeatherDialog {
                 to = to.plusYears(1);
             }
         } catch (DateTimeException e) {
-            response = new DialogResponse("Такой даты не существует. Напишите период в формате дд.мм - дд.мм.");
-            return response;
+            return new DialogResponse("Такой даты не существует. Напишите период в формате дд.мм - дд.мм.");
         }
 
         if (ChronoUnit.DAYS.between(from, to) + 1 > MAX_DAYS) {
-            response = new DialogResponse("Период слишком длинный. Выберите не больше " + MAX_DAYS + " дней.");
-            return response;
+            return new DialogResponse("Период слишком длинный. Выберите не больше " + MAX_DAYS + " дней.");
         }
 
         if (to.isAfter(today.plusDays(MAX_DAYS - 1))) {
-            response = new DialogResponse("Погоду можно посмотреть только на ближайшие "
+            return new DialogResponse("Погоду можно посмотреть только на ближайшие "
                     + MAX_DAYS + " дней. Выберите другие даты.");
-            return response;
         }
 
         String city = session.getCity();
         try {
-            response = new DialogResponse(format(city, from, to, provider.getForecast(city, from, to)),
+            return new DialogResponse(format(city, from, to, provider.getForecast(city, from, to)),
                     keyboard.build(session.getState()));
         } catch (IOException e) {
-            response = new DialogResponse("Не удалось получить погоду. Попробуйте позже.",
+            return new DialogResponse("Не удалось получить погоду. Попробуйте позже.",
                     keyboard.build(session.getState()));
         }
-
-
-        return response;
     }
 
     /**
-     * Формирует текст ответа: заголовок и по строке на каждый день.
+     * Создание ответного сообщения в виде: заголовок + в каждой строке прогноз погоды на один день
      * Пример строки: "22.10: -1...+7°C, дождь".
      */
     private String format(String city, LocalDate from, LocalDate to, List<WeatherProvider.Day> days) {
@@ -144,7 +136,7 @@ public class WeatherDialog {
     }
 
     /**
-     * Добавляется знак, для положительной температуры
+     * Добавление знака, для положительной температуры
      */
     private String signed(double temperature) {
         long rounded = Math.round(temperature);

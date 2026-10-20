@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Хранилище сессий пользователей для каждого чата хранит свою сессию
+ * Хранилище сессий пользователей, для каждого чата своя сессия
  */
 public class SessionStorage {
     /** Сессии пользователей:
@@ -26,19 +26,5 @@ public class SessionStorage {
      */
     public BotSession getSession(long chatId) {
         return sessions.computeIfAbsent(chatId, newId -> new BotSession());
-    }
-
-    /**
-     * Удаляет сессию пользователя по идентификатору
-     */
-    public void removeSession(long chatId) {
-        sessions.remove(chatId);
-    }
-
-    /**
-     * Возвращает количество хранимых сессий.
-     */
-    public int getSessionCount() {
-        return sessions.size();
     }
 }

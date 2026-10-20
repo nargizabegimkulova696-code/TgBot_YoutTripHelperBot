@@ -8,30 +8,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 /**
- * Считывает данные из csv файла и создает на основе этих данных словарь
+ * Считывание данных из csv файла и создание словаря на основе этих данных
  */
 public class CsvCityCatalog implements CityCatalog {
     /**
-     * Словарь, в котором ключ - название города, значение - справка о городе
+     * Словарь, в котором ключ - название города, значение - карточка с описанием города
      */
     private final Map<String, Info> cities = new HashMap<>();
 
     /**
-     * Количество данных: name, status, population, area, description, climate, facts
+     * Максимальное кол-во данных на город: name, status, population, area, description, climate, facts
      */
     private final int columns = 7;
 
     /**
      * В конструкторе реализуется чтение данных из файла и инициализация словаря.
-     * (Отсчет со второй строки, так как первая - заголовок)
+     * Чтение данных из файла начинается со второй строки, так как первая - заголовок
      */
     public CsvCityCatalog(InputStreamReader input) throws IOException {
         BufferedReader reader = new BufferedReader(input);
-        reader.readLine(); // первая строка заголовок - ее пропускают
+        //пропуск заголовка файла
+        reader.readLine();
 
         String line;
-        int number = 1; // номер строки в файле.
+        int number = 1;
 
         while ((line = reader.readLine()) != null) {
             number++;
@@ -59,7 +61,8 @@ public class CsvCityCatalog implements CityCatalog {
     }
 
     /**
-     * Разбивает колонку с фактами на список, факты разделены символом |
+     * Разбитие строки с фактами о городе в список
+     * Разделитель для фактов о городе - |
      */
     private List<String> parseFacts(String text) {
         List<String> facts = new ArrayList<>();
@@ -73,7 +76,12 @@ public class CsvCityCatalog implements CityCatalog {
         return facts;
     }
 
-
+    /**
+     * Метод создан для корректного поиска города или карточки с его описанием в словаре
+     *
+     * @param str - на вход строка с названием города
+     * @return string result - нормализованное название города
+     */
     private String normal(String str) {
 
         if (str == null || str.isBlank()) {

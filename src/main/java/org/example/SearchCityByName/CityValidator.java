@@ -3,7 +3,7 @@ package org.example.SearchCityByName;
 import org.example.Catalog.CityCatalog;
 
 /**
- * Сверка данных введенных пользователем со словарем
+ * Класс реализует поиск города, введенного пользователем, по его названию в каталоге
  */
 public class CityValidator {
     /**
@@ -18,12 +18,15 @@ public class CityValidator {
         this.catalog = catalog;
     }
 
+    /**
+     * Возврат каталога
+     */
     public CityCatalog getCatalog() {
         return catalog;
     }
 
     /**
-     * Проверка на хранения города введенного пользователе в списке допустимых городов
+     * Поиск города по его названию в списке городов
      */
     public String contain(String cityName) {
         String city = catalog.findCity(cityName);

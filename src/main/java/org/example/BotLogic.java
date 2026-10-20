@@ -21,13 +21,13 @@ public class BotLogic {
     private final SessionStorage sessionStorage;
 
     /**
-     * Константные сообщения для команд /start
+     * Константные сообщения для команды /start
      */
     private static final String START_MESSAGE = "Привет, я бот — помощник в путешествиях. В какой город вы хотели бы отправиться?";
 
 
     /**
-     * Константные сообщения для команд /help
+     * Константные сообщения для команды /help
      */
     private static final String HELP_MESSAGE = """
             Я бот — помощник в путешествиях
@@ -40,16 +40,24 @@ public class BotLogic {
             weather - погода в городе
             back - вернуться к списку команд""";
 
+    /**
+     * Константное сообщение, если город не найден
+     */
     private static final String NOT_FOUNT_CITY = "Информации о городе не найдено";
 
-
+    /**
+     * Константное сообщение, если сообщение от пользователя некорректно
+     */
     private static final String WRONG_INTERACTION = "Чтобы воспользоваться ботом, нажми на нужную кнопку, " +
             "чтобы получить информацию или нажми back, чтобы вернуться к выбору города.";
 
+    /**
+     * Валидатор осуществляет поиск города в каталоге по его названию
+     */
     private final CityValidator validator;
 
     /**
-     * Создаёт логику бота, работающую с переданным хранилищем сессий
+     * Конструктор логики бота - создание сессии пользователей и валидатора
      */
     public BotLogic(SessionStorage sessionStorage, CityValidator validator) {
         this.sessionStorage = sessionStorage;
@@ -59,11 +67,12 @@ public class BotLogic {
     /**
      * Метод создан для создания сообщения в ответ пользователю
      * @param chatId идентификатор чата пользователя
-     * @param text   текст сообщения, которое отправил пользователь
-     * @return ответ бота
+     * @param text текст сообщения, которое отправил пользователь
+     * @return ответ от бота
      */
     public DialogResponse makeMessage(String text, long chatId) {
         BotSession session = sessionStorage.getSession(chatId);
+
         BackCommand toBack = new BackCommand();
         WeatherDialog weatherDialog = new WeatherDialog(new OpenMeteoWeather());
         AboutCity aboutCity = new AboutCity(validator.getCatalog());
