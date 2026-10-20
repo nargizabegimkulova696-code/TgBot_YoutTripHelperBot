@@ -7,7 +7,6 @@ import org.example.command.weather.WeatherProvider;
 import org.example.response.DialogResponse;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
-import org.example.session.SessionStorage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
- * Тесты: отдельные сессии пользователей ({@link SessionStorage}),
+ * Тесты: отдельные сессии пользователей,
  * Команда /help, кнопки: about_city и weather, которые обрабатывает {@link BotLogic}
  * Прогноз погоды проверяется через {@link WeatherDialog}
  */
@@ -31,11 +30,6 @@ class SessionsAndCommandsTest {
     private final String CSV = "name;status;population;area;description;climate;facts\n"
             + "Москва;Столица России;13 млн;2 560 км²;Крупнейший город страны;умеренный;Метро|Кремль\n"
             + "Тула;;;;;;\n";
-
-    /**
-     * Хранилище сессий
-     */
-    private final SessionStorage storage = new SessionStorage();
 
     /**
      * Проверяемая логика бота
@@ -60,8 +54,8 @@ class SessionsAndCommandsTest {
         logic.makeMessage("Москва", 1L);
         logic.makeMessage("Тула", 2L);
 
-        Assertions.assertEquals("Москва", storage.getSession(1L).getCity());
-        Assertions.assertEquals("Тула", storage.getSession(2L).getCity());
+        Assertions.assertTrue(logic.makeMessage("cat:about_city", 1L).getAnswer().startsWith("Москва"));
+        Assertions.assertEquals("Тула", logic.makeMessage("cat:about_city", 2L).getAnswer());
     }
 
     /**
@@ -74,10 +68,11 @@ class SessionsAndCommandsTest {
 
         logic.makeMessage("/start", 1L);
 
-        Assertions.assertEquals(DialogState.WAITING_FOR_CITY, storage.getSession(1L).getState());
-        Assertions.assertEquals(DialogState.CITY_SELECTED, storage.getSession(2L).getState());
-        Assertions.assertEquals("Тула", storage.getSession(2L).getCity());
+        Assertions.assertEquals("Выберете категорию для города Москва:",
+                logic.makeMessage("Москва", 1L).getAnswer());
+        Assertions.assertEquals("Тула", logic.makeMessage("cat:about_city", 2L).getAnswer());
     }
+
 
     /**
      * About_city показывает название и другие данные из каталога
@@ -114,7 +109,8 @@ class SessionsAndCommandsTest {
         DialogResponse response = logic.makeMessage("cat:weather", 1L);
 
         Assertions.assertEquals("Сначала выберите город, для этого напишите его название)", response.getAnswer());
-        Assertions.assertEquals(DialogState.WAITING_FOR_CITY, storage.getSession(1L).getState());
+        Assertions.assertEquals("Выберете категорию для города Москва:",
+                logic.makeMessage("Москва", 1L).getAnswer());
     }
 
     /**
@@ -125,12 +121,11 @@ class SessionsAndCommandsTest {
         logic.makeMessage("Москва", 1L);
         logic.makeMessage("cat:weather", 1L);
 
-        DialogResponse response = logic.makeMessage("завтра", 1L);
+        String expected = "Некорректный ввод.\n " +
+                "Напишите период в формате дд.мм - дд.мм, например 12.10 - 18.10.";
 
-        Assertions.assertEquals("Некорректный ввод.\n " +
-                        "Напишите период в формате дд.мм - дд.мм, например 12.10 - 18.10.",
-                response.getAnswer());
-        Assertions.assertEquals(DialogState.CAT_WEATHER, storage.getSession(1L).getState());
+        Assertions.assertEquals(expected, logic.makeMessage("завтра", 1L).getAnswer());
+        Assertions.assertEquals(expected, logic.makeMessage("послезавтра", 1L).getAnswer());
     }
 
     /**
