@@ -32,16 +32,17 @@ class SessionsAndCommandsTest {
             + "Тула;;;;;;\n";
 
     /**
-     * Проверяемая логика бота
+     * Проверяемая логика бота и сессии, которая создается внутри логики
      */
     private final BotLogic logic;
 
     /**
-     * Инициализация логики и тестируемого каталога
+     * Инициализация логики, каталога и сервера
      */
     SessionsAndCommandsTest() throws IOException {
         CityCatalog catalog = new CsvCityCatalog(new InputStreamReader(
                 new ByteArrayInputStream(CSV.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8));
+
         CityServer server = new CityServer(catalog);
         logic = new BotLogic(server);
     }

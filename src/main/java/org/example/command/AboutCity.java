@@ -1,28 +1,29 @@
 package org.example.command;
 
 import org.apache.commons.lang3.StringUtils;
-import org.example.catalog.CityCatalog;
+
 import org.example.catalog.CityCatalog.Info;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Inline-кнопка about_city - возвращает краткое описание города.
- * Данные берутся из каталога городов {@link CityCatalog}, а ответ собирается из блоков.
+ * Класс отвечает за форматирование текста, который видит пользователь при выборе категории - about_city
  */
 public class AboutCity {
+    /**
+     * Метод форматирует блоки информации, которые хранятся в передаваемом параметре,
+     * в текст сообщения для пользователя
+     */
     public String format(Info info) {
         List<String> blocks = new ArrayList<>();
 
-        // 1. Название и статус (название есть всегда)
         if (has(info.status())) {
             blocks.add(info.name() + " — " + info.status());
         } else {
             blocks.add(info.name());
         }
 
-        // 2. Население и площадь
         List<String> popPlusArea = new ArrayList<>();
         if (has(info.population())) {
             popPlusArea.add("Население: " + info.population());
@@ -32,15 +33,12 @@ public class AboutCity {
         }
         addBlock(blocks, String.join("\n", popPlusArea));
 
-        // 3. Описание
         addBlock(blocks, info.description());
 
-        // 4. Климат
         if (has(info.climate())) {
             addBlock(blocks, "Климат: " + info.climate());
         }
 
-        // 5. Интересные факты
         if (info.facts() != null && !info.facts().isEmpty()) {
             blocks.add("Интересные факты:\n— " + String.join("\n— ", info.facts()));
         }

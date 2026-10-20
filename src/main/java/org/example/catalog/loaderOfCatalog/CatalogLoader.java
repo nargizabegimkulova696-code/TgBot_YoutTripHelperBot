@@ -5,11 +5,11 @@ import org.example.catalog.CityCatalog;
 import java.io.IOException;
 
 /**
- * Интерфейс для инициализации каталога
+ * Интерфейс для создания каталогов
  */
 public interface CatalogLoader {
     /**
-     * Инициализация каталога и его возврат
+     * Метод, который создает каталог либо выбрасывает исключение, если чтение файда не прошло успешно
      */
     public CityCatalog load() throws IOException;
 }

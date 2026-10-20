@@ -18,10 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Тесты: кнопок, доступных после выбора города ({@link KeyboardFactory})и команды /start.
- * Логику ответного сообщения обрабатывает {@link BotLogic}
+ * Тестирование botLogic на корректное ответное сообщение пользователю
  */
-class BotCatTest {
+class BotLogicTest {
     /**
      * Id чата тестового пользователя
      */
@@ -48,7 +47,7 @@ class BotCatTest {
     /**
      * Инициализация каталога и логики бота
      */
-    BotCatTest() throws IOException {
+    BotLogicTest() throws IOException {
         CityCatalog catalog = new CsvCityCatalog(new InputStreamReader(
                 new ByteArrayInputStream(CSV.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8));
 
@@ -84,7 +83,7 @@ class BotCatTest {
     }
 
     /**
-     * /start спрашивает название города, ответное сообщение: текст + пустой список категорий
+     * Команда /start спрашивает название города, ответное сообщение: текст + пустой список категорий
      */
     @Test
     void testStartAsksWithoutAny() {

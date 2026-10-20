@@ -12,7 +12,7 @@ import java.util.Map;
 
 
 /**
- * Считывание данных из csv файла и создание словаря на основе этих данных
+ * Чтение данных из csv файла и создание словаря на основе этих данных
  */
 public class CsvCityCatalog implements CityCatalog {
     /**

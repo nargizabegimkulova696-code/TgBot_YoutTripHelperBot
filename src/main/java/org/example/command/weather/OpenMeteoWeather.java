@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Создание прогноза погоды на период указанных дат с помощью API Open-Meteo
+ * Класс реализует запрос к API Open-Meteo, чтобы узнать прогноз погоды на период указанных дат
  */
 public class OpenMeteoWeather implements WeatherProvider {
     /**
@@ -51,11 +51,8 @@ public class OpenMeteoWeather implements WeatherProvider {
     public List<Day> getForecast(String city, LocalDate from, LocalDate to) throws IOException {
         JsonNode place = findPlace(city); //findPlace(city) возвращает объект с данными о городе
 
-        //указываем часовой пояс для запроса прогноза погоды
         String timezone = place.path("timezone").asText("auto");
 
-        // API + широта + долгота + температура макс + температура мин
-        // + погодный код + первая дата периода + последняя дата периода
         JsonNode forecast = get(FORECAST_URL
                 + "?latitude=" + place.path("latitude").asDouble()
                 + "&longitude=" + place.path("longitude").asDouble()
@@ -135,7 +132,6 @@ public class OpenMeteoWeather implements WeatherProvider {
         List<Day> days = new ArrayList<>();
         for (int i = 0; i < dates.size(); i++) {
             if (maxTemps.get(i).isNull() || minTemps.get(i).isNull() || codes.get(i).isNull()) {
-                // Какого-то вида данных нет на этот день, поэтому он не будет учитываться
                 continue;
             }
             days.add(new Day(LocalDate.parse(
@@ -148,7 +144,7 @@ public class OpenMeteoWeather implements WeatherProvider {
     }
 
     /**
-     * Переводит код погоды в краткое описание
+     * Перевод кода погоды в краткое описание
      */
     public String describe(int code) {
         return switch (code) {

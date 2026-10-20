@@ -18,7 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Диалог с inline-кнопкой weather
+ * Диалог бота с пользователем в категории weather
  */
 public class WeatherDialog {
     /**
@@ -83,7 +83,6 @@ public class WeatherDialog {
                     "Напишите период в формате дд.мм - дд.мм, например 12.10 - 18.10.");
         }
 
-        // Обработка различных случаев, учитывая не введенный год
         LocalDate today = LocalDate.now();
         LocalDate from;
         LocalDate to;
