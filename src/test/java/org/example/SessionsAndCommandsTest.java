@@ -1,14 +1,13 @@
 package org.example;
 
-import org.example.Catalog.CityCatalog;
-import org.example.Catalog.CsvCityCatalog;
-import org.example.DialogService.DialogResponse;
-import org.example.SearchCityByName.CityValidator;
-import org.example.Session.BotSession;
-import org.example.Session.DialogState;
-import org.example.Session.SessionStorage;
-import org.example.Weather.WeatherDialog;
-import org.example.Weather.WeatherProvider;
+import org.example.catalog.CityCatalog;
+import org.example.catalog.CsvCityCatalog;
+import org.example.command.weather.WeatherDialog;
+import org.example.command.weather.WeatherProvider;
+import org.example.response.DialogResponse;
+import org.example.session.BotSession;
+import org.example.session.DialogState;
+import org.example.session.SessionStorage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -49,7 +48,8 @@ class SessionsAndCommandsTest {
     SessionsAndCommandsTest() throws IOException {
         CityCatalog catalog = new CsvCityCatalog(new InputStreamReader(
                 new ByteArrayInputStream(CSV.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8));
-        logic = new BotLogic(storage, new CityValidator(catalog));
+        CityServer server = new CityServer(catalog);
+        logic = new BotLogic(server);
     }
 
     /**

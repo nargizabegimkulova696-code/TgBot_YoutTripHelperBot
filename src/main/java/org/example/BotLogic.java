@@ -1,15 +1,13 @@
 package org.example;
 
-import org.example.AboutCity.AboutCity;
-import org.example.BackCommand.BackCommand;
-import org.example.DialogService.DialogResponse;
-import org.example.DialogService.KeyboardFactory;
-import org.example.SearchCityByName.CityValidator;
-import org.example.Session.BotSession;
-import org.example.Session.DialogState;
-import org.example.Session.SessionStorage;
-import org.example.Weather.OpenMeteoWeather;
-import org.example.Weather.WeatherDialog;
+import org.example.command.Back;
+import org.example.command.weather.OpenMeteoWeather;
+import org.example.command.weather.WeatherDialog;
+import org.example.response.DialogResponse;
+import org.example.response.KeyboardFactory;
+import org.example.session.BotSession;
+import org.example.session.DialogState;
+import org.example.session.SessionStorage;
 
 /**
  * Логика работы бота, которая не зависит от API
@@ -18,7 +16,7 @@ public class BotLogic {
     /**
      * Хранилище сессий пользователей
      */
-    private final SessionStorage sessionStorage;
+    private final SessionStorage sessionStorage = new SessionStorage();
 
     /**
      * Константные сообщения для команды /start
@@ -43,7 +41,7 @@ public class BotLogic {
     /**
      * Константное сообщение, если город не найден
      */
-    private static final String NOT_FOUNT_CITY = "Информации о городе не найдено";
+    private static final String NOT_FOUND_CITY = "Информации о городе не найдено";
 
     /**
      * Константное сообщение, если сообщение от пользователя некорректно
@@ -54,14 +52,13 @@ public class BotLogic {
     /**
      * Валидатор осуществляет поиск города в каталоге по его названию
      */
-    private final CityValidator validator;
+    private final CityServer server;
 
     /**
      * Конструктор логики бота - создание сессии пользователей и валидатора
      */
-    public BotLogic(SessionStorage sessionStorage, CityValidator validator) {
-        this.sessionStorage = sessionStorage;
-        this.validator = validator;
+    public BotLogic(CityServer server) {
+        this.server = server;
     }
 
     /**
@@ -73,9 +70,9 @@ public class BotLogic {
     public DialogResponse makeMessage(String text, long chatId) {
         BotSession session = sessionStorage.getSession(chatId);
 
-        BackCommand toBack = new BackCommand();
+        Back toBack = new Back();
         WeatherDialog weatherDialog = new WeatherDialog(new OpenMeteoWeather());
-        AboutCity aboutCity = new AboutCity(validator.getCatalog());
+        //AboutCity aboutCity = new AboutCity(validator.getCatalog());
 
         DialogResponse response;
         KeyboardFactory keyboard = new KeyboardFactory();
@@ -83,6 +80,7 @@ public class BotLogic {
         switch (text) {
             case "/start" -> {
                 session.setState(DialogState.WAITING_FOR_CITY);
+                session.setCity(null);
                 response = new DialogResponse(START_MESSAGE);
             }
             case "/help" -> {
@@ -101,7 +99,7 @@ public class BotLogic {
 
             case "cat:about_city" -> {
                 session.setState(DialogState.CAT_ABOUT_CITY);
-                response = new DialogResponse(aboutCity.describe(session.getCity()),
+                response = new DialogResponse(server.findInfoForCity(session.getCity()),
                         keyboard.build(session.getState()));
             }
 
@@ -111,15 +109,17 @@ public class BotLogic {
                         response = weatherDialog.handleDates(text, session);
                     }
                     case WAITING_FOR_CITY -> {
-                        if (!validator.contain(text).isEmpty()) {
+                        String city = server.findCityByName(text);
+
+                        if (city != null) {
                             session.setState(DialogState.CITY_SELECTED);
-                            session.setCity(validator.contain(text));
+                            session.setCity(city);
 
                             response = new DialogResponse("Выберете категорию для города "
-                                    + validator.contain(text) + ":",
+                                    + city + ":",
                                     keyboard.build(session.getState()));
                         } else {
-                            response = new DialogResponse(NOT_FOUNT_CITY);
+                            response = new DialogResponse(NOT_FOUND_CITY);
                         }
                     }
                     default -> {

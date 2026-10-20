@@ -1,13 +1,12 @@
 package org.example;
 
-import org.example.Catalog.CityCatalog;
-import org.example.Catalog.CsvCityCatalog;
-import org.example.DialogService.Button;
-import org.example.DialogService.DialogResponse;
-import org.example.DialogService.KeyboardFactory;
-import org.example.SearchCityByName.CityValidator;
-import org.example.Session.DialogState;
-import org.example.Session.SessionStorage;
+import org.example.catalog.CityCatalog;
+import org.example.catalog.CsvCityCatalog;
+import org.example.response.Button;
+import org.example.response.DialogResponse;
+import org.example.response.KeyboardFactory;
+import org.example.session.DialogState;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +21,7 @@ import java.util.List;
  * Тесты: кнопок, доступных после выбора города ({@link KeyboardFactory})и команды /start.
  * Логику ответного сообщения обрабатывает {@link BotLogic}
  */
-class BotMenuTest {
+class BotCatTest {
     /**
      * Id чата тестового пользователя
      */
@@ -42,11 +41,6 @@ class BotMenuTest {
             + "Тула;;;;;;\n";
 
     /**
-     * Хранилище сессий
-     */
-    private final SessionStorage storage = new SessionStorage();
-
-    /**
      * Логика бота, которую тестируем
      */
     private final BotLogic logic;
@@ -54,10 +48,12 @@ class BotMenuTest {
     /**
      * Инициализация каталога и логики бота
      */
-    BotMenuTest() throws IOException {
+    BotCatTest() throws IOException {
         CityCatalog catalog = new CsvCityCatalog(new InputStreamReader(
-                new ByteArrayInputStream(CSV.getBytes()), StandardCharsets.UTF_8));
-        logic = new BotLogic(storage, new CityValidator(catalog));
+                new ByteArrayInputStream(CSV.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8));
+
+        CityServer server = new CityServer(catalog);
+        logic = new BotLogic(server);
     }
 
     /**
@@ -88,7 +84,7 @@ class BotMenuTest {
     }
 
     /**
-     * /start спрашивает город и не показывает список категорий
+     * /start спрашивает название города, ответное сообщение: текст + пустой список категорий
      */
     @Test
     void testStartAsksWithoutAny() {
@@ -99,7 +95,7 @@ class BotMenuTest {
     }
 
     /**
-     * Если город лежит в каталоге, то в ответном сообщении лежит текст+список категорий
+     * Если город лежит в каталоге, то в ответном сообщении лежит текст+ непустой список категорий
      */
     @Test
     void testValidCityShowsMenu() {
@@ -107,7 +103,6 @@ class BotMenuTest {
 
         Assertions.assertEquals("Выберете категорию для города Москва:", response.getAnswer());
         Assertions.assertTrue(response.hasButtons());
-        Assertions.assertEquals(DialogState.CITY_SELECTED, storage.getSession(CHAT).getState());
     }
 
     /**
@@ -118,11 +113,11 @@ class BotMenuTest {
         DialogResponse response = logic.makeMessage("Атлантида", CHAT);
 
         Assertions.assertEquals("Информации о городе не найдено", response.getAnswer());
-        Assertions.assertEquals(DialogState.WAITING_FOR_CITY, storage.getSession(CHAT).getState());
+        Assertions.assertFalse(response.hasButtons());
     }
 
     /**
-     * Кнопка back возвращает в меню, кнопка back - к выбору города
+     * При нажатии на кнопку back происходит возврат на итерацию выше
      */
     @Test
     void testBackStepByStep() {
@@ -130,24 +125,21 @@ class BotMenuTest {
         logic.makeMessage("cat:about_city", CHAT);
 
         DialogResponse toMenu = logic.makeMessage("cat:back", CHAT);
-        Assertions.assertEquals(DialogState.CITY_SELECTED, storage.getSession(CHAT).getState());
         Assertions.assertEquals(3, toMenu.getListOfCommands().size());
 
         DialogResponse toCity = logic.makeMessage("cat:back", CHAT);
-        Assertions.assertEquals(DialogState.WAITING_FOR_CITY, storage.getSession(CHAT).getState());
         Assertions.assertEquals(START_MESSAGE, toCity.getAnswer());
     }
 
     /**
      * В будущем будет команда /back, которая не должна портить логику ответного сообщения,
-     * если пользователь находится в меню
+     * * если пользователь находится в меню
      */
     @Test
     void testBackInStateWaitingForCity() {
         DialogResponse response = Assertions.assertDoesNotThrow(() -> logic.makeMessage("cat:back", CHAT));
 
         Assertions.assertEquals(START_MESSAGE, response.getAnswer());
-        Assertions.assertEquals(DialogState.WAITING_FOR_CITY, storage.getSession(CHAT).getState());
     }
 
     /**
@@ -158,9 +150,11 @@ class BotMenuTest {
         logic.makeMessage("Москва", CHAT);
 
         logic.makeMessage("cat:weather", CHAT);
-        Assertions.assertEquals(DialogState.CAT_WEATHER, storage.getSession(CHAT).getState());
+        // мы в категории погоды: на мусорный ввод отвечает погодный диалог
+        Assertions.assertTrue(logic.makeMessage("завтра", CHAT).getAnswer().startsWith("Некорректный ввод"));
 
-        logic.makeMessage("cat:about_city", CHAT);
-        Assertions.assertEquals(DialogState.CAT_ABOUT_CITY, storage.getSession(CHAT).getState());
+        // сразу переходим в about_city, не возвращаясь в меню
+        String about = logic.makeMessage("cat:about_city", CHAT).getAnswer();
+        Assertions.assertTrue(about.startsWith("Москва — Столица России"));
     }
 }

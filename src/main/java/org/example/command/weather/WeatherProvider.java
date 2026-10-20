@@ -1,4 +1,4 @@
-package org.example.Weather;
+package org.example.command.weather;
 
 import java.io.IOException;
 import java.time.LocalDate;

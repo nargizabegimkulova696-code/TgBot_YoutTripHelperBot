@@ -1,7 +1,7 @@
-package org.example.LoaderOfCatalog;
+package org.example.catalog.loaderOfCatalog;
 
-import org.example.Catalog.CityCatalog;
-import org.example.Catalog.CsvCityCatalog;
+import org.example.catalog.CityCatalog;
+import org.example.catalog.CsvCityCatalog;
 
 import java.io.IOException;
 import java.io.InputStream;

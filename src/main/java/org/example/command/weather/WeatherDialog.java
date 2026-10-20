@@ -1,10 +1,10 @@
-package org.example.Weather;
+package org.example.command.weather;
 
-import org.example.DialogService.DialogResponse;
-import org.example.DialogService.KeyboardFactory;
+import org.example.response.DialogResponse;
+import org.example.response.KeyboardFactory;
 
-import org.example.Session.BotSession;
-import org.example.Session.DialogState;
+import org.example.session.BotSession;
+import org.example.session.DialogState;
 
 import java.io.IOException;
 

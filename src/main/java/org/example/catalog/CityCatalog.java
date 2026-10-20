@@ -1,4 +1,4 @@
-package org.example.Catalog;
+package org.example.catalog;
 
 import java.util.List;
 

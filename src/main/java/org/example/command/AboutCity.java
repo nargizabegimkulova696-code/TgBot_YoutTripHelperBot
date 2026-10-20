@@ -1,7 +1,8 @@
-package org.example.AboutCity;
+package org.example.command;
 
-import org.example.Catalog.CityCatalog;
-import org.example.Catalog.CityCatalog.Info;
+import org.apache.commons.lang3.StringUtils;
+import org.example.catalog.CityCatalog;
+import org.example.catalog.CityCatalog.Info;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,38 +12,7 @@ import java.util.List;
  * Данные берутся из каталога городов {@link CityCatalog}, а ответ собирается из блоков.
  */
 public class AboutCity {
-    /**
-     * Каталог, из которого берутся данные о городах
-     */
-    private final CityCatalog catalog;
-
-    /**
-     * Ответ, если города нет в каталоге
-     */
-    public static final String NOT_FOUND = "Информации о городе не найдено";
-
-    /**
-     * Каталог - содержит краткое описание городов, которое распределено по блокам
-     */
-    public AboutCity(CityCatalog catalog) {
-        this.catalog = catalog;
-    }
-
-    /**
-     * Возврат текстового сообщения, содержащее краткое описание города
-     */
-    public String describe(String city) {
-        Info info = catalog.findInfo(city);
-        if (info == null) {
-            return NOT_FOUND;
-        }
-        return format(info);
-    }
-
-    /**
-     * Форматирование блоков - склеивание непустых блоков, содержащих информацию о городе
-     */
-    private String format(Info info) {
+    public String format(Info info) {
         List<String> blocks = new ArrayList<>();
 
         // 1. Название и статус (название есть всегда)
@@ -91,6 +61,6 @@ public class AboutCity {
      * Перед добавлением в список блоков проверка, что строка в блоке непустая
      */
     private boolean has(String text) {
-        return text != null && !text.isBlank();
+        return StringUtils.isNotBlank(text);
     }
 }

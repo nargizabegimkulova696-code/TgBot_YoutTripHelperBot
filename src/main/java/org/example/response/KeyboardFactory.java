@@ -1,6 +1,6 @@
-package org.example.DialogService;
+package org.example.response;
 
-import org.example.Session.DialogState;
+import org.example.session.DialogState;
 
 import java.util.ArrayList;
 import java.util.List;

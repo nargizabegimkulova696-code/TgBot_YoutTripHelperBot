@@ -1,4 +1,4 @@
-package org.example.TelegramBot;
+package org.example.telegramBot;
 
 import java.io.InputStream;
 import java.util.Properties;

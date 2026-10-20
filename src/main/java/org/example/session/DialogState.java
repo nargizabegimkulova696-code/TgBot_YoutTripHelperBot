@@ -1,4 +1,4 @@
-package org.example.Session;
+package org.example.session;
 
 /**
  * Состояние бота в диалоге с пользователем
