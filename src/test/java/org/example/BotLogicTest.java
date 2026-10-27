@@ -52,7 +52,7 @@ class BotLogicTest {
                 new ByteArrayInputStream(CSV.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8));
 
         CityServer server = new CityServer(catalog);
-        logic = new BotLogic(server);
+        logic = new BotLogic(server, (city, from, to) -> List.of());
     }
 
     /**
