@@ -1,30 +1,28 @@
-package org.example.command.weather;
+package org.example.handler.states;
 
+import org.example.command.weather.WeatherProvider;
+import org.example.handler.StateHandler;
 import org.example.response.DialogResponse;
 import org.example.response.KeyboardFactory;
-
 import org.example.session.BotSession;
-import org.example.session.DialogState;
 
 import java.io.IOException;
-
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Диалог бота с пользователем в категории weather
+ * Состояние CAT_WEATHER: разбирает введённый период дат и возвращает прогноз погоды
  */
-public class WeatherDialog {
+public class WeatherDatesHandler implements StateHandler {
     /**
-     * Максимальная длина периода прогноза, включая сегодня
+     * Максимальная длина периода прогноза, включая сегодня.
      */
-    private final int MAX_DAYS = 14;
+    public static final int MAX_DAYS = 14;
 
     /**
      * Период в формате регулярного выражения "дд.мм - дд.мм".
@@ -35,52 +33,37 @@ public class WeatherDialog {
     /**
      * Формат вывода даты в ответе бота
      */
-    private final DateTimeFormatter DAY_MONTH = DateTimeFormatter.ofPattern("dd.MM");
+    private static final DateTimeFormatter DAY_MONTH = DateTimeFormatter.ofPattern("dd.MM");
 
     /**
      * Источник прогноза погоды, чтобы класс функционировал без подключения API
      */
     private final WeatherProvider provider;
 
-    public WeatherDialog(WeatherProvider provider) {
+    /**
+     * Кнопки с категориями
+     */
+    private final KeyboardFactory keyboard = new KeyboardFactory();
+
+    public WeatherDatesHandler(WeatherProvider provider) {
         this.provider = provider;
     }
 
     /**
-     * Начало диалога: проверяет, что город уже выбран, и просит ввести период.
-     * Если города нет, остаёмся в текущем состоянии и просим выбрать город.
-     * @param session сессия пользователя (город и состояние диалога)
+     * Обработка введённого периода дат.
+     * Если ввод корректный - возвращает прогноз, иначе просит ввести заново
+     *
+     * @param text    сообщение пользователя в формате дд.мм - дд.мм
+     * @param session сессия пользователя
      * @return ответ от бота (текстовое сообщение + inline-клавиатура)
      */
-    public DialogResponse start(BotSession session) {
-        DialogResponse response;
-        KeyboardFactory keyboard = new KeyboardFactory();
-
-        if (session.getCity() == null) {
-            response = new DialogResponse("Сначала выберите город, для этого напишите его название)");
-            return response;
-        }
-
-        session.setState(DialogState.CAT_WEATHER);
-        response = new DialogResponse("На какие даты вас интересует погода? Напишите период в формате дд.мм - дд.мм. "
-                + "Длина периода не больше " + MAX_DAYS + " дней.", keyboard.build(session.getState()));
-        return response;
-    }
-
-    /**
-     * Обработка случаев связанных с введенным периодом дат
-     * Если ввод некорректный - просит пользователя ввести заново, иначе возвращаем результат
-     * @param text сообщение пользователя в формате дд.мм - дд.мм
-     * @param session сессия пользователя
-     * @return сообщение: (прогноз погоды или сообщение о том, что пошло не так) + inline-клавиатура
-     */
-    public DialogResponse handleDates(String text, BotSession session) {
-        KeyboardFactory keyboard = new KeyboardFactory();
-
+    @Override
+    public DialogResponse handle(String text, BotSession session) {
         Matcher matcher = PERIOD.matcher(text.trim());
         if (!matcher.matches()) {
             return new DialogResponse("Некорректный ввод.\n " +
-                    "Напишите период в формате дд.мм - дд.мм, например 12.10 - 18.10.");
+                    "Напишите период в формате дд.мм - дд.мм, например 12.10 - 18.10.",
+                    keyboard.build(session.getState()));
         }
 
         LocalDate today = LocalDate.now();
@@ -96,16 +79,19 @@ public class WeatherDialog {
                 to = to.plusYears(1);
             }
         } catch (DateTimeException e) {
-            return new DialogResponse("Такой даты не существует. Напишите период в формате дд.мм - дд.мм.");
+            return new DialogResponse("Такой даты не существует. Напишите период в формате дд.мм - дд.мм.",
+                    keyboard.build(session.getState()));
         }
 
         if (ChronoUnit.DAYS.between(from, to) + 1 > MAX_DAYS) {
-            return new DialogResponse("Период слишком длинный. Выберите не больше " + MAX_DAYS + " дней.");
+            return new DialogResponse("Период слишком длинный. Выберите не больше " + MAX_DAYS + " дней.",
+                    keyboard.build(session.getState()));
         }
 
         if (to.isAfter(today.plusDays(MAX_DAYS - 1))) {
             return new DialogResponse("Погоду можно посмотреть только на ближайшие "
-                    + MAX_DAYS + " дней. Выберите другие даты.");
+                    + MAX_DAYS + " дней. Выберите другие даты.",
+                    keyboard.build(session.getState()));
         }
 
         String city = session.getCity();
@@ -123,15 +109,15 @@ public class WeatherDialog {
      * Пример строки: "22.10: -1...+7°C, дождь".
      */
     private String format(String city, LocalDate from, LocalDate to, List<WeatherProvider.Day> days) {
-        String text = "Погода в городе " + city
-                + " с " + from.format(DAY_MONTH) + " по " + to.format(DAY_MONTH) + ":";
+        StringBuilder text = new StringBuilder("Погода в городе " + city
+                + " с " + from.format(DAY_MONTH) + " по " + to.format(DAY_MONTH) + ":");
 
         for (WeatherProvider.Day day : days) {
-            text += "\n" + day.date().format(DAY_MONTH) + ": "
-                    + signed(day.minTemp()) + "..." + signed(day.maxTemp()) + "°C, "
-                    + day.description();
+            text.append("\n").append(day.date().format(DAY_MONTH)).append(": ")
+                    .append(signed(day.minTemp())).append("...").append(signed(day.maxTemp())).append("°C, ")
+                    .append(day.description());
         }
-        return text;
+        return text.toString();
     }
 
     /**

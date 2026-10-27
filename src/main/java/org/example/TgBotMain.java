@@ -5,6 +5,7 @@ import org.example.catalog.CityCatalog;
 import org.example.catalog.loaderOfCatalog.CatalogLoader;
 import org.example.catalog.loaderOfCatalog.CsvCatalogLoader;
 
+import org.example.command.weather.OpenMeteoWeather;
 import org.example.telegramBot.ConfigTgBot;
 import org.example.telegramBot.TgBot;
 
@@ -41,7 +42,7 @@ public class TgBotMain{
             CityCatalog catalog = loader.load();
             CityServer serverForCities = new CityServer(catalog);
 
-            BotLogic botLogic = new BotLogic(serverForCities);
+            BotLogic botLogic = new BotLogic(serverForCities, new OpenMeteoWeather());
 
             TgBot helperTripBot = new TgBot(tgBotName, tgBotToken, botLogic);
 

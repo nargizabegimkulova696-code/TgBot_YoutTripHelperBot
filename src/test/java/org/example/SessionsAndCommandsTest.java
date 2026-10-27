@@ -2,8 +2,8 @@ package org.example;
 
 import org.example.catalog.CityCatalog;
 import org.example.catalog.CsvCityCatalog;
-import org.example.command.weather.WeatherDialog;
 import org.example.command.weather.WeatherProvider;
+import org.example.handler.states.WeatherDatesHandler;
 import org.example.response.DialogResponse;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * Тесты: отдельные сессии пользователей,
  * Команда /help, кнопки: about_city и weather, которые обрабатывает {@link BotLogic}
- * Прогноз погоды проверяется через {@link WeatherDialog}
+ * Прогноз погоды проверяется через {@link WeatherDatesHandler}
  */
 class SessionsAndCommandsTest {
     /**
@@ -44,7 +44,7 @@ class SessionsAndCommandsTest {
                 new ByteArrayInputStream(CSV.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8));
 
         CityServer server = new CityServer(catalog);
-        logic = new BotLogic(server);
+        logic = new BotLogic(server, (city, from, to) -> List.of());
     }
 
     /**
@@ -157,7 +157,7 @@ class SessionsAndCommandsTest {
         session.setState(DialogState.CAT_WEATHER);
 
         String dm = DateTimeFormatter.ofPattern("dd.MM").format(day);
-        String answer = new WeatherDialog(provider).handleDates(dm + " - " + dm, session).getAnswer();
+        String answer = new WeatherDatesHandler(provider).handle(dm + " - " + dm, session).getAnswer();
 
         Assertions.assertEquals("Погода в городе Москва с " + dm + " по " + dm + ":\n"
                 + dm + ": -1...+7°C, дождь", answer);
