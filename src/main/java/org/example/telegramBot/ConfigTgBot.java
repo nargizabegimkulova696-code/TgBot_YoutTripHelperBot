@@ -1,4 +1,4 @@
-package org.example;
+package org.example.telegramBot;
 
 import java.io.InputStream;
 import java.util.Properties;
@@ -15,7 +15,7 @@ public class ConfigTgBot {
     /**
      * Конструктор класса ConfigTgBot, который читает данные с файла application.properties
      */
-    ConfigTgBot(){
+    public ConfigTgBot() {
         properties = new Properties();
 
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("tgBot.properties")){
