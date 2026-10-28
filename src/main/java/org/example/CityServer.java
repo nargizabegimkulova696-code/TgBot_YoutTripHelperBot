@@ -2,7 +2,6 @@ package org.example;
 
 import org.example.catalog.CityCatalog;
 import org.example.catalog.CityCatalog.Info;
-import org.example.command.AboutCity;
 
 /**
  * Предоставляет доступ к каталогу с данными
@@ -41,8 +40,7 @@ public class CityServer {
         }
 
         Info info = catalog.findInfo(city);
-        AboutCity aboutCity = new AboutCity();
 
-        return aboutCity.format(info);
+        return info.formattedInfo();
     }
 }

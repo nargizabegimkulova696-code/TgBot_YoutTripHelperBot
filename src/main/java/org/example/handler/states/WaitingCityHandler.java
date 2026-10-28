@@ -26,6 +26,9 @@ public class WaitingCityHandler implements StateHandler {
      */
     private final KeyboardFactory keyboard = new KeyboardFactory();
 
+    /**
+     * Создание от сервера WaitingCityHandler
+     */
     public WaitingCityHandler(CityServer server) {
         this.server = server;
     }
