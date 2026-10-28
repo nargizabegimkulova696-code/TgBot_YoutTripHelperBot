@@ -40,11 +40,14 @@ class SessionsAndCommandsTest {
      * Инициализация логики, каталога и сервера
      */
     SessionsAndCommandsTest() throws IOException {
-        CityCatalog catalog = new CsvCityCatalog(new InputStreamReader(
-                new ByteArrayInputStream(CSV.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8));
+        try (InputStreamReader reader = new InputStreamReader(
+                new ByteArrayInputStream(CSV.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8)) {
 
-        CityServer server = new CityServer(catalog);
-        logic = new BotLogic(server, (city, from, to) -> List.of());
+            CityCatalog catalog = new CsvCityCatalog(reader);
+            CityServer server = new CityServer(catalog);
+            logic = new BotLogic(server, (city, from, to) -> List.of());
+        }
+        ;
     }
 
     /**
@@ -84,11 +87,12 @@ class SessionsAndCommandsTest {
 
         String text = logic.makeMessage("cat:about_city", 1L).getAnswer();
 
-        String expected = "Москва — Столица России\n\n"
-                + "Население: 13 млн\nПлощадь: 2 560 км²\n\n"
+        String expected = "Москва - Столица России\n\n"
+                + "Население: 13 млн\n\n"
+                + "Площадь: 2 560 км²\n\n"
                 + "Крупнейший город страны\n\n"
                 + "Климат: умеренный\n\n"
-                + "Интересные факты:\n— Метро\n— Кремль";
+                + "Интересные факты о городе: \n- Метро\n- Кремль";
         Assertions.assertEquals(expected, text);
     }
 

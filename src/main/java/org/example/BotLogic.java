@@ -34,11 +34,6 @@ public class BotLogic {
     private final StateService stateService;
 
     /**
-     * Валидатор осуществляет поиск города в каталоге по его названию
-     */
-    private final CityServer server;
-
-    /**
      * Конструктор логики бота, создаёт все обработчики один раз
      * @param server доступ к каталогу городов
      * @param weatherProvider источник прогноза погоды
@@ -47,17 +42,18 @@ public class BotLogic {
         this.buttonHandlers = Map.of(
                 "/start", new StartHandler(),
                 "/help", new HelpHandler(),
+                "/about_city", new AboutCityHandler(server),
+                "/weather", new WeatherHandler(),
+                "/back", new BackHandler(),
                 "cat:back", new BackHandler(),
                 "cat:weather", new WeatherHandler(),
-                "cat:about_city", new AboutCityHandler()
+                "cat:about_city", new AboutCityHandler(server)
         );
 
         this.stateService = new StateService(Map.of(
                 DialogState.WAITING_FOR_CITY, new WaitingCityHandler(server),
                 DialogState.CAT_WEATHER, new WeatherDatesHandler(weatherProvider)
         ));
-
-        this.server = server;
     }
 
     /**

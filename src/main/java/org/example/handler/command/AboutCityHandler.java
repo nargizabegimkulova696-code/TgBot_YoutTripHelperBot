@@ -1,5 +1,6 @@
 package org.example.handler.command;
 
+import org.example.CityServer;
 import org.example.handler.ButtonHandler;
 import org.example.response.DialogResponse;
 import org.example.response.KeyboardFactory;
@@ -15,21 +16,26 @@ public class AboutCityHandler implements ButtonHandler {
      */
     private static final String NO_CITY = "Сначала выберите город, для этого напишите его название)";
 
-
-    private static final String STUB_MESSAGE = "какой-то ответ под about city";
-
     /**
      * Кнопки с категориями
      */
     private final KeyboardFactory keyboard = new KeyboardFactory();
 
+    private final CityServer server;
+
+    public AboutCityHandler(CityServer server) {
+        this.server = server;
+    }
+
     @Override
     public DialogResponse execute(BotSession session) {
-        if (session.getCity() == null) {
+        String city = session.getCity();
+
+        if (city == null) {
             return new DialogResponse(NO_CITY);
         }
 
         session.setState(DialogState.CAT_ABOUT_CITY);
-        return new DialogResponse(STUB_MESSAGE, keyboard.build(session.getState()));
+        return new DialogResponse(server.findInfoForCity(city), keyboard.build(session.getState()));
     }
 }

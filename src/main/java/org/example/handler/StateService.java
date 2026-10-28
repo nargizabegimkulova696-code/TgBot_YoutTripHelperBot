@@ -26,6 +26,9 @@ public class StateService {
      */
     private final KeyboardFactory keyboard = new KeyboardFactory();
 
+    /**
+     * Создание StateService от словаря, который содержит обработчиков состояний
+     */
     public StateService(Map<DialogState, StateHandler> handlers) {
         this.handlers = handlers;
     }

@@ -9,7 +9,8 @@ import java.io.IOException;
  */
 public interface CatalogLoader {
     /**
-     * Метод, который создает каталог либо выбрасывает исключение, если чтение файда не прошло успешно
+     * Метод создает каталог либо выбрасывает исключение, если файл не был найден или данные,
+     * прочитанные из файла, не соответствуют ожидаемым
      */
-    public CityCatalog load() throws IOException;
+    CityCatalog load() throws IOException;
 }

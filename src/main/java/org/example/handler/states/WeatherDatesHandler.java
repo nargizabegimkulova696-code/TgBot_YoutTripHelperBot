@@ -36,6 +36,12 @@ public class WeatherDatesHandler implements StateHandler {
     private static final DateTimeFormatter DAY_MONTH = DateTimeFormatter.ofPattern("dd.MM");
 
     /**
+     * Ответ, который получит пользователь, если введет неверный формат даты
+     */
+    private static final String WRONG_INPUT = "Некорректный ввод.\n " +
+            "Напишите период в формате дд.мм - дд.мм, например 12.10 - 18.10.";
+
+    /**
      * Источник прогноза погоды, чтобы класс функционировал без подключения API
      */
     private final WeatherProvider provider;
@@ -45,6 +51,9 @@ public class WeatherDatesHandler implements StateHandler {
      */
     private final KeyboardFactory keyboard = new KeyboardFactory();
 
+    /**
+     * Инициализация WeatherDatesHandler от provider
+     */
     public WeatherDatesHandler(WeatherProvider provider) {
         this.provider = provider;
     }
@@ -61,8 +70,7 @@ public class WeatherDatesHandler implements StateHandler {
     public DialogResponse handle(String text, BotSession session) {
         Matcher matcher = PERIOD.matcher(text.trim());
         if (!matcher.matches()) {
-            return new DialogResponse("Некорректный ввод.\n " +
-                    "Напишите период в формате дд.мм - дд.мм, например 12.10 - 18.10.",
+            return new DialogResponse(WRONG_INPUT,
                     keyboard.build(session.getState()));
         }
 

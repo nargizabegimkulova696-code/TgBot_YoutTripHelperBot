@@ -23,7 +23,7 @@ public class CsvCityCatalog implements CityCatalog {
     /**
      * Максимальное кол-во данных на город: name, status, population, area, description, climate, facts
      */
-    private final int columns = 7;
+    private static final int COLUMNS = 7;
 
     /**
      * В конструкторе реализуется чтение данных из файла и инициализация словаря.
@@ -46,8 +46,8 @@ public class CsvCityCatalog implements CityCatalog {
 
             String[] parts = line.split(";", -1);
 
-            if (parts.length != columns) {
-                throw new IOException("Строка " + number + ": ожидается колонок " + columns
+            if (parts.length != COLUMNS) {
+                throw new IOException("Строка " + number + ": ожидается колонок " + COLUMNS
                         + ", найдено " + parts.length);
             }
 
@@ -61,7 +61,7 @@ public class CsvCityCatalog implements CityCatalog {
 
             Info info = new Info(name, status, population, area, description, climate, facts);
 
-            String key = normal(info.name());
+            String key = normal(info.getName());
 
             if (!key.isEmpty()) {
                 cities.put(key, info);
@@ -86,14 +86,14 @@ public class CsvCityCatalog implements CityCatalog {
     }
 
     /**
-     * Метод создан для корректного поиска города или карточки с его описанием в словаре
+     * Метод нормализирует название города
      *
      * @param str - на вход строка с названием города
      * @return string result - нормализованное название города
      */
     private String normal(String str) {
 
-        if (!StringUtils.isNotBlank(str)) {
+        if (StringUtils.isBlank(str)) {
             return "";
         }
 
@@ -113,7 +113,7 @@ public class CsvCityCatalog implements CityCatalog {
         if (info == null) {
             return null;
         }
-        return info.name();
+        return info.getName();
     }
 
     @Override
