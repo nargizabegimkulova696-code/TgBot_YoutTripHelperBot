@@ -1,7 +1,7 @@
-package org.example.catalog.loaderOfCatalog;
+package org.example.catalog.loaders.city;
 
-import org.example.catalog.CityCatalog;
-import org.example.catalog.CsvCityCatalog;
+import org.example.catalog.city.CityCatalog;
+import org.example.catalog.city.CsvCityCatalog;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * Метод этого класса инициализирует каталог городов
  */
-public class CsvCatalogLoader implements CatalogLoader {
+public class CsvCatalogLoader implements CityCatalogLoader {
     @Override
     public CityCatalog load() throws IOException {
         try (InputStream stream = getClass().getResourceAsStream("/city_info.csv")) {

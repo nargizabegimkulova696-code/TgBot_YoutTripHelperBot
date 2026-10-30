@@ -5,13 +5,17 @@ import org.example.command.weather.WeatherProvider;
 import org.example.handler.ButtonHandler;
 import org.example.handler.StateService;
 import org.example.handler.command.*;
+import org.example.handler.states.TagHandler;
 import org.example.handler.states.WaitingCityHandler;
 import org.example.handler.states.WeatherDatesHandler;
 import org.example.response.DialogResponse;
+import org.example.server.CityServer;
+import org.example.server.TripServer;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
 import org.example.session.SessionStorage;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -35,24 +39,37 @@ public class BotLogic {
 
     /**
      * Конструктор логики бота, создаёт все обработчики один раз
-     * @param server доступ к каталогу городов
+     * @param cityServer доступ к каталогу городов
+     * @param tripServer доступ к каталогам категорий: food, culture, attractions
      * @param weatherProvider источник прогноза погоды
      */
-    public BotLogic(CityServer server, WeatherProvider weatherProvider) {
-        this.buttonHandlers = Map.of(
-                "/start", new StartHandler(),
-                "/help", new HelpHandler(),
-                "/about_city", new AboutCityHandler(server),
-                "/weather", new WeatherHandler(),
-                "/back", new BackHandler(),
-                "cat:back", new BackHandler(),
-                "cat:weather", new WeatherHandler(),
-                "cat:about_city", new AboutCityHandler(server)
-        );
+    public BotLogic(CityServer cityServer, TripServer tripServer, WeatherProvider weatherProvider) {
+        Map<String, ButtonHandler> handlers = new HashMap<>();
+
+        handlers.put("/start", new StartHandler());
+        handlers.put("/help", new HelpHandler());
+        handlers.put("/about_city", new AboutCityHandler(cityServer));
+        handlers.put("/weather", new WeatherHandler());
+        handlers.put("/food", new FoodHandler());
+        handlers.put("/culture", new CultureHandler());
+        handlers.put("/attractions", new AttractionsHandler());
+        handlers.put("/back", new BackHandler());
+
+        handlers.put("cat:weather", new WeatherHandler());
+        handlers.put("cat:about_city", new AboutCityHandler(cityServer));
+        handlers.put("cat:food", new FoodHandler());
+        handlers.put("cat:culture", new CultureHandler());
+        handlers.put("cat:attractions", new AttractionsHandler());
+        handlers.put("cat:back", new BackHandler());
+
+        this.buttonHandlers = handlers;
 
         this.stateService = new StateService(Map.of(
-                DialogState.WAITING_FOR_CITY, new WaitingCityHandler(server),
-                DialogState.CAT_WEATHER, new WeatherDatesHandler(weatherProvider)
+                DialogState.WAITING_FOR_CITY, new WaitingCityHandler(cityServer),
+                DialogState.CAT_WEATHER, new WeatherDatesHandler(weatherProvider),
+                DialogState.CAT_FOOD, new TagHandler(tripServer),
+                DialogState.CAT_CULTURE, new TagHandler(tripServer),
+                DialogState.CAT_ATTRACTIONS, new TagHandler(tripServer)
         ));
     }
 

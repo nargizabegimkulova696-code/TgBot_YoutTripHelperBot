@@ -1,17 +1,18 @@
 package org.example;
 
-import org.example.catalog.CityCatalog;
-
-import org.example.catalog.loaderOfCatalog.CatalogLoader;
-import org.example.catalog.loaderOfCatalog.CsvCatalogLoader;
-
+import org.example.catalog.city.CityCatalog;
+import org.example.catalog.loaders.city.CityCatalogLoader;
+import org.example.catalog.loaders.city.CsvCatalogLoader;
+import org.example.catalog.loaders.tags.CsvTagsCatalogLoader;
+import org.example.catalog.loaders.tags.TagsCatalogLoader;
+import org.example.catalog.tags.TagsCatalog;
 import org.example.command.weather.OpenMeteoWeather;
+import org.example.server.CityServer;
+import org.example.server.TripServer;
 import org.example.telegramBot.ConfigTgBot;
 import org.example.telegramBot.TgBot;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
@@ -37,12 +38,19 @@ public class TgBotMain{
         String tgBotName = config.getBotName();
         String tgBotToken = config.getBotToken();
 
-        CatalogLoader loader = new CsvCatalogLoader();
-        try {
-            CityCatalog catalog = loader.load();
-            CityServer serverForCities = new CityServer(catalog);
+        CityCatalogLoader cityLoader = new CsvCatalogLoader();
+        TagsCatalogLoader tagsLoader = new CsvTagsCatalogLoader();
 
-            BotLogic botLogic = new BotLogic(serverForCities, new OpenMeteoWeather());
+        try {
+            CityCatalog citiesCatalog = cityLoader.load();
+            CityServer serverForCities = new CityServer(citiesCatalog);
+
+            TagsCatalog foodCatalog = tagsLoader.load("/food_info.csv");
+            TagsCatalog cultureCatalog = tagsLoader.load("/culture_info.csv");
+            TagsCatalog attractionsCatalog = tagsLoader.load("/attractions_info.csv");
+            TripServer tripServer = new TripServer(foodCatalog, cultureCatalog, attractionsCatalog);
+
+            BotLogic botLogic = new BotLogic(serverForCities, tripServer, new OpenMeteoWeather());
 
             TgBot helperTripBot = new TgBot(tgBotName, tgBotToken, botLogic);
 
@@ -52,7 +60,7 @@ public class TgBotMain{
 
             LOG.info("Бот зарегистрирован");
         } catch (IOException e) {
-            LOG.error("Не удалось прочитать файл </city_info.csv> и в связи с этим запустить бота", e);
+            LOG.error("Не удалось прочитать файлы и в связи с этим запустить бота", e);
         }
     }
 }

@@ -1,6 +1,6 @@
-package org.example.catalog;
+package org.example.catalog.city;
 
-import org.apache.commons.lang3.StringUtils;
+import org.example.StringUtilities;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -61,7 +61,7 @@ public class CsvCityCatalog implements CityCatalog {
 
             Info info = new Info(name, status, population, area, description, climate, facts);
 
-            String key = normal(info.getName());
+            String key = StringUtilities.normal(info.getName());
 
             if (!key.isEmpty()) {
                 cities.put(key, info);
@@ -85,31 +85,9 @@ public class CsvCityCatalog implements CityCatalog {
         return facts;
     }
 
-    /**
-     * Метод нормализирует название города
-     *
-     * @param str - на вход строка с названием города
-     * @return string result - нормализованное название города
-     */
-    private String normal(String str) {
-
-        if (StringUtils.isBlank(str)) {
-            return "";
-        }
-
-        String result = str
-                .toLowerCase()
-                .replace('ё', 'е')
-                .replace('-', ' ')
-                .replaceAll("\\s+", " ")
-                .trim();
-
-        return result;
-    }
-
     @Override
     public String findCity(String nameCity) {
-        Info info = cities.get(normal(nameCity));
+        Info info = cities.get(StringUtilities.normal(nameCity));
         if (info == null) {
             return null;
         }
@@ -118,7 +96,7 @@ public class CsvCityCatalog implements CityCatalog {
 
     @Override
     public Info findInfo(String nameCity) {
-        return cities.get(normal(nameCity));
+        return cities.get(StringUtilities.normal(nameCity));
     }
 }
 

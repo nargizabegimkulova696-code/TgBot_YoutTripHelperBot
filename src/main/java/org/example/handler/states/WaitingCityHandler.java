@@ -1,9 +1,9 @@
 package org.example.handler.states;
 
-import org.example.CityServer;
 import org.example.handler.StateHandler;
 import org.example.response.DialogResponse;
 import org.example.response.KeyboardFactory;
+import org.example.server.CityServer;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
 

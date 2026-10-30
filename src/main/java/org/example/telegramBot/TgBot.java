@@ -31,7 +31,7 @@ public class TgBot extends TelegramLongPollingBot{
      */
     private final String botUsername;
     /**
-     * Поле log создано для вывода ошибок в консоль при отправке ботом сообщения
+     * Логирование ошибок при отправке сообщений ботом
      */
     private final Logger log = LoggerFactory.getLogger("TgBot");
 

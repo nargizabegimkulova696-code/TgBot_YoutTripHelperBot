@@ -1,4 +1,4 @@
-package org.example.catalog;
+package org.example.catalog.city;
 
 import org.apache.commons.lang3.StringUtils;
 

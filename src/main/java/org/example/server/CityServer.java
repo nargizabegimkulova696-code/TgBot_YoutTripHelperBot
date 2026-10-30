@@ -1,7 +1,7 @@
-package org.example;
+package org.example.server;
 
-import org.example.catalog.CityCatalog;
-import org.example.catalog.CityCatalog.Info;
+import org.example.catalog.city.CityCatalog;
+import org.example.catalog.city.CityCatalog.Info;
 
 /**
  * Предоставляет доступ к каталогу с данными
