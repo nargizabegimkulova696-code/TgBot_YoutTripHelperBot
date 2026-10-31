@@ -36,6 +36,13 @@ public class ConfigTgBot {
     }
 
     /**
+     * возвращает ключ API Geoapify
+     */
+    public String getGeoapifyKey() {
+        return properties.getProperty("geoapifyKey");
+    }
+
+    /**
      * возвращает токен тг-бота
      */
     public String getBotToken(){
