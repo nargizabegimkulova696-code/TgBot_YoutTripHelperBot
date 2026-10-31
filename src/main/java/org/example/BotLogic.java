@@ -1,15 +1,22 @@
 package org.example;
 
-import org.example.AboutCity.AboutCity;
-import org.example.BackCommand.BackCommand;
-import org.example.DialogService.DialogResponse;
-import org.example.DialogService.KeyboardFactory;
-import org.example.SearchCityByName.CityValidator;
-import org.example.Session.BotSession;
-import org.example.Session.DialogState;
-import org.example.Session.SessionStorage;
-import org.example.Weather.OpenMeteoWeather;
-import org.example.Weather.WeatherDialog;
+
+import org.example.command.weather.WeatherProvider;
+import org.example.handler.ButtonHandler;
+import org.example.handler.StateService;
+import org.example.handler.command.*;
+import org.example.handler.states.TagHandler;
+import org.example.handler.states.WaitingCityHandler;
+import org.example.handler.states.WeatherDatesHandler;
+import org.example.response.DialogResponse;
+import org.example.server.CityServer;
+import org.example.server.TripServer;
+import org.example.session.BotSession;
+import org.example.session.DialogState;
+import org.example.session.SessionStorage;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Логика работы бота, которая не зависит от API
@@ -18,118 +25,68 @@ public class BotLogic {
     /**
      * Хранилище сессий пользователей
      */
-    private final SessionStorage sessionStorage;
+    private final SessionStorage sessionStorage = new SessionStorage();
 
     /**
-     * Константные сообщения для команды /start
+     * Обработчики команд и кнопок: ключ - текст команды или callbackData кнопки
      */
-    private static final String START_MESSAGE = "Привет, я бот — помощник в путешествиях. В какой город вы хотели бы отправиться?";
-
-
-    /**
-     * Константные сообщения для команды /help
-     */
-    private static final String HELP_MESSAGE = """
-            Я бот — помощник в путешествиях
-            
-            /start - начало работы
-            /help - показать все доступные команды
-            
-            Доступные команды после выбора города:
-            about_city - краткая сводка о городе
-            weather - погода в городе
-            back - вернуться к списку команд""";
+    private final Map<String, ButtonHandler> buttonHandlers;
 
     /**
-     * Константное сообщение, если город не найден
+     * Обработчик обычного текста в зависимости от состояния диалога
      */
-    private static final String NOT_FOUNT_CITY = "Информации о городе не найдено";
+    private final StateService stateService;
 
     /**
-     * Константное сообщение, если сообщение от пользователя некорректно
+     * Конструктор логики бота, создаёт все обработчики один раз
+     * @param cityServer доступ к каталогу городов
+     * @param tripServer доступ к каталогам категорий: food, culture, attractions
+     * @param weatherProvider источник прогноза погоды
      */
-    private static final String WRONG_INTERACTION = "Чтобы воспользоваться ботом, нажми на нужную кнопку, " +
-            "чтобы получить информацию или нажми back, чтобы вернуться к выбору города.";
+    public BotLogic(CityServer cityServer, TripServer tripServer, WeatherProvider weatherProvider) {
+        Map<String, ButtonHandler> handlers = new HashMap<>();
 
-    /**
-     * Валидатор осуществляет поиск города в каталоге по его названию
-     */
-    private final CityValidator validator;
+        handlers.put("/start", new StartHandler());
+        handlers.put("/help", new HelpHandler());
+        handlers.put("/about_city", new AboutCityHandler(cityServer));
+        handlers.put("/weather", new WeatherHandler());
+        handlers.put("/food", new FoodHandler());
+        handlers.put("/culture", new CultureHandler());
+        handlers.put("/attractions", new AttractionsHandler());
+        handlers.put("/back", new BackHandler());
 
-    /**
-     * Конструктор логики бота - создание сессии пользователей и валидатора
-     */
-    public BotLogic(SessionStorage sessionStorage, CityValidator validator) {
-        this.sessionStorage = sessionStorage;
-        this.validator = validator;
+        handlers.put("cat:weather", new WeatherHandler());
+        handlers.put("cat:about_city", new AboutCityHandler(cityServer));
+        handlers.put("cat:food", new FoodHandler());
+        handlers.put("cat:culture", new CultureHandler());
+        handlers.put("cat:attractions", new AttractionsHandler());
+        handlers.put("cat:back", new BackHandler());
+
+        this.buttonHandlers = handlers;
+
+        this.stateService = new StateService(Map.of(
+                DialogState.WAITING_FOR_CITY, new WaitingCityHandler(cityServer),
+                DialogState.CAT_WEATHER, new WeatherDatesHandler(weatherProvider),
+                DialogState.CAT_FOOD, new TagHandler(tripServer),
+                DialogState.CAT_CULTURE, new TagHandler(tripServer),
+                DialogState.CAT_ATTRACTIONS, new TagHandler(tripServer)
+        ));
     }
 
     /**
-     * Метод создан для создания сообщения в ответ пользователю
-     * @param chatId идентификатор чата пользователя
+     * Метод создан для создания сообщения в ответ пользователю:
+     * сначала ищется обработчик команды/кнопки, иначе текст обрабатывается по состоянию диалога
      * @param text текст сообщения, которое отправил пользователь
+     * @param chatId идентификатор чата пользователя
      * @return ответ от бота
      */
     public DialogResponse makeMessage(String text, long chatId) {
         BotSession session = sessionStorage.getSession(chatId);
 
-        BackCommand toBack = new BackCommand();
-        WeatherDialog weatherDialog = new WeatherDialog(new OpenMeteoWeather());
-        AboutCity aboutCity = new AboutCity(validator.getCatalog());
-
-        DialogResponse response;
-        KeyboardFactory keyboard = new KeyboardFactory();
-
-        switch (text) {
-            case "/start" -> {
-                session.setState(DialogState.WAITING_FOR_CITY);
-                response = new DialogResponse(START_MESSAGE);
-            }
-            case "/help" -> {
-                session.setState(DialogState.WAITING_FOR_CITY);
-                response = new DialogResponse(HELP_MESSAGE);
-            }
-
-            case "cat:back" -> {
-                response = toBack.back(session);
-            }
-
-            case "cat:weather" -> {
-                response = weatherDialog.start(session);
-
-            }
-
-            case "cat:about_city" -> {
-                session.setState(DialogState.CAT_ABOUT_CITY);
-                response = new DialogResponse(aboutCity.describe(session.getCity()),
-                        keyboard.build(session.getState()));
-            }
-
-            default -> {
-                switch (session.getState()) {
-                    case CAT_WEATHER -> {
-                        response = weatherDialog.handleDates(text, session);
-                    }
-                    case WAITING_FOR_CITY -> {
-                        if (!validator.contain(text).isEmpty()) {
-                            session.setState(DialogState.CITY_SELECTED);
-                            session.setCity(validator.contain(text));
-
-                            response = new DialogResponse("Выберете категорию для города "
-                                    + validator.contain(text) + ":",
-                                    keyboard.build(session.getState()));
-                        } else {
-                            response = new DialogResponse(NOT_FOUNT_CITY);
-                        }
-                    }
-                    default -> {
-                        response = new DialogResponse(WRONG_INTERACTION);
-                    }
-                }
-
-            }
+        ButtonHandler button = buttonHandlers.get(text);
+        if (button != null) {
+            return button.execute(session);
         }
-
-        return response;
+        return stateService.handle(text, session);
     }
 }

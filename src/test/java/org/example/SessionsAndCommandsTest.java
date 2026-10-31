@@ -1,14 +1,12 @@
 package org.example;
 
-import org.example.Catalog.CityCatalog;
-import org.example.Catalog.CsvCityCatalog;
-import org.example.DialogService.DialogResponse;
-import org.example.SearchCityByName.CityValidator;
-import org.example.Session.BotSession;
-import org.example.Session.DialogState;
-import org.example.Session.SessionStorage;
-import org.example.Weather.WeatherDialog;
-import org.example.Weather.WeatherProvider;
+import org.example.catalog.CityCatalog;
+import org.example.catalog.CsvCityCatalog;
+import org.example.command.weather.WeatherProvider;
+import org.example.handler.states.WeatherDatesHandler;
+import org.example.response.DialogResponse;
+import org.example.session.BotSession;
+import org.example.session.DialogState;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -21,9 +19,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
- * Тесты: отдельные сессии пользователей ({@link SessionStorage}),
+ * Тесты: отдельные сессии пользователей,
  * Команда /help, кнопки: about_city и weather, которые обрабатывает {@link BotLogic}
- * Прогноз погоды проверяется через {@link WeatherDialog}
+ * Прогноз погоды проверяется через {@link WeatherDatesHandler}
  */
 class SessionsAndCommandsTest {
     /**
@@ -34,22 +32,22 @@ class SessionsAndCommandsTest {
             + "Тула;;;;;;\n";
 
     /**
-     * Хранилище сессий
-     */
-    private final SessionStorage storage = new SessionStorage();
-
-    /**
-     * Проверяемая логика бота
+     * Проверяемая логика бота и сессии, которая создается внутри логики
      */
     private final BotLogic logic;
 
     /**
-     * Инициализация логики и тестируемого каталога
+     * Инициализация логики, каталога и сервера
      */
     SessionsAndCommandsTest() throws IOException {
-        CityCatalog catalog = new CsvCityCatalog(new InputStreamReader(
-                new ByteArrayInputStream(CSV.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8));
-        logic = new BotLogic(storage, new CityValidator(catalog));
+        try (InputStreamReader reader = new InputStreamReader(
+                new ByteArrayInputStream(CSV.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8)) {
+
+            CityCatalog catalog = new CsvCityCatalog(reader);
+            CityServer server = new CityServer(catalog);
+            logic = new BotLogic(server, (city, from, to) -> List.of());
+        }
+        ;
     }
 
     /**
@@ -60,8 +58,8 @@ class SessionsAndCommandsTest {
         logic.makeMessage("Москва", 1L);
         logic.makeMessage("Тула", 2L);
 
-        Assertions.assertEquals("Москва", storage.getSession(1L).getCity());
-        Assertions.assertEquals("Тула", storage.getSession(2L).getCity());
+        Assertions.assertTrue(logic.makeMessage("cat:about_city", 1L).getAnswer().startsWith("Москва"));
+        Assertions.assertEquals("Тула", logic.makeMessage("cat:about_city", 2L).getAnswer());
     }
 
     /**
@@ -74,10 +72,11 @@ class SessionsAndCommandsTest {
 
         logic.makeMessage("/start", 1L);
 
-        Assertions.assertEquals(DialogState.WAITING_FOR_CITY, storage.getSession(1L).getState());
-        Assertions.assertEquals(DialogState.CITY_SELECTED, storage.getSession(2L).getState());
-        Assertions.assertEquals("Тула", storage.getSession(2L).getCity());
+        Assertions.assertEquals("Выберете категорию для города Москва:",
+                logic.makeMessage("Москва", 1L).getAnswer());
+        Assertions.assertEquals("Тула", logic.makeMessage("cat:about_city", 2L).getAnswer());
     }
+
 
     /**
      * About_city показывает название и другие данные из каталога
@@ -88,11 +87,12 @@ class SessionsAndCommandsTest {
 
         String text = logic.makeMessage("cat:about_city", 1L).getAnswer();
 
-        String expected = "Москва — Столица России\n\n"
-                + "Население: 13 млн\nПлощадь: 2 560 км²\n\n"
+        String expected = "Москва - Столица России\n\n"
+                + "Население: 13 млн\n\n"
+                + "Площадь: 2 560 км²\n\n"
                 + "Крупнейший город страны\n\n"
                 + "Климат: умеренный\n\n"
-                + "Интересные факты:\n— Метро\n— Кремль";
+                + "Интересные факты о городе: \n- Метро\n- Кремль";
         Assertions.assertEquals(expected, text);
     }
 
@@ -114,7 +114,8 @@ class SessionsAndCommandsTest {
         DialogResponse response = logic.makeMessage("cat:weather", 1L);
 
         Assertions.assertEquals("Сначала выберите город, для этого напишите его название)", response.getAnswer());
-        Assertions.assertEquals(DialogState.WAITING_FOR_CITY, storage.getSession(1L).getState());
+        Assertions.assertEquals("Выберете категорию для города Москва:",
+                logic.makeMessage("Москва", 1L).getAnswer());
     }
 
     /**
@@ -125,12 +126,11 @@ class SessionsAndCommandsTest {
         logic.makeMessage("Москва", 1L);
         logic.makeMessage("cat:weather", 1L);
 
-        DialogResponse response = logic.makeMessage("завтра", 1L);
+        String expected = "Некорректный ввод.\n " +
+                "Напишите период в формате дд.мм - дд.мм, например 12.10 - 18.10.";
 
-        Assertions.assertEquals("Некорректный ввод.\n " +
-                        "Напишите период в формате дд.мм - дд.мм, например 12.10 - 18.10.",
-                response.getAnswer());
-        Assertions.assertEquals(DialogState.CAT_WEATHER, storage.getSession(1L).getState());
+        Assertions.assertEquals(expected, logic.makeMessage("завтра", 1L).getAnswer());
+        Assertions.assertEquals(expected, logic.makeMessage("послезавтра", 1L).getAnswer());
     }
 
     /**
@@ -161,7 +161,7 @@ class SessionsAndCommandsTest {
         session.setState(DialogState.CAT_WEATHER);
 
         String dm = DateTimeFormatter.ofPattern("dd.MM").format(day);
-        String answer = new WeatherDialog(provider).handleDates(dm + " - " + dm, session).getAnswer();
+        String answer = new WeatherDatesHandler(provider).handle(dm + " - " + dm, session).getAnswer();
 
         Assertions.assertEquals("Погода в городе Москва с " + dm + " по " + dm + ":\n"
                 + dm + ": -1...+7°C, дождь", answer);
