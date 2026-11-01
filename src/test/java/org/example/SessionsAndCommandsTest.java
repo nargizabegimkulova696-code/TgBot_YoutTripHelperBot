@@ -1,10 +1,12 @@
 package org.example;
 
-import org.example.catalog.CityCatalog;
-import org.example.catalog.CsvCityCatalog;
+import org.example.catalog.city.CityCatalog;
+import org.example.catalog.city.CsvCityCatalog;
 import org.example.command.weather.WeatherProvider;
 import org.example.handler.states.WeatherDatesHandler;
 import org.example.response.DialogResponse;
+import org.example.server.CityServer;
+import org.example.server.TripServer;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
 import org.junit.jupiter.api.Assertions;
@@ -45,7 +47,9 @@ class SessionsAndCommandsTest {
 
             CityCatalog catalog = new CsvCityCatalog(reader);
             CityServer server = new CityServer(catalog);
-            logic = new BotLogic(server, (city, from, to) -> List.of());
+            logic = new BotLogic(server,
+                    new TripServer((city, tag) -> List.of()),
+                    (city, from, to) -> List.of());
         }
         ;
     }

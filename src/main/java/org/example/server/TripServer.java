@@ -2,6 +2,7 @@ package org.example.server;
 
 import org.example.command.places.PlacesProvider;
 import org.example.command.places.PlacesProvider.Place;
+import org.example.paging.Page;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,30 +14,43 @@ import java.util.List;
  * обрабатывает тег, выбранный пользователем
  */
 public class TripServer {
+    /**
+     * Сколько мест на одной странице
+     */
+    public static final int PAGE_SIZE = 5;
+    /**
+     * Источник мест
+     */
     private final PlacesProvider provider;
 
     public TripServer(PlacesProvider provider) {
         this.provider = provider;
     }
 
-    public String getPlaces(String city, String tag) {
+    /**
+     * Страница мест по тегу
+     *
+     * @param city   город, в котором ищем места
+     * @param tag    тег, например "tag:cafe"
+     * @param number номер страницы, начиная с 0
+     * @return страница мест или null, если места получить не удалось
+     */
+    public Page<Place> getPage(String city, String tag, int number) {
         try {
-            List<Place> places = provider.getPlaces(city, tag);
-
-            if (places.isEmpty()) {
-                return null;
-            }
-
-            return formatted(places);
+            return new Page<>(provider.getPlaces(city, tag), number, PAGE_SIZE);
         } catch (IOException e) {
             return null;
         }
     }
 
-    private String formatted(List<Place> places) {
+
+    /**
+     * Форматирует места страницы в текст сообщения
+     */
+    public String formatted(Page<Place> page) {
         List<String> blocks = new ArrayList<>();
 
-        for (Place place : places) {
+        for (Place place : page.getItems()) {
             blocks.add("- " + place.format());
         }
 

@@ -1,5 +1,7 @@
 package org.example.response;
 
+import org.example.paging.Page;
+import org.example.paging.PageCallback;
 import org.example.session.DialogState;
 
 import java.util.ArrayList;
@@ -69,6 +71,29 @@ public class KeyboardFactory {
         }
 
         add(keyboard, "назад", "cat:back");
+        return keyboard;
+    }
+
+    /**
+     * Кнопки под страницей мест: "ещё" - если есть следующая страница,
+     * "назад" - на предыдущую страницу, а с первой страницы - к выбору тега
+     *
+     * @param tag  тег, места которого показаны
+     * @param page показанная страница
+     */
+    public List<List<Button>> buildPage(String tag, Page<?> page) {
+        List<List<Button>> keyboard = new ArrayList<>();
+
+        if (page.hasNext()) {
+            add(keyboard, "ещё", new PageCallback(tag, page.getNumber() + 1).toData());
+        }
+
+        if (page.hasPrevious()) {
+            add(keyboard, "назад", new PageCallback(tag, page.getNumber() - 1).toData());
+        } else {
+            add(keyboard, "назад", "cat:back");
+        }
+
         return keyboard;
     }
 

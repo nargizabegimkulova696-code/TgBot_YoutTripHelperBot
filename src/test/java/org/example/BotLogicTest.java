@@ -1,10 +1,11 @@
 package org.example;
 
-import org.example.catalog.CityCatalog;
-import org.example.catalog.CsvCityCatalog;
+import org.example.catalog.city.CityCatalog;
+import org.example.catalog.city.CsvCityCatalog;
 import org.example.response.Button;
 import org.example.response.DialogResponse;
-
+import org.example.server.CityServer;
+import org.example.server.TripServer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -61,7 +62,7 @@ class BotLogicTest {
 
             CityCatalog catalog = new CsvCityCatalog(reader);
             CityServer server = new CityServer(catalog);
-            logic = new BotLogic(server, (city, from, to) -> List.of());
+            logic = new BotLogic(server, new TripServer((city, tag) -> List.of()), (city, from, to) -> List.of());
         }
     }
 
@@ -79,9 +80,8 @@ class BotLogicTest {
                 .toList();
 
         Assertions.assertEquals("Выберете категорию для города Москва:", response.getAnswer());
-        Assertions.assertEquals(List.of("cat:about_city", "cat:weather", "cat:back"), callbacks);
+        Assertions.assertEquals(List.of("cat:about_city", "cat:weather", "cat:food", "cat:culture", "cat:attractions", "cat:back"), callbacks);
     }
-
     /**
      * Тестирование ответного сообщения, которое приходит пользователю
      * после выбора города, если он не найден в каталоге
