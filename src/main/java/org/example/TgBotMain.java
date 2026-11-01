@@ -3,9 +3,7 @@ package org.example;
 import org.example.catalog.city.CityCatalog;
 import org.example.catalog.loaders.city.CityCatalogLoader;
 import org.example.catalog.loaders.city.CsvCatalogLoader;
-import org.example.catalog.loaders.tags.CsvTagsCatalogLoader;
-import org.example.catalog.loaders.tags.TagsCatalogLoader;
-import org.example.catalog.tags.TagsCatalog;
+import org.example.command.places.GeoapifyPlaces;
 import org.example.command.weather.OpenMeteoWeather;
 import org.example.server.CityServer;
 import org.example.server.TripServer;
@@ -37,18 +35,14 @@ public class TgBotMain{
         //получаем из настроек имя и токен для конструктора TgBot
         String tgBotName = config.getBotName();
         String tgBotToken = config.getBotToken();
+        String geoApiKey = config.getGeoapifyKey();
 
         CityCatalogLoader cityLoader = new CsvCatalogLoader();
-        TagsCatalogLoader tagsLoader = new CsvTagsCatalogLoader();
-
         try {
             CityCatalog citiesCatalog = cityLoader.load();
             CityServer serverForCities = new CityServer(citiesCatalog);
 
-            TagsCatalog foodCatalog = tagsLoader.load("/food_info.csv");
-            TagsCatalog cultureCatalog = tagsLoader.load("/culture_info.csv");
-            TagsCatalog attractionsCatalog = tagsLoader.load("/attractions_info.csv");
-            TripServer tripServer = new TripServer(foodCatalog, cultureCatalog, attractionsCatalog);
+            TripServer tripServer = new TripServer(new GeoapifyPlaces(geoApiKey));
 
             BotLogic botLogic = new BotLogic(serverForCities, tripServer, new OpenMeteoWeather());
 
