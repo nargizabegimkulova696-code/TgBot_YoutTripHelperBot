@@ -22,25 +22,25 @@ public class KeyboardFactory {
                 return keyboard;
             }
             case CITY_SELECTED -> {
-                add(keyboard, "about city", "cat:about_city");
-                add(keyboard, "weather", "cat:weather");
-                add(keyboard, "food", "cat:food");
-                add(keyboard, "culture", "cat:culture");
-                add(keyboard, "attractions", "cat:attractions");
+                add(keyboard, "о городе", "cat:about_city");
+                add(keyboard, "погода", "cat:weather");
+                add(keyboard, "еда", "cat:food");
+                add(keyboard, "культура", "cat:culture");
+                add(keyboard, "развлечения", "cat:attractions");
             }
 
             case CAT_ABOUT_CITY -> {
-                add(keyboard, "weather", "cat:weather");
-                add(keyboard, "food", "cat:food");
-                add(keyboard, "culture", "cat:culture");
-                add(keyboard, "attractions", "cat:attractions");
+                add(keyboard, "погода", "cat:weather");
+                add(keyboard, "еда", "cat:food");
+                add(keyboard, "культура", "cat:culture");
+                add(keyboard, "развлечения", "cat:attractions");
             }
 
             case CAT_WEATHER -> {
-                add(keyboard, "about_city", "cat:about_city");
-                add(keyboard, "food", "cat:food");
-                add(keyboard, "culture", "cat:culture");
-                add(keyboard, "attractions", "cat:attractions");
+                add(keyboard, "о городе", "cat:about_city");
+                add(keyboard, "еда", "cat:food");
+                add(keyboard, "культура", "cat:culture");
+                add(keyboard, "развлечения", "cat:attractions");
             }
 
             case CAT_FOOD -> {
@@ -68,7 +68,7 @@ public class KeyboardFactory {
             }
         }
 
-        add(keyboard, "back", "cat:back");
+        add(keyboard, "назад", "cat:back");
         return keyboard;
     }
 
