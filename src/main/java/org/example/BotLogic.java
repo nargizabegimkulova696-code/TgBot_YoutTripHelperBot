@@ -44,6 +44,7 @@ public class BotLogic {
      * @param weatherProvider источник прогноза погоды
      */
     public BotLogic(CityServer cityServer, TripServer tripServer, WeatherProvider weatherProvider) {
+        TagHandler tagHandler = new TagHandler(tripServer);
         Map<String, ButtonHandler> handlers = new HashMap<>();
 
         handlers.put("/start", new StartHandler());
@@ -67,9 +68,12 @@ public class BotLogic {
         this.stateService = new StateService(Map.of(
                 DialogState.WAITING_FOR_CITY, new WaitingCityHandler(cityServer),
                 DialogState.CAT_WEATHER, new WeatherDatesHandler(weatherProvider),
-                DialogState.CAT_FOOD, new TagHandler(tripServer),
-                DialogState.CAT_CULTURE, new TagHandler(tripServer),
-                DialogState.CAT_ATTRACTIONS, new TagHandler(tripServer)
+                DialogState.CAT_FOOD, tagHandler,
+                DialogState.CAT_CULTURE, tagHandler,
+                DialogState.CAT_ATTRACTIONS, tagHandler,
+                DialogState.IN_TAG_FOOD, tagHandler,
+                DialogState.IN_TAG_CULTURE, tagHandler,
+                DialogState.IN_TAG_ATTRACTIONS, tagHandler
         ));
     }
 

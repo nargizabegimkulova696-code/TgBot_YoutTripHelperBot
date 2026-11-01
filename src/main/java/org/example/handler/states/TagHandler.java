@@ -1,6 +1,9 @@
 package org.example.handler.states;
 
+import org.example.command.places.PlacesProvider;
 import org.example.handler.StateHandler;
+import org.example.paging.Page;
+import org.example.paging.PageCallback;
 import org.example.response.DialogResponse;
 import org.example.response.KeyboardFactory;
 import org.example.server.TripServer;
@@ -22,6 +25,11 @@ public class TagHandler implements StateHandler {
     private static final String ATTRACTIONS_ANS = "Места для отдыха:";
 
     /**
+     * Ответ, если вместо кнопки прислали текст
+     */
+    private static final String CHOOSE_TAG = "Выберите, что вас интересует, с помощью кнопок.";
+
+    /**
      * Сервер для получения данных о теге по городу
      */
     private final TripServer server;
@@ -40,41 +48,38 @@ public class TagHandler implements StateHandler {
 
     @Override
     public DialogResponse handle(String text, BotSession session) {
-        String places;
+        PageCallback callback;
+        try {
+            callback = new PageCallback(text);
+        } catch (IllegalArgumentException e) {
+            return new DialogResponse(CHOOSE_TAG, keyboard.build(session.getState()));
+        }
+
+        String title;
 
         switch (session.getState()) {
-            case CAT_FOOD -> {
-                places = server.getPlaces(session.getCity(), text);
+            case CAT_FOOD, IN_TAG_FOOD -> {
                 session.setState(DialogState.IN_TAG_FOOD);
-
-                if (places == null) {
-                    return new DialogResponse(NOT_FOUND_TAG, keyboard.build(session.getState()));
-                }
-
-                return new DialogResponse(FOOD_ANS + "\n\n" + places, keyboard.build(session.getState()));
+                title = FOOD_ANS;
             }
-
-            case CAT_CULTURE -> {
-                places = server.getPlaces(session.getCity(), text);
+            case CAT_CULTURE, IN_TAG_CULTURE -> {
                 session.setState(DialogState.IN_TAG_CULTURE);
-
-                if (places == null) {
-                    return new DialogResponse(NOT_FOUND_TAG, keyboard.build(session.getState()));
-                }
-
-                return new DialogResponse(CULTURE_ANS + "\n\n" + places, keyboard.build(session.getState()));
+                title = CULTURE_ANS;
             }
-
             default -> {
-                places = server.getPlaces(session.getCity(), text);
                 session.setState(DialogState.IN_TAG_ATTRACTIONS);
-
-                if (places == null) {
-                    return new DialogResponse(NOT_FOUND_TAG, keyboard.build(session.getState()));
-                }
-
-                return new DialogResponse(ATTRACTIONS_ANS + "\n\n" + places, keyboard.build(session.getState()));
+                title = ATTRACTIONS_ANS;
             }
         }
+
+        Page<PlacesProvider.Place> page = server.getPage(session.getCity(), callback.getTag(), callback.getPage());
+        if (page == null || page.isEmpty()) {
+            return new DialogResponse(NOT_FOUND_TAG, keyboard.build(session.getState()));
+        }
+
+        String answer = title + "\n\n" + server.formatted(page)
+                + "\n\nСтраница " + (page.getNumber() + 1) + " из " + page.getTotalPages();
+
+        return new DialogResponse(answer, keyboard.buildPage(callback.getTag(), page));
     }
 }
