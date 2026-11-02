@@ -16,12 +16,24 @@ import org.example.session.DialogState;
  */
 public class TagHandler implements StateHandler {
 
+    /**
+     * Ответное сообщение, если мест для города не найдено
+     */
     private final static String NOT_FOUND_TAG = "Места для тега не найдены(";
 
+    /**
+     * Ответное сообщение пользователю из состояний CAT_FOOD и IN_TAG_FOOD
+     */
     private static final String FOOD_ANS = "Места, где можно вкусно покушать:";
 
+    /**
+     * Ответное сообщение пользователю из состояний CAT_CULTURE и IN_TAG_CULTURE
+     */
     private static final String CULTURE_ANS = "Места, которые стоит посетить любителям культуры:";
 
+    /**
+     * Ответное сообщение пользователю из состояний CAT_ATTRACTIONS и IN_TAG_FOOD
+     */
     private static final String ATTRACTIONS_ANS = "Места для отдыха:";
 
     /**

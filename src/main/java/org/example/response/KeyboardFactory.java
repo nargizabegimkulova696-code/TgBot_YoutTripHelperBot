@@ -85,7 +85,7 @@ public class KeyboardFactory {
         List<List<Button>> keyboard = new ArrayList<>();
 
         if (page.hasNext()) {
-            add(keyboard, "ещё", new PageCallback(tag, page.getNumber() + 1).toData());
+            add(keyboard, "далее", new PageCallback(tag, page.getNumber() + 1).toData());
         }
 
         if (page.hasPrevious()) {
