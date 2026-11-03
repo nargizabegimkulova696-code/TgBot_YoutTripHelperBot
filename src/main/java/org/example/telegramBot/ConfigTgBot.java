@@ -1,4 +1,4 @@
-package org.example;
+package org.example.telegramBot;
 
 import java.io.InputStream;
 import java.util.Properties;
@@ -10,12 +10,12 @@ public class ConfigTgBot {
     /**
      * Создано для хранения данных бота в виде пары: "ключ - значение"
      */
-    private Properties properties;
+    private final Properties properties;
 
     /**
      * Конструктор класса ConfigTgBot, который читает данные с файла application.properties
      */
-    ConfigTgBot(){
+    public ConfigTgBot() {
         properties = new Properties();
 
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("tgBot.properties")){
@@ -33,6 +33,13 @@ public class ConfigTgBot {
      */
     public String getBotName(){
         return properties.getProperty("tgBotName");
+    }
+
+    /**
+     * возвращает ключ API Geoapify
+     */
+    public String getGeoapifyKey() {
+        return properties.getProperty("geoapifyKey");
     }
 
     /**
