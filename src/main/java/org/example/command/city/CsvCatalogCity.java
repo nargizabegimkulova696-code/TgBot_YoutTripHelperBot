@@ -1,4 +1,4 @@
-package org.example.catalog.city;
+package org.example.command.city;
 
 import org.example.StringUtilities;
 
@@ -6,19 +6,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
  * Чтение данных из csv файла и создание словаря на основе этих данных
  */
-public class CsvCityCatalog implements CityCatalog {
+public class CsvCatalogCity implements CityProvider {
     /**
      * Словарь, в котором ключ - название города, значение - карточка с описанием города
      */
-    private final Map<String, Info> cities = new HashMap<>();
+    private final Map<String, City> cities = new ConcurrentHashMap<>();
 
     /**
      * Максимальное кол-во данных на город: name, status, population, area, description, climate, facts
@@ -29,7 +29,7 @@ public class CsvCityCatalog implements CityCatalog {
      * В конструкторе реализуется чтение данных из файла и инициализация словаря.
      * Чтение данных из файла начинается со второй строки, так как первая - заголовок
      */
-    public CsvCityCatalog(InputStreamReader input) throws IOException {
+    public CsvCatalogCity(InputStreamReader input) throws IOException {
         BufferedReader reader = new BufferedReader(input);
         //пропуск заголовка файла
         reader.readLine();
@@ -51,20 +51,20 @@ public class CsvCityCatalog implements CityCatalog {
                         + ", найдено " + parts.length);
             }
 
-            String name = parts[0].trim();
-            String status = parts[1].trim();
+            String title = parts[0].trim();
+            String description = parts[1].trim();
             String population = parts[2].trim();
             String area = parts[3].trim();
-            String description = parts[4].trim();
+            String extract = parts[4].trim();
             String climate = parts[5].trim();
             List<String> facts = parseFacts(parts[6].trim());
 
-            Info info = new Info(name, status, population, area, description, climate, facts);
+            City city = new City(title, description, population, area, extract, climate, facts);
 
-            String key = StringUtilities.normal(info.getName());
+            String key = StringUtilities.normal(city.getTitle());
 
             if (!key.isEmpty()) {
-                cities.put(key, info);
+                cities.put(key, city);
             }
         }
     }
@@ -86,17 +86,8 @@ public class CsvCityCatalog implements CityCatalog {
     }
 
     @Override
-    public String findCity(String nameCity) {
-        Info info = cities.get(StringUtilities.normal(nameCity));
-        if (info == null) {
-            return null;
-        }
-        return info.getName();
-    }
-
-    @Override
-    public Info findInfo(String nameCity) {
-        return cities.get(StringUtilities.normal(nameCity));
+    public City getInfo(String title) {
+        return cities.get(StringUtilities.normal(title));
     }
 }
 

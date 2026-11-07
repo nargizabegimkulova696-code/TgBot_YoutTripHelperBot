@@ -1,5 +1,6 @@
 package org.example.handler.command;
 
+import org.apache.commons.lang3.StringUtils;
 import org.example.handler.ButtonHandler;
 import org.example.response.DialogResponse;
 import org.example.response.KeyboardFactory;
@@ -15,6 +16,8 @@ public class AboutCityHandler implements ButtonHandler {
      * Ответ, если кнопку нажали до выбора города
      */
     private static final String NO_CITY = "Сначала выберите город, для этого напишите его название)";
+
+    private static final String NO_DATA = "Информации о городе не найдено";
 
     /**
      * Кнопки с категориями
@@ -42,6 +45,13 @@ public class AboutCityHandler implements ButtonHandler {
         }
 
         session.setState(DialogState.CAT_ABOUT_CITY);
-        return new DialogResponse(server.findInfoForCity(city), keyboard.build(session.getState()));
+
+        String cityInfo = server.findInfoForCity(city);
+
+        if (StringUtils.isBlank(cityInfo)) {
+            return new DialogResponse(NO_DATA, keyboard.build(session.getState()));
+        }
+
+        return new DialogResponse(cityInfo, keyboard.build(session.getState()));
     }
 }

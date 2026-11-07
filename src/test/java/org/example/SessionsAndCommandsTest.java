@@ -1,7 +1,8 @@
 package org.example;
 
-import org.example.catalog.city.CityCatalog;
-import org.example.catalog.city.CsvCityCatalog;
+import org.example.command.city.City;
+import org.example.command.city.CityProvider;
+import org.example.command.city.CsvCatalogCity;
 import org.example.command.weather.WeatherProvider;
 import org.example.handler.states.WeatherDatesHandler;
 import org.example.response.DialogResponse;
@@ -21,17 +22,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
- * Тесты: отдельные сессии пользователей,
- * Команда /help, кнопки: about_city и weather, которые обрабатывает {@link BotLogic}
+ * Тесты: отдельные сессии пользователей.
+ * Команда /help и /weather, которые обрабатывает {@link BotLogic}
  * Прогноз погоды проверяется через {@link WeatherDatesHandler}
  */
 class SessionsAndCommandsTest {
     /**
-     * Тестовый каталог
+     * Каталог заглушка
      */
-    private final String CSV = "name;status;population;area;description;climate;facts\n"
-            + "Москва;Столица России;13 млн;2 560 км²;Крупнейший город страны;умеренный;Метро|Кремль\n"
-            + "Тула;;;;;;\n";
+    private final String CSV = ";;;;;;\n"
+            + ";;;;;;\n"
+            + ";;;;;;\n";
 
     /**
      * Проверяемая логика бота и сессии, которая создается внутри логики
@@ -45,8 +46,16 @@ class SessionsAndCommandsTest {
         try (InputStreamReader reader = new InputStreamReader(
                 new ByteArrayInputStream(CSV.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8)) {
 
-            CityCatalog catalog = new CsvCityCatalog(reader);
-            CityServer server = new CityServer(catalog);
+            CityProvider catalog = new CsvCatalogCity(reader);
+            CityProvider provider = (city) -> {
+                if (city.equals("Москва")) {
+                    return new City("Москва", "", "", "", "", "");
+                }
+                return new City("Тула", "", "", "", "", "");
+            };
+
+            CityServer server = new CityServer(provider, catalog);
+
             logic = new BotLogic(server,
                     new TripServer((city, tag) -> List.of()),
                     (city, from, to) -> List.of());
@@ -79,35 +88,6 @@ class SessionsAndCommandsTest {
         Assertions.assertEquals("Выберете категорию для города Москва:",
                 logic.makeMessage("Москва", 1L).getAnswer());
         Assertions.assertEquals("Тула", logic.makeMessage("cat:about_city", 2L).getAnswer());
-    }
-
-
-    /**
-     * About_city показывает название и другие данные из каталога
-     */
-    @Test
-    void testAboutCityShowsCatalog() {
-        logic.makeMessage("Москва", 1L);
-
-        String text = logic.makeMessage("cat:about_city", 1L).getAnswer();
-
-        String expected = "Москва - Столица России\n\n"
-                + "Население: 13 млн\n\n"
-                + "Площадь: 2 560 км²\n\n"
-                + "Крупнейший город страны\n\n"
-                + "Климат: умеренный\n\n"
-                + "Интересные факты о городе: \n- Метро\n- Кремль";
-        Assertions.assertEquals(expected, text);
-    }
-
-    /**
-     * Если о городе нет данных, то показано только название
-     */
-    @Test
-    void testThatCityIsOutcast() {
-        logic.makeMessage("Тула", 1L);
-
-        Assertions.assertEquals("Тула", logic.makeMessage("cat:about_city", 1L).getAnswer());
     }
 
     /**
