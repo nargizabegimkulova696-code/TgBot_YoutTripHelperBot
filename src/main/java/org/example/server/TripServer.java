@@ -94,12 +94,15 @@ public class TripServer {
 
     /**
      * Форматирует места страницы в текст сообщения
+     * Нумерация сквозная по всем страницам, начиная с 1
      */
     public String formatted(Page<Place> page) {
         List<String> blocks = new ArrayList<>();
+        List<Place> items = page.getItems();
 
-        for (Place place : page.getItems()) {
-            blocks.add("- " + place.format());
+        for (int i = 0; i < items.size(); i++) {
+            int number = page.getFirstIndex() + i + 1;
+            blocks.add(number + ". " + items.get(i).format());
         }
 
         return String.join("\n\n", blocks);

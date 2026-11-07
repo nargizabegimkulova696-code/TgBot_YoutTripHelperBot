@@ -80,15 +80,15 @@ public class PagingTest {
         Assertions.assertEquals("""
                 Места, где можно вкусно покушать:
                 
-                - Кафе 1, ул. Ленина, 1
+                1. Кафе 1, ул. Ленина, 1
                 
-                - Кафе 2, ул. Ленина, 2
+                2. Кафе 2, ул. Ленина, 2
                 
-                - Кафе 3
+                3. Кафе 3
                 
-                - Кафетерий 4, ул. Тургенева, 4
+                4. Кафетерий 4, ул. Тургенева, 4
                 
-                - Кафе 5, ул. Ленина, 5
+                5. Кафе 5, ул. Ленина, 5
                 
                 Страница 1 из 2""", response.getAnswer());
         Assertions.assertEquals("page:tag:cafe:1", response.getListOfCommands().get(0).get(0).getCallBackData());
@@ -107,9 +107,9 @@ public class PagingTest {
         Assertions.assertEquals("""
                 Места, где можно вкусно покушать:
                 
-                - Кафе 6, ул. Московская, 6
+                7. Кафе 6, ул. Московская, 6
                 
-                - Кафе 7, ул. 8 марта, 8
+                8. Кафе 7, ул. 8 марта, 8
                 
                 Страница 2 из 2""", response.getAnswer());
         Assertions.assertEquals(1, response.getListOfCommands().size());
