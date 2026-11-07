@@ -107,9 +107,9 @@ public class PagingTest {
         Assertions.assertEquals("""
                 Места, где можно вкусно покушать:
                 
-                7. Кафе 6, ул. Московская, 6
+                6. Кафе 6, ул. Московская, 6
                 
-                8. Кафе 7, ул. 8 марта, 8
+                7. Кафе 7, ул. 8 марта, 8
                 
                 Страница 2 из 2""", response.getAnswer());
         Assertions.assertEquals(1, response.getListOfCommands().size());
