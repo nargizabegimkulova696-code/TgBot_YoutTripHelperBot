@@ -1,46 +1,63 @@
 package org.example.server;
 
-import org.example.catalog.city.CityCatalog;
-import org.example.catalog.city.CityCatalog.Info;
+import org.example.command.city.City;
+import org.example.command.city.CityProvider;
+
+import java.io.IOException;
 
 /**
- * Предоставляет доступ к каталогу с данными
+ * Предоставляет доступ к данным о городе
  */
 public class CityServer {
     /**
-     * Используемый в программе каталог с данными
+     * Данные о городах, которые получаем от api
      */
-    private final CityCatalog catalog;
+    private final CityProvider provider;
 
     /**
-     * Константное сообщение, которое получает пользователь, если данных о городе нет в каталоге
+     * Данные о городах из csv каталога, для городов с населением >500тыс.
      */
-    private static final String NOT_FOUND_CITY = "Информации о городе не найдено";
+    private final CityProvider catalog;
+
 
     /**
-     * В конструкторе инициализируем поле каталога
+     * Инициализация провайдера и каталога
      */
-    public CityServer(CityCatalog catalog) {
+    public CityServer(CityProvider provider, CityProvider catalog) {
+
+        this.provider = provider;
         this.catalog = catalog;
     }
 
     /**
-     * Метод, который ищет город по его названию в каталоге
+     * Метод, который ищет город по его названию
      */
     public String findCityByName(String city) {
-        return catalog.findCity(city);
+        try {
+            City cityInfo = provider.getInfo(city);
+            return cityInfo.getTitle();
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     /**
      * Метод, который ищет информацию о городе по его названию, при выборе категории about_city
      */
     public String findInfoForCity(String city) {
-        if (catalog.findInfo(city) == null) {
-            return NOT_FOUND_CITY;
+        try {
+            City info;
+
+            if (catalog.getInfo(city) == null) {
+                info = provider.getInfo(city);
+                return info.formattedInfoWithMinPop();
+            }
+
+            info = catalog.getInfo(city);
+
+            return info.formattedInfoWithBigPop();
+        } catch (IOException e) {
+            return null;
         }
-
-        Info info = catalog.findInfo(city);
-
-        return info.formattedInfo();
     }
 }

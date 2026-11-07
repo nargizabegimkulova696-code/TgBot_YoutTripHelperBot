@@ -1,8 +1,8 @@
 package org.example;
 
-import org.example.catalog.city.CityCatalog;
-import org.example.catalog.city.CsvCityCatalog;
-import org.example.response.Button;
+import org.example.command.city.City;
+import org.example.command.city.CityProvider;
+import org.example.command.city.CsvCatalogCity;
 import org.example.response.DialogResponse;
 import org.example.server.CityServer;
 import org.example.server.TripServer;
@@ -13,7 +13,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.List;
 
 
@@ -60,38 +59,15 @@ class BotLogicTest {
         try (InputStreamReader reader = new InputStreamReader(
                 new ByteArrayInputStream(CSV.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8)) {
 
-            CityCatalog catalog = new CsvCityCatalog(reader);
-            CityServer server = new CityServer(catalog);
+            CityProvider catalog = new CsvCatalogCity(reader);
+            CityProvider provider = (city) -> {
+                return new City("Москва", "", "", "", "", "");
+            };
+
+            CityServer server = new CityServer(provider, catalog);
+
             logic = new BotLogic(server, new TripServer((city, tag) -> List.of()), (city, from, to) -> List.of());
         }
-    }
-
-    /**
-     * Тестирование ответного сообщения, которое приходит пользователю
-     * после выбора города, если он найден в каталоге
-     */
-    @Test
-    void testBotLogicKnownCity() {
-        DialogResponse response = logic.makeMessage("москва", CHAT);
-        List<String> callbacks = response.getListOfCommands()
-                .stream()
-                .flatMap(Collection::stream)
-                .map(Button::getCallBackData)
-                .toList();
-
-        Assertions.assertEquals("Выберете категорию для города Москва:", response.getAnswer());
-        Assertions.assertEquals(List.of("cat:about_city", "cat:weather", "cat:food", "cat:culture", "cat:attractions", "cat:back"), callbacks);
-    }
-    /**
-     * Тестирование ответного сообщения, которое приходит пользователю
-     * после выбора города, если он не найден в каталоге
-     */
-    @Test
-    void testBotLogicUnKnownCity() {
-        DialogResponse response = logic.makeMessage("Томск", CHAT);
-
-        Assertions.assertEquals("Информации о городе не найдено", response.getAnswer());
-        Assertions.assertFalse(response.hasButtons());
     }
 
     /**

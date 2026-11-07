@@ -1,8 +1,9 @@
 package org.example;
 
-import org.example.catalog.city.CityCatalog;
-import org.example.catalog.loaders.city.CityCatalogLoader;
-import org.example.catalog.loaders.city.CsvCatalogLoader;
+import org.example.cityLoader.CityLoader;
+import org.example.cityLoader.CsvCityLoader;
+import org.example.command.city.CityProvider;
+import org.example.command.city.WikimediaRestCity;
 import org.example.command.places.GeoapifyPlaces;
 import org.example.command.weather.OpenMeteoWeather;
 import org.example.server.CityServer;
@@ -37,14 +38,15 @@ public class TgBotMain{
         String tgBotToken = config.getBotToken();
         String geoApiKey = config.getGeoapifyKey();
 
-        CityCatalogLoader cityLoader = new CsvCatalogLoader();
-        try {
-            CityCatalog citiesCatalog = cityLoader.load();
-            CityServer serverForCities = new CityServer(citiesCatalog);
+        CityLoader cityLoader = new CsvCityLoader();
 
+        try {
+            CityProvider catalog = cityLoader.load();
+
+            CityServer cityServer = new CityServer(new WikimediaRestCity(), catalog);
             TripServer tripServer = new TripServer(new GeoapifyPlaces(geoApiKey));
 
-            BotLogic botLogic = new BotLogic(serverForCities, tripServer, new OpenMeteoWeather());
+            BotLogic botLogic = new BotLogic(cityServer, tripServer, new OpenMeteoWeather());
 
             TgBot helperTripBot = new TgBot(tgBotName, tgBotToken, botLogic);
 

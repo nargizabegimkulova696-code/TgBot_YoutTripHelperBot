@@ -1,5 +1,7 @@
 package org.example;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Утилиты для строк
  */
@@ -14,14 +16,13 @@ public class StringUtilities {
      */
     public static String normal(String str) {
 
-        if (org.apache.commons.lang3.StringUtils.isBlank(str)) {
+        if (StringUtils.isBlank(str)) {
             return "";
         }
 
-        String result = str
-                .toLowerCase()
-                .replace('ё', 'е')
-                .replace('-', ' ')
+        String result = str.toLowerCase().
+                replace("ё", "e")
+                .replace("-", " ")
                 .replaceAll("\\s+", " ")
                 .trim();
 
