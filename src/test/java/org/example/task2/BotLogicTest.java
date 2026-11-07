@@ -1,5 +1,6 @@
-package org.example;
+package org.example.task2;
 
+import org.example.BotLogic;
 import org.example.command.city.City;
 import org.example.command.city.CityProvider;
 import org.example.command.city.CsvCatalogCity;

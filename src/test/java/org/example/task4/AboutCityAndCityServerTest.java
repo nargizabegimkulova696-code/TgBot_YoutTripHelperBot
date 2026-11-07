@@ -1,4 +1,4 @@
-package org.example;
+package org.example.task4;
 
 import org.example.command.city.City;
 import org.example.command.city.CityProvider;

@@ -1,4 +1,4 @@
-package org.example;
+package org.example.task3;
 
 import org.example.handler.ButtonHandler;
 import org.example.handler.command.AttractionsHandler;

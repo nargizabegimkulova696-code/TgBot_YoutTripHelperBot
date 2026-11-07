@@ -1,4 +1,4 @@
-package org.example;
+package org.example.task3;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.command.places.GeoapifyPlaces;
