@@ -25,6 +25,6 @@ public class SessionStorage {
      * Если сессии нет, создаёт новую и сохраняет её.
      */
     public BotSession getSession(long chatId) {
-        return sessions.computeIfAbsent(chatId, newId -> new BotSession());
+        return sessions.computeIfAbsent(chatId, newId -> new BotSession(chatId));
     }
 }

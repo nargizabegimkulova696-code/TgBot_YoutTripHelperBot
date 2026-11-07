@@ -11,6 +11,7 @@ import org.example.server.CityServer;
 import org.example.server.TripServer;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
+import org.example.storage.UserPlaceStorage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -58,7 +59,8 @@ class SessionsAndCommandsTest {
             CityServer server = new CityServer(provider, catalog);
 
             logic = new BotLogic(server,
-                    new TripServer((city, tag) -> List.of()),
+                    new TripServer((city, tag) -> List.of(),
+                            new UserPlaceStorage("jdbc:sqlite::memory:")),
                     (city, from, to) -> List.of());
         }
         ;
@@ -141,7 +143,7 @@ class SessionsAndCommandsTest {
         WeatherProvider provider = (city, from, to) ->
                 List.of(new WeatherProvider.Day(day, -1.0, 7.0, "дождь"));
 
-        BotSession session = new BotSession();
+        BotSession session = new BotSession(1);
         session.setCity("Москва");
         session.setState(DialogState.CAT_WEATHER);
 

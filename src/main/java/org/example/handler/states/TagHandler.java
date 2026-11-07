@@ -1,6 +1,6 @@
 package org.example.handler.states;
 
-import org.example.command.places.PlacesProvider;
+import org.example.command.places.Place;
 import org.example.handler.StateHandler;
 import org.example.paging.Page;
 import org.example.paging.PageCallback;
@@ -84,7 +84,7 @@ public class TagHandler implements StateHandler {
             }
         }
 
-        Page<PlacesProvider.Place> page = server.getPage(session.getCity(), callback.getTag(), callback.getPage());
+        Page<Place> page = server.getPage(session.getChatId(), session.getCity(), callback.getTag(), callback.getPage());
         if (page == null || page.isEmpty()) {
             return new DialogResponse(NOT_FOUND_TAG, keyboard.build(session.getState()));
         }

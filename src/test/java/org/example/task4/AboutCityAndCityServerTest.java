@@ -27,7 +27,7 @@ public class AboutCityAndCityServerTest {
     /**
      * Сессия пользователя
      */
-    private final BotSession session = new BotSession();
+    private final BotSession session = new BotSession(1);
 
     /**
      * Фейковый провайдер вместо api

@@ -8,6 +8,7 @@ import org.example.command.places.GeoapifyPlaces;
 import org.example.command.weather.OpenMeteoWeather;
 import org.example.server.CityServer;
 import org.example.server.TripServer;
+import org.example.storage.UserPlaceStorage;
 import org.example.telegramBot.ConfigTgBot;
 import org.example.telegramBot.TgBot;
 import org.slf4j.Logger;
@@ -44,7 +45,8 @@ public class TgBotMain{
             CityProvider catalog = cityLoader.load();
 
             CityServer cityServer = new CityServer(new WikimediaRestCity(), catalog);
-            TripServer tripServer = new TripServer(new GeoapifyPlaces(geoApiKey));
+            UserPlaceStorage userPlaceStorage = new UserPlaceStorage("jdbc:sqlite:places.db");
+            TripServer tripServer = new TripServer(new GeoapifyPlaces(geoApiKey), userPlaceStorage);
 
             BotLogic botLogic = new BotLogic(cityServer, tripServer, new OpenMeteoWeather());
 

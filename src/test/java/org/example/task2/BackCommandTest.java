@@ -15,7 +15,7 @@ public class BackCommandTest {
     /**
      * Сессия пользователя
      */
-    BotSession session = new BotSession();
+    BotSession session = new BotSession(1);
 
     /**
      * Инициализация back
