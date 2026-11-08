@@ -61,7 +61,7 @@ public class CsvCityCatalog implements CityCatalog {
 
             Info info = new Info(name, status, population, area, description, climate, facts);
 
-            String key = StringUtilities.normal(info.getName());
+            String key = StringUtilities.normalizeCityName(info.getName());
 
             if (!key.isEmpty()) {
                 cities.put(key, info);
@@ -87,7 +87,7 @@ public class CsvCityCatalog implements CityCatalog {
 
     @Override
     public String findCity(String nameCity) {
-        Info info = cities.get(StringUtilities.normal(nameCity));
+        Info info = cities.get(StringUtilities.normalizeCityName(nameCity));
         if (info == null) {
             return null;
         }
@@ -96,7 +96,7 @@ public class CsvCityCatalog implements CityCatalog {
 
     @Override
     public Info findInfo(String nameCity) {
-        return cities.get(StringUtilities.normal(nameCity));
+        return cities.get(StringUtilities.normalizeCityName(nameCity));
     }
 }
 
