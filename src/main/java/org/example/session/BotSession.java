@@ -16,9 +16,15 @@ public class BotSession {
     private String city;
 
     /**
-     * Конструктор сессии изначальный, без заданного бота
+     * Идентификатор чата пользователя
      */
-    public BotSession(){
+    private final long chatId;
+
+    /**
+     * Создание сессии пользователя с заданным идентификатором чата
+     */
+    public BotSession(long chatId) {
+        this.chatId = chatId;
         this.state = DialogState.WAITING_FOR_CITY;
         this.city = null;
     }
@@ -28,6 +34,13 @@ public class BotSession {
      */
     public DialogState getState() {
         return state;
+    }
+
+    /**
+     * Возврат идентификатора чата пользователя.
+     */
+    public long getChatId() {
+        return chatId;
     }
 
     /**

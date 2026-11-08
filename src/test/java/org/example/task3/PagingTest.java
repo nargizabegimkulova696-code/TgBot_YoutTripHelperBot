@@ -1,7 +1,8 @@
-package org.example;
+package org.example.task3;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.command.places.GeoapifyPlaces;
+import org.example.command.places.Place;
 import org.example.command.places.PlacesProvider;
 import org.example.handler.states.TagHandler;
 import org.example.paging.PageCallback;
@@ -10,6 +11,7 @@ import org.example.response.DialogResponse;
 import org.example.server.TripServer;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
+import org.example.storage.UserPlaceStorage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -32,22 +34,23 @@ public class PagingTest {
             return List.of();
         }
         return List.of(
-                new PlacesProvider.Place("Кафе 1", "ул. Ленина, 1"),
-                new PlacesProvider.Place("Кафе 2", "ул. Ленина, 2"),
-                new PlacesProvider.Place("Кафе 3", ""),
-                new PlacesProvider.Place("Кафетерий 4", "ул. Тургенева, 4"),
-                new PlacesProvider.Place("Кафе 5", "ул. Ленина, 5"),
-                new PlacesProvider.Place("Кафе 6", "ул. Московская, 6"),
-                new PlacesProvider.Place("Кафе 7", "ул. 8 марта, 8"));
+                new Place("Кафе 1", "ул. Ленина, 1"),
+                new Place("Кафе 2", "ул. Ленина, 2"),
+                new Place("Кафе 3", ""),
+                new Place("Кафетерий 4", "ул. Тургенева, 4"),
+                new Place("Кафе 5", "ул. Ленина, 5"),
+                new Place("Кафе 6", "ул. Московская, 6"),
+                new Place("Кафе 7", "ул. 8 марта, 8"));
     };
     /**
      * Обработчик тегов с тестовым источником мест
      */
-    private final TagHandler handler = new TagHandler(new TripServer(provider));
+    private final TagHandler handler = new TagHandler(new TripServer(provider,
+            new UserPlaceStorage("jdbc:sqlite::memory:")));
     /**
      * Сессия пользователя
      */
-    private final BotSession session = new BotSession();
+    private final BotSession session = new BotSession(1);
 
     /**
      * Город и категория выбраны
@@ -77,15 +80,15 @@ public class PagingTest {
         Assertions.assertEquals("""
                 Места, где можно вкусно покушать:
                 
-                - Кафе 1, ул. Ленина, 1
+                1. Кафе 1, ул. Ленина, 1
                 
-                - Кафе 2, ул. Ленина, 2
+                2. Кафе 2, ул. Ленина, 2
                 
-                - Кафе 3
+                3. Кафе 3
                 
-                - Кафетерий 4, ул. Тургенева, 4
+                4. Кафетерий 4, ул. Тургенева, 4
                 
-                - Кафе 5, ул. Ленина, 5
+                5. Кафе 5, ул. Ленина, 5
                 
                 Страница 1 из 2""", response.getAnswer());
         Assertions.assertEquals("page:tag:cafe:1", response.getListOfCommands().get(0).get(0).getCallBackData());
@@ -104,9 +107,9 @@ public class PagingTest {
         Assertions.assertEquals("""
                 Места, где можно вкусно покушать:
                 
-                - Кафе 6, ул. Московская, 6
+                6. Кафе 6, ул. Московская, 6
                 
-                - Кафе 7, ул. 8 марта, 8
+                7. Кафе 7, ул. 8 марта, 8
                 
                 Страница 2 из 2""", response.getAnswer());
         Assertions.assertEquals(1, response.getListOfCommands().size());
@@ -184,10 +187,10 @@ public class PagingTest {
                   {"properties": {"name": "Пекарня", "street": "улица Баумана"}}
                 ]}""";
 
-        List<PlacesProvider.Place> places = new GeoapifyPlaces("test-key").parsePlaces(new ObjectMapper().readTree(json));
+        List<Place> places = new GeoapifyPlaces("test-key").parsePlaces(new ObjectMapper().readTree(json));
 
         Assertions.assertEquals(List.of("Numi, Центральная улица, 27", "Пекарня, улица Баумана"),
-                places.stream().map(PlacesProvider.Place::format).toList());
+                places.stream().map(Place::format).toList());
     }
 
 }

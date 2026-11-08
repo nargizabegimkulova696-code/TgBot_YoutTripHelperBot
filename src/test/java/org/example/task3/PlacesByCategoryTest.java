@@ -1,4 +1,4 @@
-package org.example;
+package org.example.task3;
 
 import org.example.handler.ButtonHandler;
 import org.example.handler.command.AttractionsHandler;
@@ -25,7 +25,7 @@ public class PlacesByCategoryTest {
     /**
      * Сессия пользователя
      */
-    private final BotSession session = new BotSession();
+    private final BotSession session = new BotSession(1);
 
     /**
      * Словарь, содержащий обработчиков команд и кнопок

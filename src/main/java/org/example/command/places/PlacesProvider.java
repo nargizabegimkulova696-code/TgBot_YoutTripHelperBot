@@ -18,34 +18,4 @@ public interface PlacesProvider {
      * @throws IOException если места получить не удалось
      */
     List<Place> getPlaces(String city, String tag) throws IOException;
-
-    /**
-     * Одно место: название и адрес
-     */
-    class Place {
-        /**
-         * Название места
-         */
-        private final String name;
-
-        /**
-         * Адрес места, может быть пустым
-         */
-        private final String address;
-
-        public Place(String name, String address) {
-            this.name = name;
-            this.address = address;
-        }
-
-        /**
-         * Название и адрес места, или название если нет адреса
-         */
-        public String format() {
-            if (address.isBlank()) {
-                return name;
-            }
-            return name + ", " + address;
-        }
-    }
 }

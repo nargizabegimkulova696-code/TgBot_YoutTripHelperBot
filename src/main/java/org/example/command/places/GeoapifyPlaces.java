@@ -115,7 +115,7 @@ public class GeoapifyPlaces implements PlacesProvider {
     private String findCityId(String city) throws IOException {
         JsonNode root = get(GEOCODING_URL
                 + "?text=" + URLEncoder.encode(city, StandardCharsets.UTF_8)
-                + "&type=city&filter=countrycode:ru&lang=ru&format=json"
+                + "&type=city&lang=ru&format=json"
                 + "&apiKey=" + apiKey);
 
         JsonNode results = root.path("results");

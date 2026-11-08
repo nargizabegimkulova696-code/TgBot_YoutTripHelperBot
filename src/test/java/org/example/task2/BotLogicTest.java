@@ -1,11 +1,13 @@
-package org.example;
+package org.example.task2;
 
+import org.example.BotLogic;
 import org.example.command.city.City;
 import org.example.command.city.CityProvider;
 import org.example.command.city.CsvCatalogCity;
 import org.example.response.DialogResponse;
 import org.example.server.CityServer;
 import org.example.server.TripServer;
+import org.example.storage.UserPlaceStorage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -66,7 +68,9 @@ class BotLogicTest {
 
             CityServer server = new CityServer(provider, catalog);
 
-            logic = new BotLogic(server, new TripServer((city, tag) -> List.of()), (city, from, to) -> List.of());
+            logic = new BotLogic(server, new TripServer((city, tag) -> List.of(),
+                    new UserPlaceStorage("jdbc:sqlite::memory:")),
+                    (city, from, to) -> List.of());
         }
     }
 

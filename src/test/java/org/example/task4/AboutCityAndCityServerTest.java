@@ -1,4 +1,4 @@
-package org.example;
+package org.example.task4;
 
 import org.example.command.city.City;
 import org.example.command.city.CityProvider;
@@ -27,7 +27,7 @@ public class AboutCityAndCityServerTest {
     /**
      * Сессия пользователя
      */
-    private final BotSession session = new BotSession();
+    private final BotSession session = new BotSession(1);
 
     /**
      * Фейковый провайдер вместо api
