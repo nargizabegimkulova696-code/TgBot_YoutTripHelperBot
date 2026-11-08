@@ -61,7 +61,7 @@ public class CsvCityCatalog implements CityCatalog {
 
             Info info = new Info(name, status, population, area, description, climate, facts);
 
-            String key = normal(info.getName());
+            String key = normalizeCityName(info.getName());
 
             if (!key.isEmpty()) {
                 cities.put(key, info);
@@ -86,12 +86,20 @@ public class CsvCityCatalog implements CityCatalog {
     }
 
     /**
-     * Метод нормализирует название города
+     * Метод приводит название города к "нормализованному" виду;
+     * Это нужно, чтобы город находился независимо от того, как ввел его пользователь.
+     * Преобразования:
+     * <ul>
+     *     <li>Все буквы переводятся в нижний регистр;</li>
+     *     <li>Буква "ё" заменяется на "е";</li>
+     *     <li>Дефисы заменяются на пробелы;</li>
+     *     <li>Несколько пробелов подряд заменяются одним, пробелы по краям удаляются.</li>
+     * </ul>
      *
      * @param str - на вход строка с названием города
-     * @return string result - нормализованное название города
+     * @return string result - "нормализованное" название города
      */
-    private String normal(String str) {
+    private String normalizeCityName(String str) {
 
         if (StringUtils.isBlank(str)) {
             return "";
@@ -109,7 +117,7 @@ public class CsvCityCatalog implements CityCatalog {
 
     @Override
     public String findCity(String nameCity) {
-        Info info = cities.get(normal(nameCity));
+        Info info = cities.get(normalizeCityName(nameCity));
         if (info == null) {
             return null;
         }
@@ -118,7 +126,7 @@ public class CsvCityCatalog implements CityCatalog {
 
     @Override
     public Info findInfo(String nameCity) {
-        return cities.get(normal(nameCity));
+        return cities.get(normalizeCityName(nameCity));
     }
 }
 
