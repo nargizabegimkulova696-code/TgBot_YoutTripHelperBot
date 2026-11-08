@@ -61,7 +61,7 @@ public class CsvCatalogCity implements CityProvider {
 
             City city = new City(title, description, population, area, extract, climate, facts);
 
-            String key = StringUtilities.normal(city.getTitle());
+            String key = StringUtilities.normalizeCityName(city.getTitle());
 
             if (!key.isEmpty()) {
                 cities.put(key, city);
@@ -87,7 +87,7 @@ public class CsvCatalogCity implements CityProvider {
 
     @Override
     public City getInfo(String title) {
-        return cities.get(StringUtilities.normal(title));
+        return cities.get(StringUtilities.normalizeCityName(title));
     }
 }
 

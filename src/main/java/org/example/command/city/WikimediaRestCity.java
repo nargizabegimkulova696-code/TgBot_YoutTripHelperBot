@@ -64,7 +64,7 @@ public class WikimediaRestCity implements CityProvider {
 
     @Override
     public City getInfo(String city) throws IOException {
-        String normalTitle = StringUtilities.normal(city);
+        String normalTitle = StringUtilities.normalizeCityName(city);
 
         City visitedCities = catalog.get(normalTitle);
 
