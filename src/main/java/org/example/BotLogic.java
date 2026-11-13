@@ -1,35 +1,75 @@
 package org.example;
 
+
+import org.example.command.weather.WeatherProvider;
+import org.example.handler.ButtonHandler;
+import org.example.handler.StateService;
+import org.example.handler.command.*;
+import org.example.handler.states.WaitingCityHandler;
+import org.example.handler.states.WeatherDatesHandler;
+import org.example.response.DialogResponse;
+import org.example.session.BotSession;
+import org.example.session.DialogState;
+import org.example.session.SessionStorage;
+
+import java.util.Map;
+
 /**
  * Логика работы бота, которая не зависит от API
  */
 public class BotLogic {
     /**
-     * Константные сообщения для команд /start
+     * Хранилище сессий пользователей
      */
-    private static final String START_MESSAGE = "Привет, я Эхо-Бот, " + "отправь мне свое сообщение и я повторю его за тобой!";
+    private final SessionStorage sessionStorage = new SessionStorage();
 
     /**
-     * Константные сообщения для команд /help
+     * Обработчики команд и кнопок: ключ - текст команды или callbackData кнопки
      */
-    private static final String HELP_MESSAGE = """
-            Привет, я Эхо-Бот
-            /start - начало работы
-            /help - показать все доступные команды""";
+    private final Map<String, ButtonHandler> buttonHandlers;
+
     /**
-     * Метод создан для создания сообщения в ответ пользователю
+     * Обработчик обычного текста в зависимости от состояния диалога
+     */
+    private final StateService stateService;
+
+    /**
+     * Конструктор логики бота, создаёт все обработчики один раз
+     * @param server доступ к каталогу городов
+     * @param weatherProvider источник прогноза погоды
+     */
+    public BotLogic(CityServer server, WeatherProvider weatherProvider) {
+        this.buttonHandlers = Map.of(
+                "/start", new StartHandler(),
+                "/help", new HelpHandler(),
+                "/about_city", new AboutCityHandler(server),
+                "/weather", new WeatherHandler(),
+                "/back", new BackHandler(),
+                "cat:back", new BackHandler(),
+                "cat:weather", new WeatherHandler(),
+                "cat:about_city", new AboutCityHandler(server)
+        );
+
+        this.stateService = new StateService(Map.of(
+                DialogState.WAITING_FOR_CITY, new WaitingCityHandler(server),
+                DialogState.CAT_WEATHER, new WeatherDatesHandler(weatherProvider)
+        ));
+    }
+
+    /**
+     * Метод создан для создания сообщения в ответ пользователю:
+     * сначала ищется обработчик команды/кнопки, иначе текст обрабатывается по состоянию диалога
      * @param text текст сообщения, которое отправил пользователь
+     * @param chatId идентификатор чата пользователя
+     * @return ответ от бота
      */
-    public String makeMessage(String text){
+    public DialogResponse makeMessage(String text, long chatId) {
+        BotSession session = sessionStorage.getSession(chatId);
 
-        String answer;
-
-        switch (text){
-            case "/start" -> answer = START_MESSAGE;
-            case "/help" -> answer = HELP_MESSAGE;
-            default -> answer = "Вы ввели «" + text + "»";
+        ButtonHandler button = buttonHandlers.get(text);
+        if (button != null) {
+            return button.execute(session);
         }
-
-        return answer;
+        return stateService.handle(text, session);
     }
 }
