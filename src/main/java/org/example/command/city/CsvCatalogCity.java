@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,7 +30,7 @@ public class CsvCatalogCity implements CityProvider {
      * В конструкторе реализуется чтение данных из файла и инициализация словаря.
      * Чтение данных из файла начинается со второй строки, так как первая - заголовок
      */
-    public CsvCatalogCity(InputStreamReader input) throws IOException {
+    public CsvCityCatalog(InputStreamReader input) throws IOException {
         BufferedReader reader = new BufferedReader(input);
         //пропуск заголовка файла
         reader.readLine();
