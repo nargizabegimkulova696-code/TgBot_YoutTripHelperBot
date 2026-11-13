@@ -1,8 +1,8 @@
 package org.example;
 
-import org.example.command.weather.WeatherProvider;
 import org.example.catalog.city.CityCatalog;
 import org.example.catalog.city.CsvCityCatalog;
+import org.example.command.weather.WeatherProvider;
 import org.example.response.Button;
 import org.example.response.DialogResponse;
 import org.example.server.CityServer;
@@ -70,23 +70,32 @@ class BotLogicTest {
      * Кнопки, которые видит пользователь сразу после выбора города
      */
     private final List<List<Button>> citySelectedButtons = List.of(
-            List.of(new Button("about city", "cat:about_city")),
-            List.of(new Button("weather", "cat:weather")),
-            List.of(new Button("back", "cat:back")));
+            List.of(new Button("о городе", "cat:about_city")),
+            List.of(new Button("погода", "cat:weather")),
+            List.of(new Button("еда", "cat:food")),
+            List.of(new Button("культура", "cat:culture")),
+            List.of(new Button("развлечения", "cat:attractions")),
+            List.of(new Button("назад", "cat:back")));
 
     /**
      * Кнопки, которые видит пользователь в категории about_city
      */
     private final List<List<Button>> aboutCityButtons = List.of(
-            List.of(new Button("weather", "cat:weather")),
-            List.of(new Button("back", "cat:back")));
+            List.of(new Button("погода", "cat:weather")),
+            List.of(new Button("еда", "cat:food")),
+            List.of(new Button("культура", "cat:culture")),
+            List.of(new Button("развлечения", "cat:attractions")),
+            List.of(new Button("назад", "cat:back")));
 
     /**
      * Кнопки, которые видит пользователь в категории weather
      */
     private final List<List<Button>> weatherButtons = List.of(
-            List.of(new Button("about city", "cat:about_city")),
-            List.of(new Button("back", "cat:back")));
+            List.of(new Button("о городе", "cat:about_city")),
+            List.of(new Button("еда", "cat:food")),
+            List.of(new Button("культура", "cat:culture")),
+            List.of(new Button("развлечения", "cat:attractions")),
+            List.of(new Button("назад", "cat:back")));
 
     /**
      * Доступ к каталогу городов из CITY_CATALOG
@@ -98,6 +107,10 @@ class BotLogicTest {
      */
     private final BotLogic logic;
 
+    /**
+     * Сервер категорий food, culture, attractions
+     */
+    private final TripServer tripServer = new TripServer((city, tag) -> List.of());
 
     /**
      * Инициализация каталога и логики бота
@@ -109,7 +122,7 @@ class BotLogicTest {
 
             CityCatalog catalog = new CsvCityCatalog(reader);
             server = new CityServer(catalog);
-            logic = new BotLogic(server, (city, from, to) -> List.of());
+            logic = new BotLogic(server, tripServer, (city, from, to) -> List.of());
         }
     }
 
@@ -294,7 +307,7 @@ class BotLogicTest {
         WeatherProvider provider = (city, from, to) ->
                 List.of(new WeatherProvider.Day(day, -1.0, 7.0, "дождь"));
 
-        BotLogic logicWithForecast = new BotLogic(server, provider);
+        BotLogic logicWithForecast = new BotLogic(server, tripServer, provider);
         logicWithForecast.makeMessage("Москва", CHAT_ID);
         logicWithForecast.makeMessage("cat:weather", CHAT_ID);
 
@@ -314,7 +327,7 @@ class BotLogicTest {
             throw new IOException("нет сети");
         };
 
-        BotLogic logicWithoutWeather = new BotLogic(server, brokenProvider);
+        BotLogic logicWithoutWeather = new BotLogic(server, tripServer, brokenProvider);
         logicWithoutWeather.makeMessage("Москва", CHAT_ID);
         logicWithoutWeather.makeMessage("cat:weather", CHAT_ID);
 
