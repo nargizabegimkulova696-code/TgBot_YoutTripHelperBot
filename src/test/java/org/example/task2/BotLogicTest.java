@@ -4,10 +4,13 @@ import org.example.BotLogic;
 import org.example.command.city.City;
 import org.example.command.city.CityProvider;
 import org.example.command.city.CsvCatalogCity;
+import org.example.command.weather.WeatherProvider;
+import org.example.response.Button;
 import org.example.response.DialogResponse;
 import org.example.server.CityServer;
 import org.example.server.TripServer;
 import org.example.storage.UserPlaceStorage;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -109,9 +112,14 @@ class BotLogicTest {
     private final BotLogic logic;
 
     /**
-     * Сервер категорий food, culture, attractions
+     * Хранилище мест пользователей в памяти
      */
-    private final TripServer tripServer = new TripServer((city, tag) -> List.of());
+    private final UserPlaceStorage storage = new UserPlaceStorage("jdbc:sqlite::memory:");
+
+    /**
+     * Сервер категорий food, culture, attractions, источник мест всегда пустой, потому что не тестируется
+     */
+    private final TripServer tripServer = new TripServer((city, tag) -> List.of(), storage);
 
     /**
      * Инициализация каталога и логики бота
@@ -122,14 +130,25 @@ class BotLogicTest {
                 new ByteArrayInputStream(CITY_CATALOG.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8)) {
 
             CityProvider catalog = new CsvCatalogCity(reader);
-            CityProvider provider = (city) -> {
-                return new City("Москва", "", "", "", "", "");
+            // заглушка API, для имен из каталога
+            CityProvider api = city -> {
+                City found = catalog.getInfo(city);
+                if (found == null) {
+                    throw new IOException("Город не найден");
+                }
+                return found;
             };
-            CityServer server = new CityServer(provider, catalog);
-            logic = new BotLogic(server, TripServer((city, tag) -> List.of(),
-                    new UserPlaceStorage("jdbc:sqlite::memory:")),
-                    (city, from, to) -> List.of());
+            server = new CityServer(api, catalog);
+            logic = new BotLogic(server, tripServer, (city, from, to) -> List.of());
         }
+    }
+
+    /**
+     * Закрывает базу в памяти после каждого теста
+     */
+    @AfterEach
+    void closeStorage() throws Exception {
+        storage.close();
     }
 
     /**
