@@ -1,18 +1,29 @@
 package org.example.handler.states;
 
-import org.example.command.places.PlacesProvider;
+import org.example.command.places.PlacesProvider.Place;
 import org.example.handler.StateHandler;
 import org.example.paging.Page;
 import org.example.paging.PageCallback;
 import org.example.response.DialogResponse;
 import org.example.response.KeyboardFactory;
-import org.example.server.TripServer;
+import org.example.service.TripService;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
- * Обработчик состояния, в котором находится пользователь
- * после выбора одной из категорий: food, culture, attractions
+ * Обработчик выбора тега и листания мест.
+ * Работает в состояниях CAT_* (ждём тег) и IN_TAG_* (смотрим места);
+ * При нажатии кнопки получаем строку callback_data,
+ * где тег и номер страницы закодированы в ней (разборка с помощью {@link PageCallback});
+ *
+ * Пример: "tag:cafe" - первая страница тега, "page:tag:cafe:2" - страница 2 того же тега.
  */
 public class TagHandler implements StateHandler {
 
@@ -42,9 +53,19 @@ public class TagHandler implements StateHandler {
     private static final String CHOOSE_TAG = "Выберите, что вас интересует, с помощью кнопок.";
 
     /**
-     * Сервер для получения данных о теге по городу
+     * Ответное сообщение, если источник мест не ответил из-за ошибки
      */
-    private final TripServer server;
+    private static final String PLACES_UNAVAILABLE = "Не удалось загрузить места. Попробуйте позже.";
+
+    /**
+     * Сервис для получения данных о теге по городу
+     */
+    private final TripService tripService;
+
+    /**
+     * Логирование ошибок получения мест
+     */
+    private final Logger log = LoggerFactory.getLogger(TagHandler.class);
 
     /**
      * Клавиатура кнопок
@@ -52,10 +73,10 @@ public class TagHandler implements StateHandler {
     private final KeyboardFactory keyboard = new KeyboardFactory();
 
     /**
-     * Инициализация обработчика состояний и сервера
+     * Инициализация обработчика состояний и сервиса
      */
-    public TagHandler(TripServer server) {
-        this.server = server;
+    public TagHandler(TripService tripService) {
+        this.tripService = tripService;
     }
 
     @Override
@@ -84,14 +105,36 @@ public class TagHandler implements StateHandler {
             }
         }
 
-        Page<PlacesProvider.Place> page = server.getPage(session.getCity(), callback.getTag(), callback.getPage());
-        if (page == null || page.isEmpty()) {
+        Page<Place> page;
+        try {
+            page = tripService.getPage(session.getCity(), callback.getTag(), callback.getPage());
+        } catch (IOException e) {
+            log.error("Не удалось получить места: город={}, тег={}", session.getCity(), callback.getTag(), e);
+            return new DialogResponse(PLACES_UNAVAILABLE, keyboard.build(session.getState()));
+        }
+
+        if (page.isEmpty()) {
             return new DialogResponse(NOT_FOUND_TAG, keyboard.build(session.getState()));
         }
 
-        String answer = title + "\n\n" + server.formatted(page)
-                + "\n\nСтраница " + (page.getNumber() + 1) + " из " + page.getTotalPages();
+        return new DialogResponse(formatPage(title, page), keyboard.buildPage(callback.getTag(), page));
+    }
 
-        return new DialogResponse(answer, keyboard.buildPage(callback.getTag(), page));
+    /**
+     * Собирает текст ответа со страницей мест: заголовок, места через пустую строку и номер страницы
+     *
+     * @param title заголовок категории
+     * @param page  страница мест
+     * @return текст сообщения пользователю
+     */
+    private String formatPage(String title, Page<Place> page) {
+        List<String> blocks = new ArrayList<>();
+
+        for (Place place : page.getItems()) {
+            blocks.add("- " + place.format());
+        }
+
+        return title + "\n\n" + String.join("\n\n", blocks)
+                + "\n\nСтраница " + (page.getNumber() + 1) + " из " + page.getTotalPages();
     }
 }

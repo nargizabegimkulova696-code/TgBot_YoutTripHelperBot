@@ -9,8 +9,8 @@ import org.example.handler.states.TagHandler;
 import org.example.handler.states.WaitingCityHandler;
 import org.example.handler.states.WeatherDatesHandler;
 import org.example.response.DialogResponse;
-import org.example.server.CityServer;
-import org.example.server.TripServer;
+import org.example.service.CityService;
+import org.example.service.TripService;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
 import org.example.session.SessionStorage;
@@ -39,15 +39,15 @@ public class BotLogic {
 
     /**
      * Конструктор логики бота, создаёт все обработчики один раз
-     * @param cityServer доступ к каталогу городов
-     * @param tripServer доступ к каталогам категорий: food, culture, attractions
+     * @param cityService доступ к каталогу городов
+     * @param tripService доступ к каталогам категорий: food, culture, attractions
      * @param weatherProvider источник прогноза погоды
      */
-    public BotLogic(CityServer cityServer, TripServer tripServer, WeatherProvider weatherProvider) {
-        TagHandler tagHandler = new TagHandler(tripServer);
+    public BotLogic(CityService cityService, TripService tripService, WeatherProvider weatherProvider) {
+        TagHandler tagHandler = new TagHandler(tripService);
         Map<String, ButtonHandler> handlers = new HashMap<>();
 
-        ButtonHandler aboutCity = new AboutCityHandler(cityServer);
+        ButtonHandler aboutCity = new AboutCityHandler(cityService);
         ButtonHandler weather = new WeatherHandler();
         ButtonHandler food = new FoodHandler();
         ButtonHandler culture = new CultureHandler();
@@ -74,7 +74,7 @@ public class BotLogic {
         this.buttonHandlers = handlers;
 
         this.stateService = new StateService(Map.of(
-                DialogState.WAITING_FOR_CITY, new WaitingCityHandler(cityServer),
+                DialogState.WAITING_FOR_CITY, new WaitingCityHandler(cityService),
                 DialogState.CAT_WEATHER, new WeatherDatesHandler(weatherProvider),
                 DialogState.CAT_FOOD, tagHandler,
                 DialogState.CAT_CULTURE, tagHandler,

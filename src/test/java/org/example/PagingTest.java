@@ -8,7 +8,7 @@ import org.example.handler.states.TagHandler;
 import org.example.paging.PageCallback;
 import org.example.response.Button;
 import org.example.response.DialogResponse;
-import org.example.server.TripServer;
+import org.example.service.TripService;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
 import org.junit.jupiter.api.Assertions;
@@ -44,7 +44,7 @@ public class PagingTest {
     /**
      * Обработчик тегов с тестовым источником мест
      */
-    private final TagHandler handler = new TagHandler(new TripServer(provider));
+    private final TagHandler handler = new TagHandler(new TripService(provider));
     /**
      * Сессия пользователя
      */

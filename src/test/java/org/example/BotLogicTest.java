@@ -6,8 +6,8 @@ import org.example.command.weather.WeatherProvider;
 import org.example.handler.command.*;
 import org.example.response.Button;
 import org.example.response.DialogResponse;
-import org.example.server.CityServer;
-import org.example.server.TripServer;
+import org.example.service.CityService;
+import org.example.service.TripService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -100,7 +100,7 @@ class BotLogicTest {
     /**
      * Доступ к каталогу городов из CITY_CATALOG
      */
-    private final CityServer server;
+    private final CityService cityService;
 
     /**
      * Логика бота
@@ -108,9 +108,9 @@ class BotLogicTest {
     private final BotLogic logic;
 
     /**
-     * Сервер категорий food, culture, attractions
+     * Сервис категорий food, culture, attractions
      */
-    private final TripServer tripServer = new TripServer((city, tag) -> List.of());
+    private final TripService tripService = new TripService((city, tag) -> List.of());
 
     /**
      * Инициализация каталога и логики бота
@@ -121,8 +121,8 @@ class BotLogicTest {
                 new ByteArrayInputStream(CITY_CATALOG.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8)) {
 
             CityCatalog catalog = new CsvCityCatalog(reader);
-            server = new CityServer(catalog);
-            logic = new BotLogic(server, tripServer, (city, from, to) -> List.of());
+            cityService = new CityService(catalog);
+            logic = new BotLogic(cityService, tripService, (city, from, to) -> List.of());
         }
     }
 
@@ -307,7 +307,7 @@ class BotLogicTest {
         WeatherProvider provider = (city, from, to) ->
                 List.of(new WeatherProvider.Day(day, -1.0, 7.0, "дождь"));
 
-        BotLogic logicWithForecast = new BotLogic(server, tripServer, provider);
+        BotLogic logicWithForecast = new BotLogic(cityService, tripService, provider);
         logicWithForecast.makeMessage("Москва", CHAT_ID);
         logicWithForecast.makeMessage(WeatherHandler.CALLBACK, CHAT_ID);
 
@@ -327,7 +327,7 @@ class BotLogicTest {
             throw new IOException("нет сети");
         };
 
-        BotLogic logicWithoutWeather = new BotLogic(server, tripServer, brokenProvider);
+        BotLogic logicWithoutWeather = new BotLogic(cityService, tripService, brokenProvider);
         logicWithoutWeather.makeMessage("Москва", CHAT_ID);
         logicWithoutWeather.makeMessage(WeatherHandler.CALLBACK, CHAT_ID);
 
