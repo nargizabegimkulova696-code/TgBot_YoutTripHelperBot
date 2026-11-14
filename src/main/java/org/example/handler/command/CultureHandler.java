@@ -11,6 +11,15 @@ import org.example.session.DialogState;
  */
 public class CultureHandler implements ButtonHandler {
     /**
+     * Текстовая команда, которая вызывает этот обработчик
+     */
+    public static final String COMMAND = "/culture";
+
+    /**
+     * Данные кнопки, которая вызывает этот обработчик
+     */
+    public static final String CALLBACK = "cat:culture";
+    /**
      * Ответное сообщение при выборе категории
      */
     private static final String ANSWER = "Что вас интересует?";

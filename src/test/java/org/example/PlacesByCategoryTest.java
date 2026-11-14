@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.handler.ButtonHandler;
 import org.example.handler.command.AttractionsHandler;
+import org.example.handler.command.BackHandler;
 import org.example.handler.command.CultureHandler;
 import org.example.handler.command.FoodHandler;
 import org.example.response.Button;
@@ -31,13 +32,13 @@ public class PlacesByCategoryTest {
      * Словарь, содержащий обработчиков команд и кнопок
      */
     private final Map<String, ButtonHandler> handlers = Map.of(
-            "cat:food", new FoodHandler(),
-            "cat:culture", new CultureHandler(),
-            "cat:attractions", new AttractionsHandler(),
+            FoodHandler.CALLBACK, new FoodHandler(),
+            CultureHandler.CALLBACK, new CultureHandler(),
+            AttractionsHandler.CALLBACK, new AttractionsHandler(),
 
-            "/food", new FoodHandler(),
-            "/culture", new CultureHandler(),
-            "/attractions", new AttractionsHandler()
+            FoodHandler.COMMAND, new FoodHandler(),
+            CultureHandler.COMMAND, new CultureHandler(),
+            AttractionsHandler.COMMAND, new AttractionsHandler()
     );
 
     /**
@@ -62,7 +63,7 @@ public class PlacesByCategoryTest {
         session.setCity("Москва");
         session.setState(DialogState.CITY_SELECTED);
 
-        DialogResponse response = handlers.get("cat:food").execute(session);
+        DialogResponse response = handlers.get(FoodHandler.CALLBACK).execute(session);
 
         Assertions.assertEquals("Что вас интересует?", response.getAnswer());
         Assertions.assertEquals(List.of("tag:restaurants",
@@ -70,7 +71,7 @@ public class PlacesByCategoryTest {
                 "tag:bakeries",
                 "tag:pizzerias",
                 "tag:fastfood",
-                "cat:back"), callbacks(response));
+                BackHandler.CALLBACK), callbacks(response));
         Assertions.assertEquals(DialogState.CAT_FOOD, session.getState());
     }
 
@@ -82,14 +83,14 @@ public class PlacesByCategoryTest {
         session.setCity("Екатеринбург");
         session.setState(DialogState.CITY_SELECTED);
 
-        DialogResponse response = handlers.get("cat:culture").execute(session);
+        DialogResponse response = handlers.get(CultureHandler.CALLBACK).execute(session);
 
         Assertions.assertEquals("Что вас интересует?", response.getAnswer());
         Assertions.assertEquals(List.of("tag:museums",
                 "tag:temples",
                 "tag:historical_buildings",
                 "tag:monuments",
-                "tag:theaters", "cat:back"), callbacks(response));
+                "tag:theaters", BackHandler.CALLBACK), callbacks(response));
         Assertions.assertEquals(DialogState.CAT_CULTURE, session.getState());
     }
 
@@ -101,7 +102,7 @@ public class PlacesByCategoryTest {
         session.setCity("Челябинск");
         session.setState(DialogState.CITY_SELECTED);
 
-        DialogResponse response = handlers.get("cat:attractions").execute(session);
+        DialogResponse response = handlers.get(AttractionsHandler.CALLBACK).execute(session);
 
         Assertions.assertEquals("Что вас интересует?", response.getAnswer());
         Assertions.assertEquals(List.of(
@@ -110,7 +111,7 @@ public class PlacesByCategoryTest {
                 "tag:movie",
                 "tag:zoos",
                 "tag:nature",
-                "cat:back"
+                BackHandler.CALLBACK
         ), callbacks(response));
         Assertions.assertEquals(DialogState.CAT_ATTRACTIONS, session.getState());
     }
@@ -119,7 +120,7 @@ public class PlacesByCategoryTest {
      * Тестирование вызова команд еда, культура, развлечения, находясь в не выбранном городе
      */
     @ParameterizedTest
-    @ValueSource(strings = {"/food", "/culture", "/attractions"})
+    @ValueSource(strings = {FoodHandler.COMMAND, CultureHandler.COMMAND, AttractionsHandler.COMMAND})
     void TestHandlerCommandWithNullCity(String command) {
         DialogResponse response = handlers.get(command).execute(session);
 

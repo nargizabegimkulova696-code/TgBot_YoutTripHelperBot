@@ -3,7 +3,7 @@ package org.example.handler.states;
 import org.example.handler.StateHandler;
 import org.example.response.DialogResponse;
 import org.example.response.KeyboardFactory;
-import org.example.server.CityServer;
+import org.example.service.CityService;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
 
@@ -19,7 +19,7 @@ public class WaitingCityHandler implements StateHandler {
     /**
      * Доступ к каталогу городов
      */
-    private final CityServer server;
+    private final CityService cityService;
 
     /**
      * Кнопки с категориями
@@ -27,15 +27,15 @@ public class WaitingCityHandler implements StateHandler {
     private final KeyboardFactory keyboard = new KeyboardFactory();
 
     /**
-     * Создание от сервера WaitingCityHandler
+     * Создание от сервиса WaitingCityHandler
      */
-    public WaitingCityHandler(CityServer server) {
-        this.server = server;
+    public WaitingCityHandler(CityService cityService) {
+        this.cityService = cityService;
     }
 
     @Override
     public DialogResponse handle(String text, BotSession session) {
-        String city = server.findCityByName(text);
+        String city = cityService.findCityByName(text);
         if (city == null) {
             return new DialogResponse(NOT_FOUND_CITY);
         }
