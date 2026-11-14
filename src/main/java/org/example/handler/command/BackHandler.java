@@ -10,6 +10,15 @@ import org.example.session.BotSession;
  */
 public class BackHandler implements ButtonHandler {
     /**
+     * Текстовая команда, которая вызывает этот обработчик
+     */
+    public static final String COMMAND = "/back";
+
+    /**
+     * Данные кнопки, которая вызывает этот обработчик
+     */
+    public static final String CALLBACK = "cat:back";
+    /**
      * Команда, которая возвращает пользователя на шаг назад
      */
     private final Back back = new Back();

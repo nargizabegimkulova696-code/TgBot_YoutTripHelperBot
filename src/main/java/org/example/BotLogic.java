@@ -47,21 +47,29 @@ public class BotLogic {
         TagHandler tagHandler = new TagHandler(tripServer);
         Map<String, ButtonHandler> handlers = new HashMap<>();
 
+        ButtonHandler aboutCity = new AboutCityHandler(cityServer);
+        ButtonHandler weather = new WeatherHandler();
+        ButtonHandler food = new FoodHandler();
+        ButtonHandler culture = new CultureHandler();
+        ButtonHandler attractions = new AttractionsHandler();
+        ButtonHandler back = new BackHandler();
+
         handlers.put("/start", new StartHandler());
         handlers.put("/help", new HelpHandler());
-        handlers.put("/about_city", new AboutCityHandler(cityServer));
-        handlers.put("/weather", new WeatherHandler());
-        handlers.put("/food", new FoodHandler());
-        handlers.put("/culture", new CultureHandler());
-        handlers.put("/attractions", new AttractionsHandler());
-        handlers.put("/back", new BackHandler());
 
-        handlers.put("cat:weather", new WeatherHandler());
-        handlers.put("cat:about_city", new AboutCityHandler(cityServer));
-        handlers.put("cat:food", new FoodHandler());
-        handlers.put("cat:culture", new CultureHandler());
-        handlers.put("cat:attractions", new AttractionsHandler());
-        handlers.put("cat:back", new BackHandler());
+        handlers.put(AboutCityHandler.COMMAND, aboutCity);
+        handlers.put(AboutCityHandler.CALLBACK, aboutCity);
+        handlers.put(WeatherHandler.COMMAND, weather);
+        handlers.put(WeatherHandler.CALLBACK, weather);
+        handlers.put(FoodHandler.COMMAND, food);
+        handlers.put(FoodHandler.CALLBACK, food);
+        handlers.put(CultureHandler.COMMAND, culture);
+        handlers.put(CultureHandler.CALLBACK, culture);
+        handlers.put(AttractionsHandler.COMMAND, attractions);
+        handlers.put(AttractionsHandler.CALLBACK, attractions);
+        handlers.put(BackHandler.COMMAND, back);
+        handlers.put(BackHandler.CALLBACK, back);
+
 
         this.buttonHandlers = handlers;
 

@@ -11,6 +11,15 @@ import org.example.session.DialogState;
  */
 public class FoodHandler implements ButtonHandler {
     /**
+     * Текстовая команда, которая вызывает этот обработчик
+     */
+    public static final String COMMAND = "/food";
+
+    /**
+     * Данные кнопки, которая вызывает этот обработчик
+     */
+    public static final String CALLBACK = "cat:food";
+    /**
      * Ответное сообщение при выборе категории
      */
     private static final String ANSWER = "Что вас интересует?";

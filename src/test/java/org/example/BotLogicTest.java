@@ -3,6 +3,7 @@ package org.example;
 import org.example.catalog.city.CityCatalog;
 import org.example.catalog.city.CsvCityCatalog;
 import org.example.command.weather.WeatherProvider;
+import org.example.handler.command.*;
 import org.example.response.Button;
 import org.example.response.DialogResponse;
 import org.example.server.CityServer;
@@ -70,32 +71,31 @@ class BotLogicTest {
      * Кнопки, которые видит пользователь сразу после выбора города
      */
     private final List<List<Button>> citySelectedButtons = List.of(
-            List.of(new Button("о городе", "cat:about_city")),
-            List.of(new Button("погода", "cat:weather")),
-            List.of(new Button("еда", "cat:food")),
-            List.of(new Button("культура", "cat:culture")),
-            List.of(new Button("развлечения", "cat:attractions")),
-            List.of(new Button("назад", "cat:back")));
-
+            List.of(new Button("о городе", AboutCityHandler.CALLBACK)),
+            List.of(new Button("погода", WeatherHandler.CALLBACK)),
+            List.of(new Button("еда", FoodHandler.CALLBACK)),
+            List.of(new Button("культура", CultureHandler.CALLBACK)),
+            List.of(new Button("развлечения", AttractionsHandler.CALLBACK)),
+            List.of(new Button("назад", BackHandler.CALLBACK)));
     /**
      * Кнопки, которые видит пользователь в категории about_city
      */
     private final List<List<Button>> aboutCityButtons = List.of(
-            List.of(new Button("погода", "cat:weather")),
-            List.of(new Button("еда", "cat:food")),
-            List.of(new Button("культура", "cat:culture")),
-            List.of(new Button("развлечения", "cat:attractions")),
-            List.of(new Button("назад", "cat:back")));
+            List.of(new Button("погода", WeatherHandler.CALLBACK)),
+            List.of(new Button("еда", FoodHandler.CALLBACK)),
+            List.of(new Button("культура", CultureHandler.CALLBACK)),
+            List.of(new Button("развлечения", AttractionsHandler.CALLBACK)),
+            List.of(new Button("назад", BackHandler.CALLBACK)));
 
     /**
      * Кнопки, которые видит пользователь в категории weather
      */
     private final List<List<Button>> weatherButtons = List.of(
-            List.of(new Button("о городе", "cat:about_city")),
-            List.of(new Button("еда", "cat:food")),
-            List.of(new Button("культура", "cat:culture")),
-            List.of(new Button("развлечения", "cat:attractions")),
-            List.of(new Button("назад", "cat:back")));
+            List.of(new Button("о городе", AboutCityHandler.CALLBACK)),
+            List.of(new Button("еда", FoodHandler.CALLBACK)),
+            List.of(new Button("культура", CultureHandler.CALLBACK)),
+            List.of(new Button("развлечения", AttractionsHandler.CALLBACK)),
+            List.of(new Button("назад", BackHandler.CALLBACK)));
 
     /**
      * Доступ к каталогу городов из CITY_CATALOG
@@ -183,7 +183,7 @@ class BotLogicTest {
     @Test
     void TestForWrongInteractionsInCatAboutCity() {
         logic.makeMessage("Москва", CHAT_ID);
-        logic.makeMessage("cat:about_city", CHAT_ID);
+        logic.makeMessage(AboutCityHandler.CALLBACK, CHAT_ID);
 
         DialogResponse response = logic.makeMessage("something", CHAT_ID);
 
@@ -199,9 +199,9 @@ class BotLogicTest {
     @Test
     void testSwitchBetweenCommands() {
         logic.makeMessage("Москва", CHAT_ID);
-        logic.makeMessage("cat:weather", CHAT_ID);
+        logic.makeMessage(WeatherHandler.CALLBACK, CHAT_ID);
 
-        DialogResponse response = logic.makeMessage("cat:about_city", CHAT_ID);
+        DialogResponse response = logic.makeMessage(AboutCityHandler.CALLBACK, CHAT_ID);
 
         Assertions.assertEquals(MOSCOW_INFO, response.getAnswer());
         Assertions.assertEquals(aboutCityButtons, response.getListOfCommands());
@@ -215,8 +215,8 @@ class BotLogicTest {
         logic.makeMessage("Москва", CHAT_ID);
         logic.makeMessage("Тула", OTHER_CHAT_ID);
 
-        Assertions.assertEquals(MOSCOW_INFO, logic.makeMessage("cat:about_city", CHAT_ID).getAnswer());
-        Assertions.assertEquals("Тула", logic.makeMessage("cat:about_city", OTHER_CHAT_ID).getAnswer());
+        Assertions.assertEquals(MOSCOW_INFO, logic.makeMessage(AboutCityHandler.CALLBACK, CHAT_ID).getAnswer());
+        Assertions.assertEquals("Тула", logic.makeMessage(AboutCityHandler.CALLBACK, OTHER_CHAT_ID).getAnswer());
     }
 
     /**
@@ -231,7 +231,7 @@ class BotLogicTest {
 
         Assertions.assertEquals("Выберете категорию для города Москва:",
                 logic.makeMessage("Москва", CHAT_ID).getAnswer());
-        Assertions.assertEquals("Тула", logic.makeMessage("cat:about_city", OTHER_CHAT_ID).getAnswer());
+        Assertions.assertEquals("Тула", logic.makeMessage(AboutCityHandler.CALLBACK, OTHER_CHAT_ID).getAnswer());
     }
 
 
@@ -242,7 +242,7 @@ class BotLogicTest {
     void testAboutCityShowsCatalog() {
         logic.makeMessage("Москва", CHAT_ID);
 
-        String text = logic.makeMessage("cat:about_city", CHAT_ID).getAnswer();
+        String text = logic.makeMessage(AboutCityHandler.CALLBACK, CHAT_ID).getAnswer();
 
         Assertions.assertEquals(MOSCOW_INFO, text);
     }
@@ -254,7 +254,7 @@ class BotLogicTest {
     void testThatCityIsOutcast() {
         logic.makeMessage("Тула", CHAT_ID);
 
-        Assertions.assertEquals("Тула", logic.makeMessage("cat:about_city", CHAT_ID).getAnswer());
+        Assertions.assertEquals("Тула", logic.makeMessage(AboutCityHandler.CALLBACK, CHAT_ID).getAnswer());
     }
 
     /**
@@ -262,7 +262,7 @@ class BotLogicTest {
      */
     @Test
     void testWeatherWithoutCityAsksForCity() {
-        DialogResponse response = logic.makeMessage("cat:weather", CHAT_ID);
+        DialogResponse response = logic.makeMessage(WeatherHandler.CALLBACK, CHAT_ID);
 
         Assertions.assertEquals("Сначала выберите город, для этого напишите его название)", response.getAnswer());
         Assertions.assertEquals("Выберете категорию для города Москва:",
@@ -275,7 +275,7 @@ class BotLogicTest {
     @Test
     void testWeatherRejectsWrongFormat() {
         logic.makeMessage("Москва", CHAT_ID);
-        logic.makeMessage("cat:weather", CHAT_ID);
+        logic.makeMessage(WeatherHandler.CALLBACK, CHAT_ID);
 
         String expected = "Некорректный ввод.\n " +
                 "Напишите период в формате дд.мм - дд.мм, например 12.10 - 18.10.";
@@ -290,7 +290,7 @@ class BotLogicTest {
     @Test
     void testWeatherRejectsTooLongPeriod() {
         logic.makeMessage("Москва", CHAT_ID);
-        logic.makeMessage("cat:weather", CHAT_ID);
+        logic.makeMessage(WeatherHandler.CALLBACK, CHAT_ID);
 
         DialogResponse response = logic.makeMessage("01.01 - 31.12", CHAT_ID);
 
@@ -309,7 +309,7 @@ class BotLogicTest {
 
         BotLogic logicWithForecast = new BotLogic(server, tripServer, provider);
         logicWithForecast.makeMessage("Москва", CHAT_ID);
-        logicWithForecast.makeMessage("cat:weather", CHAT_ID);
+        logicWithForecast.makeMessage(WeatherHandler.CALLBACK, CHAT_ID);
 
         String dm = DateTimeFormatter.ofPattern("dd.MM").format(day);
         String answer = logicWithForecast.makeMessage(dm + " - " + dm, CHAT_ID).getAnswer();
@@ -329,7 +329,7 @@ class BotLogicTest {
 
         BotLogic logicWithoutWeather = new BotLogic(server, tripServer, brokenProvider);
         logicWithoutWeather.makeMessage("Москва", CHAT_ID);
-        logicWithoutWeather.makeMessage("cat:weather", CHAT_ID);
+        logicWithoutWeather.makeMessage(WeatherHandler.CALLBACK, CHAT_ID);
 
         String dm = DateTimeFormatter.ofPattern("dd.MM").format(LocalDate.now().plusDays(1));
         String answer = logicWithoutWeather.makeMessage(dm + " - " + dm, CHAT_ID).getAnswer();

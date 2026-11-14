@@ -12,6 +12,15 @@ import org.example.session.DialogState;
  */
 public class AboutCityHandler implements ButtonHandler {
     /**
+     * Текстовая команда, которая вызывает этот обработчик
+     */
+    public static final String COMMAND = "/about_city";
+
+    /**
+     * Данные кнопки, которая вызывает этот обработчик
+     */
+    public static final String CALLBACK = "cat:about_city";
+    /**
      * Ответ, если кнопку нажали до выбора города
      */
     private static final String NO_CITY = "Сначала выберите город, для этого напишите его название)";
