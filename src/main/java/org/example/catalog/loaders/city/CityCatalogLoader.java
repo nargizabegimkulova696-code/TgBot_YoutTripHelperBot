@@ -1,13 +1,13 @@
-package org.example.catalog.loaderOfCatalog;
+package org.example.catalog.loaders.city;
 
-import org.example.catalog.CityCatalog;
+import org.example.catalog.city.CityCatalog;
 
 import java.io.IOException;
 
 /**
  * Интерфейс для загрузчика каталога городов
  */
-public interface CatalogLoader {
+public interface CityCatalogLoader {
     /**
      * Загрузить каталог городов.
      *

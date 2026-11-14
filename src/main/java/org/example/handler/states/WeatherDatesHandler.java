@@ -33,7 +33,7 @@ public class WeatherDatesHandler implements StateHandler {
     /**
      * Формат вывода даты в ответе бота
      */
-    private static final DateTimeFormatter DAY_MONTH = DateTimeFormatter.ofPattern("dd.MM");
+    private final DateTimeFormatter DAY_MONTH = DateTimeFormatter.ofPattern("dd.MM");
 
     /**
      * Ответ, который получит пользователь, если введет неверный формат даты

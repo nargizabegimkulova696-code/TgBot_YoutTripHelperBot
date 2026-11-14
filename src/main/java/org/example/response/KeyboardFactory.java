@@ -1,5 +1,7 @@
 package org.example.response;
 
+import org.example.paging.Page;
+import org.example.paging.PageCallback;
 import org.example.session.DialogState;
 
 import java.util.ArrayList;
@@ -15,50 +17,92 @@ public class KeyboardFactory {
      *              уровне диалога с ботом
      */
     public List<List<Button>> build(DialogState state) {
-        List<List<Button>> newKeyboard = new ArrayList<>();
+        List<List<Button>> keyboard = new ArrayList<>();
 
         switch (state) {
             case WAITING_FOR_CITY -> {
+                return keyboard;
             }
             case CITY_SELECTED -> {
-                List<Button> rowOfButton1 = new ArrayList<>();
-                rowOfButton1.add(new Button("about city", "cat:about_city"));
-
-                List<Button> rowOfButton2 = new ArrayList<>();
-                rowOfButton2.add(new Button("weather", "cat:weather"));
-
-                List<Button> rowOfButton3 = new ArrayList<>();
-                rowOfButton3.add(new Button("back", "cat:back"));
-
-                newKeyboard.add(rowOfButton1);
-                newKeyboard.add(rowOfButton2);
-                newKeyboard.add(rowOfButton3);
+                add(keyboard, "о городе", "cat:about_city");
+                add(keyboard, "погода", "cat:weather");
+                add(keyboard, "еда", "cat:food");
+                add(keyboard, "культура", "cat:culture");
+                add(keyboard, "развлечения", "cat:attractions");
             }
 
             case CAT_ABOUT_CITY -> {
-                List<Button> rowOfButton1 = new ArrayList<>();
-                rowOfButton1.add(new Button("weather", "cat:weather"));
-
-                List<Button> rowOfButton2 = new ArrayList<>();
-                rowOfButton2.add(new Button("back", "cat:back"));
-
-                newKeyboard.add(rowOfButton1);
-                newKeyboard.add(rowOfButton2);
+                add(keyboard, "погода", "cat:weather");
+                add(keyboard, "еда", "cat:food");
+                add(keyboard, "культура", "cat:culture");
+                add(keyboard, "развлечения", "cat:attractions");
             }
 
             case CAT_WEATHER -> {
-                List<Button> rowOfButton1 = new ArrayList<>();
-                rowOfButton1.add(new Button("about_city", "cat:about_city"));
+                add(keyboard, "о городе", "cat:about_city");
+                add(keyboard, "еда", "cat:food");
+                add(keyboard, "культура", "cat:culture");
+                add(keyboard, "развлечения", "cat:attractions");
+            }
 
-                List<Button> rowOfButton2 = new ArrayList<>();
-                rowOfButton2.add(new Button("back", "cat:back"));
+            case CAT_FOOD -> {
+                add(keyboard, "рестораны", "tag:restaurants");
+                add(keyboard, "кафе", "tag:cafe");
+                add(keyboard, "пекарни", "tag:bakeries");
+                add(keyboard, "пиццерии", "tag:pizzerias");
+                add(keyboard, "фастфуд", "tag:fastfood");
+            }
 
-                newKeyboard.add(rowOfButton1);
-                newKeyboard.add(rowOfButton2);
+            case CAT_CULTURE -> {
+                add(keyboard, "музеи", "tag:museums");
+                add(keyboard, "храмы", "tag:temples");
+                add(keyboard, "исторические здания", "tag:historical_buildings");
+                add(keyboard, "памятники", "tag:monuments");
+                add(keyboard, "театры", "tag:theaters");
+            }
+
+            case CAT_ATTRACTIONS -> {
+                add(keyboard, "ТРЦ", "tag:shopping");
+                add(keyboard, "парки аттракционов", "tag:attraction_parks");
+                add(keyboard, "кино", "tag:movie");
+                add(keyboard, "зоопарки", "tag:zoos");
+                add(keyboard, "природа и виды", "tag:nature");
             }
         }
 
-        return newKeyboard;
+        add(keyboard, "назад", "cat:back");
+        return keyboard;
     }
 
+    /**
+     * Кнопки под страницей мест: "ещё" - если есть следующая страница,
+     * "назад" - на предыдущую страницу, а с первой страницы - к выбору тега
+     *
+     * @param tag  тег, места которого показаны
+     * @param page показанная страница
+     */
+    public List<List<Button>> buildPage(String tag, Page<?> page) {
+        List<List<Button>> keyboard = new ArrayList<>();
+
+        if (page.hasNext()) {
+            add(keyboard, "далее", new PageCallback(tag, page.getNumber() + 1).toData());
+        }
+
+        if (page.hasPrevious()) {
+            add(keyboard, "назад", new PageCallback(tag, page.getNumber() - 1).toData());
+        } else {
+            add(keyboard, "назад", "cat:back");
+        }
+
+        return keyboard;
+    }
+
+    /**
+     * Добавление кнопок в список кнопок
+     */
+    private void add(List<List<Button>> keyboard, String nameOfCat, String callback) {
+        List<Button> button = new ArrayList<>();
+        button.add(new Button(nameOfCat, callback));
+        keyboard.add(button);
+    }
 }

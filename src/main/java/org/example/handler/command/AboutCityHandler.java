@@ -1,9 +1,9 @@
 package org.example.handler.command;
 
-import org.example.CityServer;
 import org.example.handler.ButtonHandler;
 import org.example.response.DialogResponse;
 import org.example.response.KeyboardFactory;
+import org.example.server.CityServer;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
 
@@ -21,8 +21,14 @@ public class AboutCityHandler implements ButtonHandler {
      */
     private final KeyboardFactory keyboard = new KeyboardFactory();
 
+    /**
+     * Сервер для получения данных о городе
+     */
     private final CityServer server;
 
+    /**
+     * Инициализация обработчика кнопки и сервера
+     */
     public AboutCityHandler(CityServer server) {
         this.server = server;
     }

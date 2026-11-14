@@ -10,7 +10,7 @@ public class ConfigTgBot {
     /**
      * Создано для хранения данных бота в виде пары: "ключ - значение"
      */
-    private Properties properties;
+    private final Properties properties;
 
     /**
      * Конструктор класса ConfigTgBot, который читает данные с файла application.properties
@@ -33,6 +33,13 @@ public class ConfigTgBot {
      */
     public String getBotName(){
         return properties.getProperty("tgBotName");
+    }
+
+    /**
+     * возвращает ключ API Geoapify
+     */
+    public String getGeoapifyKey() {
+        return properties.getProperty("geoapifyKey");
     }
 
     /**
