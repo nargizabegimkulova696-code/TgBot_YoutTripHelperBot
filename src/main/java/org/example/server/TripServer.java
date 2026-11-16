@@ -173,7 +173,6 @@ public class TripServer {
         List<Place> items = page.getItems();
 
         for (int i = 0; i < items.size(); i++) {
-            //почему если номер вынести из цикла то нумерация слетает
             int number = page.getFirstIndex() + i + 1;
             blocks.add(number + ") " + items.get(i).format());
         }

@@ -137,7 +137,7 @@ public class DeletePlaceStateHandler implements StateHandler {
 
                         String question = number + ") " + place.format() + QUESTION;
 
-                        return new DialogResponse(question, keyboard.buildChoose());
+                        return new DialogResponse(question, keyboard.buildChooseForDelete());
 
                     } catch (SQLException | IOException e) {
                         return new DialogResponse(ERROR, keyboard.build(session.getState()));

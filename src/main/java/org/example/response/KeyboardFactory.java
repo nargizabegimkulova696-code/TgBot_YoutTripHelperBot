@@ -104,6 +104,10 @@ public class KeyboardFactory {
         return keyboard;
     }
 
+    /**
+     * Клавиатура для выбора сохранить/отменить
+     * промежуточные изменения места в состоянии ADD_PLACE, EDIT_PLACE
+     */
     public List<List<Button>> buildChoose() {
         List<List<Button>> keyboard = new ArrayList<>();
 
@@ -112,6 +116,19 @@ public class KeyboardFactory {
 
         return keyboard;
     }
+
+    /**
+     * Клавиатура для удаления места, добавленного пользователем
+     */
+    public List<List<Button>> buildChooseForDelete() {
+        List<List<Button>> keyboard = new ArrayList<>();
+
+        add(keyboard, "удалить", "com:save");
+        add(keyboard, "отменить", "com:cancel");
+
+        return keyboard;
+    }
+
 
     /**
      * Добавление кнопок в список кнопок
