@@ -32,6 +32,7 @@ public class AttractionsHandler implements ButtonHandler {
         }
 
         session.setState(DialogState.CAT_ATTRACTIONS);
+        session.setCategory(DialogState.CAT_ATTRACTIONS);
         return new DialogResponse(ANSWER, keyboard.build(session.getState()));
     }
 }

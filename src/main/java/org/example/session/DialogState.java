@@ -52,5 +52,30 @@ public enum DialogState {
     /**
      * Тег для категории attractions выбран
      */
-    IN_TAG_ATTRACTIONS
+    IN_TAG_ATTRACTIONS,
+
+    /**
+     * Состояние добавления места
+     */
+    ADD_PLACE,
+
+    /**
+     * Состояние редактирования места
+     */
+    EDIT_PLACE,
+
+    /**
+     * Состояние смены имени
+     */
+    CHANGE_NAME,
+
+    /**
+     * Состояние смены адреса
+     */
+    CHANGE_ADDRESS,
+
+    /**
+     * Состояние удаления места
+     */
+    DELETE_PLACE
 }

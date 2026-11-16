@@ -1,6 +1,6 @@
 package org.example.command.city;
 
-import org.example.StringUtilities;
+import org.example.utilities.StringUtilities;
 
 import java.io.BufferedReader;
 import java.io.IOException;

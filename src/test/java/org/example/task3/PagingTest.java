@@ -80,19 +80,19 @@ public class PagingTest {
         Assertions.assertEquals("""
                 Места, где можно вкусно покушать:
                 
-                1. Кафе 1, ул. Ленина, 1
+                1) Кафе 1, ул. Ленина, 1
                 
-                2. Кафе 2, ул. Ленина, 2
+                2) Кафе 2, ул. Ленина, 2
                 
-                3. Кафе 3
+                3) Кафе 3
                 
-                4. Кафетерий 4, ул. Тургенева, 4
+                4) Кафетерий 4, ул. Тургенева, 4
                 
-                5. Кафе 5, ул. Ленина, 5
+                5) Кафе 5, ул. Ленина, 5
                 
                 Страница 1 из 2""", response.getAnswer());
-        Assertions.assertEquals("page:tag:cafe:1", response.getListOfCommands().get(0).get(0).getCallBackData());
-        Assertions.assertEquals("cat:back", response.getListOfCommands().get(1).get(0).getCallBackData());
+        Assertions.assertEquals("page:tag:cafe:1", response.getListOfCommands().get(1).get(0).getCallBackData());
+        Assertions.assertEquals("cat:back", response.getListOfCommands().get(2).get(0).getCallBackData());
         Assertions.assertEquals(DialogState.IN_TAG_FOOD, session.getState());
     }
 
@@ -107,13 +107,13 @@ public class PagingTest {
         Assertions.assertEquals("""
                 Места, где можно вкусно покушать:
                 
-                6. Кафе 6, ул. Московская, 6
+                6) Кафе 6, ул. Московская, 6
                 
-                7. Кафе 7, ул. 8 марта, 8
+                7) Кафе 7, ул. 8 марта, 8
                 
                 Страница 2 из 2""", response.getAnswer());
-        Assertions.assertEquals(1, response.getListOfCommands().size());
-        Assertions.assertEquals("page:tag:cafe:0", response.getListOfCommands().get(0).get(0).getCallBackData());
+        Assertions.assertEquals(2, response.getListOfCommands().size());
+        Assertions.assertEquals("page:tag:cafe:0", response.getListOfCommands().get(1).get(0).getCallBackData());
     }
 
     /**

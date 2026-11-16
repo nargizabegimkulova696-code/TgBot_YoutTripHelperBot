@@ -7,12 +7,12 @@ public class Place {
     /**
      * Название места
      */
-    private final String name;
+    private String name;
 
     /**
      * Адрес места, может быть пустым
      */
-    private final String address;
+    private String address;
 
     /**
      * Создание места с названием и адресом
@@ -30,11 +30,28 @@ public class Place {
     }
 
     /**
+     * Смена названия места
+     *
+     * @param name - новое название
+     */
+    protected void setName(String name) {
+        this.name = name;
+    }
+
+    /**
      * Адрес места
      */
     public String getAddress() {
         return address;
     }
+
+    /**
+     * Смена адреса места
+     *
+     * @param address - новый адрес
+     */
+    protected void setAddress(String address) {
+        this.address = address; }
 
     /**
      * Название и адрес места, или название если нет адреса

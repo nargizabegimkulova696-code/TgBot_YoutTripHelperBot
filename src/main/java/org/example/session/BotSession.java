@@ -1,6 +1,8 @@
 package org.example.session;
 
 
+import org.example.storage.UserPlace;
+
 /**
  * Сессия одного пользователя: хранит текущее состояние и название города
  */
@@ -16,9 +18,25 @@ public class BotSession {
     private String city;
 
     /**
+     * Категория, в которой находится пользователь
+     * Задействуется для категорий: еда, культура, развлечения
+     */
+    private DialogState category;
+
+    /**
+     * Тег, в котором находится пользователь
+     */
+    private String tag;
+
+    /**
      * Идентификатор чата пользователя
      */
     private final long chatId;
+
+    /**
+     * Место пользователя, которое он добавляет/редактирует/удаляет
+     */
+    private UserPlace place;
 
     /**
      * Создание сессии пользователя с заданным идентификатором чата
@@ -27,6 +45,9 @@ public class BotSession {
         this.chatId = chatId;
         this.state = DialogState.WAITING_FOR_CITY;
         this.city = null;
+        this.category = null;
+        this.tag = null;
+        this.place = null;
     }
 
     /**
@@ -62,5 +83,47 @@ public class BotSession {
      */
     public void setCity(String city) {
         this.city = city;
+    }
+
+    /**
+     * Меняем значение категории
+     */
+    public void setCategory(DialogState category) {
+        this.category = category;
+    }
+
+    /**
+     * Возврат текущей категории
+     */
+    public DialogState getCategory() {
+        return category;
+    }
+
+    /**
+     * Меняем значение тега
+     */
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
+    /**
+     * Возврат текущего тега
+     */
+    public String getTag() {
+        return tag;
+    }
+
+    /**
+     * Меняем место на другое, которое пользователь хочет добавить
+     */
+    public void setPlace(UserPlace place) {
+        this.place = place;
+    }
+
+    /**
+     * Возврат места, которое пользователь хочет добавить
+     */
+    public UserPlace getPlace() {
+        return place;
     }
 }

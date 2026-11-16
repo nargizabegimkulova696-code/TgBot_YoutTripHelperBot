@@ -64,9 +64,16 @@ public class UserPlace extends Place {
         };
     }
 
-    /**
-     * Название и адрес места со смайликом категории в конце
-     */
+    @Override
+    public void setName(String name) {
+        super.setName(name);
+    }
+
+    @Override
+    public void setAddress(String address) {
+        super.setAddress(address);
+    }
+
     @Override
     public String format() {
         return super.format() + " " + getMark();

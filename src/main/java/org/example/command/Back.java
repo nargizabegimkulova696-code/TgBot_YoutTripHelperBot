@@ -54,6 +54,11 @@ public class Back {
                 return new DialogResponse(CAT_PLACES_MESSAGE, keyboard.build(session.getState()));
             }
 
+            case ADD_PLACE, EDIT_PLACE, DELETE_PLACE -> {
+                session.setState(session.getCategory());
+                return new DialogResponse(CAT_PLACES_MESSAGE, keyboard.build(session.getState()));
+            }
+
             default -> {
                 session.setState(DialogState.CITY_SELECTED);
                 return new DialogResponse("Выберете категорию для города " + session.getCity() + ":",

@@ -32,6 +32,7 @@ public class FoodHandler implements ButtonHandler {
         }
 
         session.setState(DialogState.CAT_FOOD);
+        session.setCategory(DialogState.CAT_FOOD);
         return new DialogResponse(ANSWER, keyboard.build(session.getState()));
     }
 }

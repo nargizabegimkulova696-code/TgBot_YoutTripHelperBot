@@ -3,11 +3,10 @@ package org.example;
 
 import org.example.command.weather.WeatherProvider;
 import org.example.handler.ButtonHandler;
+import org.example.handler.StateHandler;
 import org.example.handler.StateService;
 import org.example.handler.command.*;
-import org.example.handler.states.TagHandler;
-import org.example.handler.states.WaitingCityHandler;
-import org.example.handler.states.WeatherDatesHandler;
+import org.example.handler.states.*;
 import org.example.response.DialogResponse;
 import org.example.server.CityServer;
 import org.example.server.TripServer;
@@ -45,36 +44,52 @@ public class BotLogic {
      */
     public BotLogic(CityServer cityServer, TripServer tripServer, WeatherProvider weatherProvider) {
         TagHandler tagHandler = new TagHandler(tripServer);
-        Map<String, ButtonHandler> handlers = new HashMap<>();
 
-        handlers.put("/start", new StartHandler());
-        handlers.put("/help", new HelpHandler());
-        handlers.put("/about_city", new AboutCityHandler(cityServer));
-        handlers.put("/weather", new WeatherHandler());
-        handlers.put("/food", new FoodHandler());
-        handlers.put("/culture", new CultureHandler());
-        handlers.put("/attractions", new AttractionsHandler());
-        handlers.put("/back", new BackHandler());
+        Map<String, ButtonHandler> buttonHandlers = new HashMap<>();
+        Map<DialogState, StateHandler> stateHandlers = new HashMap<>();
 
-        handlers.put("cat:weather", new WeatherHandler());
-        handlers.put("cat:about_city", new AboutCityHandler(cityServer));
-        handlers.put("cat:food", new FoodHandler());
-        handlers.put("cat:culture", new CultureHandler());
-        handlers.put("cat:attractions", new AttractionsHandler());
-        handlers.put("cat:back", new BackHandler());
+        buttonHandlers.put("/start", new StartHandler());
+        buttonHandlers.put("/help", new HelpHandler());
+        buttonHandlers.put("/about_city", new AboutCityHandler(cityServer));
+        buttonHandlers.put("/weather", new WeatherHandler());
+        buttonHandlers.put("/food", new FoodHandler());
+        buttonHandlers.put("/culture", new CultureHandler());
+        buttonHandlers.put("/attractions", new AttractionsHandler());
+        buttonHandlers.put("/back", new BackHandler());
 
-        this.buttonHandlers = handlers;
+        buttonHandlers.put("cat:weather", new WeatherHandler());
+        buttonHandlers.put("cat:about_city", new AboutCityHandler(cityServer));
+        buttonHandlers.put("cat:food", new FoodHandler());
+        buttonHandlers.put("cat:culture", new CultureHandler());
+        buttonHandlers.put("cat:attractions", new AttractionsHandler());
+        buttonHandlers.put("cat:back", new BackHandler());
 
-        this.stateService = new StateService(Map.of(
-                DialogState.WAITING_FOR_CITY, new WaitingCityHandler(cityServer),
-                DialogState.CAT_WEATHER, new WeatherDatesHandler(weatherProvider),
-                DialogState.CAT_FOOD, tagHandler,
-                DialogState.CAT_CULTURE, tagHandler,
-                DialogState.CAT_ATTRACTIONS, tagHandler,
-                DialogState.IN_TAG_FOOD, tagHandler,
-                DialogState.IN_TAG_CULTURE, tagHandler,
-                DialogState.IN_TAG_ATTRACTIONS, tagHandler
-        ));
+        buttonHandlers.put("com:add_place", new AddPlaceHandler());
+        buttonHandlers.put("com:edit_place", new EditPlaceHandler());
+        buttonHandlers.put("com:delete_place", new DeletePlaceHandler());
+
+        this.buttonHandlers = buttonHandlers;
+
+        stateHandlers.put(DialogState.WAITING_FOR_CITY, new WaitingCityHandler(cityServer));
+        stateHandlers.put(DialogState.CAT_WEATHER, new WeatherDatesHandler(weatherProvider));
+
+        stateHandlers.put(DialogState.CAT_FOOD, tagHandler);
+        stateHandlers.put(DialogState.CAT_CULTURE, tagHandler);
+        stateHandlers.put(DialogState.CAT_ATTRACTIONS, tagHandler);
+
+        stateHandlers.put(DialogState.IN_TAG_FOOD, tagHandler);
+        stateHandlers.put(DialogState.IN_TAG_CULTURE, tagHandler);
+        stateHandlers.put(DialogState.IN_TAG_ATTRACTIONS, tagHandler);
+
+        stateHandlers.put(DialogState.ADD_PLACE, new AddPlaceStateHandler(tripServer));
+
+        stateHandlers.put(DialogState.EDIT_PLACE, new EditPlaceStateHandler(tripServer));
+        stateHandlers.put(DialogState.CHANGE_NAME, new EditPlaceStateHandler(tripServer));
+        stateHandlers.put(DialogState.CHANGE_ADDRESS, new EditPlaceStateHandler(tripServer));
+
+        stateHandlers.put(DialogState.DELETE_PLACE, new DeletePlaceStateHandler(tripServer));
+
+        this.stateService = new StateService(stateHandlers);
     }
 
     /**

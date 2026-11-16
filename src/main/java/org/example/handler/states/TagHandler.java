@@ -68,18 +68,21 @@ public class TagHandler implements StateHandler {
         }
 
         String title;
-
+        //написать проверку нужно ли пользователю добавить кнопки edit и delete
         switch (session.getState()) {
             case CAT_FOOD, IN_TAG_FOOD -> {
                 session.setState(DialogState.IN_TAG_FOOD);
+                session.setTag(callback.getTag());
                 title = FOOD_ANS;
             }
             case CAT_CULTURE, IN_TAG_CULTURE -> {
                 session.setState(DialogState.IN_TAG_CULTURE);
+                session.setTag(callback.getTag());
                 title = CULTURE_ANS;
             }
             default -> {
                 session.setState(DialogState.IN_TAG_ATTRACTIONS);
+                session.setTag(callback.getTag());
                 title = ATTRACTIONS_ANS;
             }
         }
@@ -92,6 +95,8 @@ public class TagHandler implements StateHandler {
         String answer = title + "\n\n" + server.formatted(page)
                 + "\n\nСтраница " + (page.getNumber() + 1) + " из " + page.getTotalPages();
 
-        return new DialogResponse(answer, keyboard.buildPage(callback.getTag(), page));
+        boolean flag = server.hasUserPlaces(session.getChatId(), session.getCity(), session.getTag());
+
+        return new DialogResponse(answer, keyboard.buildPage(callback.getTag(), page, flag));
     }
 }
