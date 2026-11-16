@@ -12,9 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Сервер по состоянию, в котором находится пользователь
- * после выбора одной из категорий: food, culture, attractions,
- * обрабатывает тег, выбранный пользователем
+ * Сервер, предназначенный для обработки тега пользователя,
+ * который выбран внутри одной из категорий: еда, культура, развлечения
  */
 public class TripServer {
     /**
@@ -30,9 +29,82 @@ public class TripServer {
      */
     private final UserPlaceStorage storage;
 
+    /**
+     * Конструктор класса
+     *
+     * @param provider - API мест
+     * @param storage  - SQL бд
+     */
     public TripServer(PlacesProvider provider, UserPlaceStorage storage) {
         this.provider = provider;
         this.storage = storage;
+    }
+
+    /**
+     * Метод добавляет место в бд
+     *
+     * @param chatId   - ID пользователя
+     * @param city     - текущий город
+     * @param category - текущая категория
+     * @param tag      - текущий тег
+     * @param name     - название места
+     * @param address  - адрес места
+     */
+    public boolean addPlace(long chatId, String city, String category, String tag,
+                            String name, String address) {
+        try {
+            storage.add(chatId, city, category, tag, name, address);
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Метод меняет название или адрес места
+     *
+     * @param chatId  - ID пользователя
+     * @param id      - ID места в бд
+     * @param name    - название места
+     * @param address - адрес места
+     */
+    public boolean editPlace(long chatId, long id, String name, String address) {
+        try {
+            return storage.update(chatId, id, name, address);
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Метод удаляет место из списка мест
+     *
+     * @param chatId - ID пользователя
+     * @param id     - ID места в бд
+     */
+    public boolean deletePlace(long chatId, long id) {
+        try {
+            return storage.delete(chatId, id);
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Проверка доступны ли пользователю кнопки edit_place и delete_place
+     *
+     * @param chat_id - ID пользователя
+     * @param city    - название города
+     * @param tag     - текущий тег
+     */
+    public boolean hasUserPlaces(long chat_id, String city, String tag) {
+        try {
+            List<UserPlace> places = storage.getPlaces(chat_id, city, tag);
+            return !places.isEmpty();
+        } catch (SQLException e) {
+            return false;
+        }
+
     }
 
     /**
@@ -102,7 +174,7 @@ public class TripServer {
 
         for (int i = 0; i < items.size(); i++) {
             int number = page.getFirstIndex() + i + 1;
-            blocks.add(number + ". " + items.get(i).format());
+            blocks.add(number + ") " + items.get(i).format());
         }
 
         return String.join("\n\n", blocks);

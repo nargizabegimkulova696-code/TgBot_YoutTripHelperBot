@@ -81,8 +81,15 @@ public class KeyboardFactory {
      * @param tag  тег, места которого показаны
      * @param page показанная страница
      */
-    public List<List<Button>> buildPage(String tag, Page<?> page) {
+    public List<List<Button>> buildPage(String tag, Page<?> page, boolean flag) {
         List<List<Button>> keyboard = new ArrayList<>();
+
+        add(keyboard, "добавить место", "com:add_place");
+
+        if (flag) {
+            add(keyboard, "редактировать место", "com:edit_place");
+            add(keyboard, "удалить место", "com:delete_place");
+        }
 
         if (page.hasNext()) {
             add(keyboard, "далее", new PageCallback(tag, page.getNumber() + 1).toData());
@@ -96,6 +103,32 @@ public class KeyboardFactory {
 
         return keyboard;
     }
+
+    /**
+     * Клавиатура для выбора сохранить/отменить
+     * промежуточные изменения места в состоянии ADD_PLACE, EDIT_PLACE
+     */
+    public List<List<Button>> buildChoose() {
+        List<List<Button>> keyboard = new ArrayList<>();
+
+        add(keyboard, "сохранить", "com:save");
+        add(keyboard, "отменить", "com:cancel");
+
+        return keyboard;
+    }
+
+    /**
+     * Клавиатура для удаления места, добавленного пользователем
+     */
+    public List<List<Button>> buildChooseForDelete() {
+        List<List<Button>> keyboard = new ArrayList<>();
+
+        add(keyboard, "удалить", "com:save");
+        add(keyboard, "отменить", "com:cancel");
+
+        return keyboard;
+    }
+
 
     /**
      * Добавление кнопок в список кнопок

@@ -134,11 +134,6 @@ public class UserPlaceStorage implements AutoCloseable {
         }
     }
 
-    /**
-     * Закрывает соединение с базой
-     *
-     * @throws SQLException ошибка при закрытии
-     */
     @Override
     public void close() throws SQLException {
         connection.close();

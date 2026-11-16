@@ -32,6 +32,7 @@ public class CultureHandler implements ButtonHandler {
         }
 
         session.setState(DialogState.CAT_CULTURE);
+        session.setCategory(DialogState.CAT_CULTURE);
         return new DialogResponse(ANSWER, keyboard.build(session.getState()));
     }
 }
