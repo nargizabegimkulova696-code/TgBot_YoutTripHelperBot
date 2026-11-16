@@ -10,7 +10,6 @@ import org.example.server.TripServer;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
 import org.example.storage.UserPlace;
-import org.example.utilities.ChangeState;
 
 /**
  * Обработчик действий, которые происходят в состоянии ADD_PLACE
@@ -88,7 +87,7 @@ public class AddPlaceStateHandler implements StateHandler {
                     return new DialogResponse(SQL_ERROR, keyboard.build(session.getState()));
                 }
 
-                ChangeState.changeState(session);
+                changeState(session);
 
                 PageCallback callback = new PageCallback(session.getTag());
 
@@ -106,7 +105,7 @@ public class AddPlaceStateHandler implements StateHandler {
             }
 
             case "com:cancel" -> {
-                ChangeState.changeState(session);
+                changeState(session);
 
                 PageCallback callback = new PageCallback(session.getTag());
 
@@ -158,6 +157,22 @@ public class AddPlaceStateHandler implements StateHandler {
 
             default -> {
                 return "culture";
+            }
+        }
+    }
+
+    private void changeState(BotSession session) {
+        switch (session.getCategory()) {
+            case CAT_FOOD -> {
+                session.setState(DialogState.IN_TAG_FOOD);
+            }
+
+            case CAT_CULTURE -> {
+                session.setState(DialogState.IN_TAG_CULTURE);
+            }
+
+            default -> {
+                session.setState(DialogState.IN_TAG_ATTRACTIONS);
             }
         }
     }

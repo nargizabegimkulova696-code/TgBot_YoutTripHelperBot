@@ -8,9 +8,8 @@ import org.example.response.DialogResponse;
 import org.example.response.KeyboardFactory;
 import org.example.server.TripServer;
 import org.example.session.BotSession;
+import org.example.session.DialogState;
 import org.example.storage.UserPlace;
-import org.example.utilities.ChangeState;
-
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -83,7 +82,7 @@ public class DeletePlaceStateHandler implements StateHandler {
                     return new DialogResponse(ERROR_DELETE, keyboard.build(session.getState()));
                 }
 
-                ChangeState.changeState(session);
+                changeState(session);
 
                 PageCallback callback = new PageCallback(session.getTag());
 
@@ -103,7 +102,7 @@ public class DeletePlaceStateHandler implements StateHandler {
             }
 
             case "com:cancel" -> {
-                ChangeState.changeState(session);
+                changeState(session);
 
                 PageCallback callback = new PageCallback(session.getTag());
 
@@ -147,6 +146,22 @@ public class DeletePlaceStateHandler implements StateHandler {
                 } catch (NumberFormatException e) {
                     return new DialogResponse(WRONG_INPUT, keyboard.build(session.getState()));
                 }
+            }
+        }
+    }
+
+    private void changeState(BotSession session) {
+        switch (session.getCategory()) {
+            case CAT_FOOD -> {
+                session.setState(DialogState.IN_TAG_FOOD);
+            }
+
+            case CAT_CULTURE -> {
+                session.setState(DialogState.IN_TAG_CULTURE);
+            }
+
+            default -> {
+                session.setState(DialogState.IN_TAG_ATTRACTIONS);
             }
         }
     }
