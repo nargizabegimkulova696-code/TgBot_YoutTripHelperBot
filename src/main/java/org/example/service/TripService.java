@@ -21,6 +21,9 @@ public class TripService {
      */
     private final PlacesProvider provider;
 
+    /**
+     * @param provider - источник мест города по тегу
+     */
     public TripService(PlacesProvider provider) {
         this.provider = provider;
     }
