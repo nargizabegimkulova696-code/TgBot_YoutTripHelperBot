@@ -1,6 +1,6 @@
 package org.example.catalog.city;
 
-import org.example.StringUtilities;
+import org.example.utils.StringUtilities;
 
 import java.io.BufferedReader;
 import java.io.IOException;

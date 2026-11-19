@@ -1,5 +1,6 @@
 package org.example.response;
 
+import org.example.handler.command.*;
 import org.example.paging.Page;
 import org.example.paging.PageCallback;
 import org.example.session.DialogState;
@@ -24,25 +25,25 @@ public class KeyboardFactory {
                 return keyboard;
             }
             case CITY_SELECTED -> {
-                add(keyboard, "о городе", "cat:about_city");
-                add(keyboard, "погода", "cat:weather");
-                add(keyboard, "еда", "cat:food");
-                add(keyboard, "культура", "cat:culture");
-                add(keyboard, "развлечения", "cat:attractions");
+                add(keyboard, "о городе", AboutCityHandler.CALLBACK);
+                add(keyboard, "погода", WeatherHandler.CALLBACK);
+                add(keyboard, "еда", FoodHandler.CALLBACK);
+                add(keyboard, "культура", CultureHandler.CALLBACK);
+                add(keyboard, "развлечения", AttractionsHandler.CALLBACK);
             }
 
             case CAT_ABOUT_CITY -> {
-                add(keyboard, "погода", "cat:weather");
-                add(keyboard, "еда", "cat:food");
-                add(keyboard, "культура", "cat:culture");
-                add(keyboard, "развлечения", "cat:attractions");
+                add(keyboard, "погода", WeatherHandler.CALLBACK);
+                add(keyboard, "еда", FoodHandler.CALLBACK);
+                add(keyboard, "культура", CultureHandler.CALLBACK);
+                add(keyboard, "развлечения", AttractionsHandler.CALLBACK);
             }
 
             case CAT_WEATHER -> {
-                add(keyboard, "о городе", "cat:about_city");
-                add(keyboard, "еда", "cat:food");
-                add(keyboard, "культура", "cat:culture");
-                add(keyboard, "развлечения", "cat:attractions");
+                add(keyboard, "о городе", AboutCityHandler.CALLBACK);
+                add(keyboard, "еда", FoodHandler.CALLBACK);
+                add(keyboard, "культура", CultureHandler.CALLBACK);
+                add(keyboard, "развлечения", AttractionsHandler.CALLBACK);
             }
 
             case CAT_FOOD -> {
@@ -70,7 +71,7 @@ public class KeyboardFactory {
             }
         }
 
-        add(keyboard, "назад", "cat:back");
+        add(keyboard, "назад", BackHandler.CALLBACK);
         return keyboard;
     }
 
@@ -91,7 +92,7 @@ public class KeyboardFactory {
         if (page.hasPrevious()) {
             add(keyboard, "назад", new PageCallback(tag, page.getNumber() - 1).toData());
         } else {
-            add(keyboard, "назад", "cat:back");
+            add(keyboard, "назад", BackHandler.CALLBACK);
         }
 
         return keyboard;

@@ -3,7 +3,7 @@ package org.example.handler.command;
 import org.example.handler.ButtonHandler;
 import org.example.response.DialogResponse;
 import org.example.response.KeyboardFactory;
-import org.example.server.CityServer;
+import org.example.service.CityService;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
 
@@ -11,6 +11,15 @@ import org.example.session.DialogState;
  * Кнопка about_city
  */
 public class AboutCityHandler implements ButtonHandler {
+    /**
+     * Текстовая команда, которая вызывает этот обработчик
+     */
+    public static final String COMMAND = "/about_city";
+
+    /**
+     * Данные кнопки, которая вызывает этот обработчик
+     */
+    public static final String CALLBACK = "cat:about_city";
     /**
      * Ответ, если кнопку нажали до выбора города
      */
@@ -22,15 +31,15 @@ public class AboutCityHandler implements ButtonHandler {
     private final KeyboardFactory keyboard = new KeyboardFactory();
 
     /**
-     * Сервер для получения данных о городе
+     * Сервис для получения данных о городе
      */
-    private final CityServer server;
+    private final CityService cityService;
 
     /**
-     * Инициализация обработчика кнопки и сервера
+     * Инициализация обработчика кнопки и сервиса
      */
-    public AboutCityHandler(CityServer server) {
-        this.server = server;
+    public AboutCityHandler(CityService cityService) {
+        this.cityService = cityService;
     }
 
     @Override
@@ -42,6 +51,6 @@ public class AboutCityHandler implements ButtonHandler {
         }
 
         session.setState(DialogState.CAT_ABOUT_CITY);
-        return new DialogResponse(server.findInfoForCity(city), keyboard.build(session.getState()));
+        return new DialogResponse(cityService.findInfoForCity(city), keyboard.build(session.getState()));
     }
 }

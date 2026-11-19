@@ -5,8 +5,8 @@ import org.example.catalog.loaders.city.CityCatalogLoader;
 import org.example.catalog.loaders.city.CsvCatalogLoader;
 import org.example.command.places.GeoapifyPlaces;
 import org.example.command.weather.OpenMeteoWeather;
-import org.example.server.CityServer;
-import org.example.server.TripServer;
+import org.example.service.CityService;
+import org.example.service.TripService;
 import org.example.telegramBot.ConfigTgBot;
 import org.example.telegramBot.TgBot;
 import org.slf4j.Logger;
@@ -40,11 +40,11 @@ public class TgBotMain{
         CityCatalogLoader cityLoader = new CsvCatalogLoader();
         try {
             CityCatalog citiesCatalog = cityLoader.load();
-            CityServer serverForCities = new CityServer(citiesCatalog);
+            CityService cityService = new CityService(citiesCatalog);
 
-            TripServer tripServer = new TripServer(new GeoapifyPlaces(geoApiKey));
+            TripService tripService = new TripService(new GeoapifyPlaces(geoApiKey));
 
-            BotLogic botLogic = new BotLogic(serverForCities, tripServer, new OpenMeteoWeather());
+            BotLogic botLogic = new BotLogic(cityService, tripService, new OpenMeteoWeather());
 
             TgBot helperTripBot = new TgBot(tgBotName, tgBotToken, botLogic);
 

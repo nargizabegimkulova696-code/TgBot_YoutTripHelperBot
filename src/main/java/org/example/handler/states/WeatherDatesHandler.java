@@ -5,6 +5,8 @@ import org.example.handler.StateHandler;
 import org.example.response.DialogResponse;
 import org.example.response.KeyboardFactory;
 import org.example.session.BotSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.DateTimeException;
@@ -50,6 +52,15 @@ public class WeatherDatesHandler implements StateHandler {
      * Кнопки с категориями
      */
     private final KeyboardFactory keyboard = new KeyboardFactory();
+
+    /**
+     * Логирование ошибок получения прогноза погоды
+     */
+    private final Logger log = LoggerFactory.getLogger(WeatherDatesHandler.class);
+    /**
+     * Ответ, если источник прогноза погоды не ответил из-за ошибки
+     */
+    private static final String FORECAST_UNAVAILABLE = "Не удалось получить погоду. Попробуйте позже.";
 
     /**
      * Инициализация WeatherDatesHandler от provider
@@ -107,8 +118,8 @@ public class WeatherDatesHandler implements StateHandler {
             return new DialogResponse(format(city, from, to, provider.getForecast(city, from, to)),
                     keyboard.build(session.getState()));
         } catch (IOException e) {
-            return new DialogResponse("Не удалось получить погоду. Попробуйте позже.",
-                    keyboard.build(session.getState()));
+            log.error("Не удалось получить прогноз погоды: город={}, период={} - {}", city, from, to, e);
+            return new DialogResponse(FORECAST_UNAVAILABLE, keyboard.build(session.getState()));
         }
     }
 

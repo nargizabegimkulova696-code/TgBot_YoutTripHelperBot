@@ -3,11 +3,12 @@ package org.example;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.command.places.GeoapifyPlaces;
 import org.example.command.places.PlacesProvider;
+import org.example.handler.command.BackHandler;
 import org.example.handler.states.TagHandler;
 import org.example.paging.PageCallback;
 import org.example.response.Button;
 import org.example.response.DialogResponse;
-import org.example.server.TripServer;
+import org.example.service.TripService;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
 import org.junit.jupiter.api.Assertions;
@@ -43,7 +44,7 @@ public class PagingTest {
     /**
      * Обработчик тегов с тестовым источником мест
      */
-    private final TagHandler handler = new TagHandler(new TripServer(provider));
+    private final TagHandler handler = new TagHandler(new TripService(provider));
     /**
      * Сессия пользователя
      */
@@ -89,7 +90,7 @@ public class PagingTest {
                 
                 Страница 1 из 2""", response.getAnswer());
         Assertions.assertEquals("page:tag:cafe:1", response.getListOfCommands().get(0).get(0).getCallBackData());
-        Assertions.assertEquals("cat:back", response.getListOfCommands().get(1).get(0).getCallBackData());
+        Assertions.assertEquals(BackHandler.CALLBACK, response.getListOfCommands().get(1).get(0).getCallBackData());
         Assertions.assertEquals(DialogState.IN_TAG_FOOD, session.getState());
     }
 
@@ -121,7 +122,7 @@ public class PagingTest {
         DialogResponse response = handler.handle("tag:bakeries", session);
 
         Assertions.assertEquals("Места для тега не найдены(", response.getAnswer());
-        Assertions.assertEquals(List.of("cat:back"), callbacks(response));
+        Assertions.assertEquals(List.of(BackHandler.CALLBACK), callbacks(response));
         Assertions.assertEquals(DialogState.IN_TAG_FOOD, session.getState());
     }
 
@@ -134,7 +135,7 @@ public class PagingTest {
         DialogResponse response = handler.handle("tag:movie", session);
 
         Assertions.assertEquals("Места для тега не найдены(", response.getAnswer());
-        Assertions.assertEquals(List.of("cat:back"), callbacks(response));
+        Assertions.assertEquals(List.of(BackHandler.CALLBACK), callbacks(response));
     }
 
     /**
@@ -148,7 +149,7 @@ public class PagingTest {
         Assertions.assertEquals("Выберите, что вас интересует, с помощью кнопок.", response.getAnswer());
         Assertions.assertEquals(DialogState.CAT_FOOD, session.getState());
         Assertions.assertEquals(List.of("tag:restaurants", "tag:cafe", "tag:bakeries", "tag:pizzerias",
-                "tag:fastfood", "cat:back"), callbacks(response));
+                "tag:fastfood", BackHandler.CALLBACK), callbacks(response));
     }
 
 

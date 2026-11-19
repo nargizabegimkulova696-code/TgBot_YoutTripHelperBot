@@ -134,7 +134,14 @@ public class GeoapifyPlaces implements PlacesProvider {
      * @throws IOException ошибка при работе с API (возникла сетевая ошибка или запрос был прерван)
      */
     private JsonNode get(String url) throws IOException {
-        HttpRequest request = HttpRequest.newBuilder(URI.create(url))
+        URI uri;
+        try {
+            uri = URI.create(url);
+        } catch (IllegalArgumentException e) {
+            // причину не передаём, потому что в ее тексте есть ключ apiKey
+            throw new IOException("Некорректный адрес запроса к Geoapify");
+        }
+        HttpRequest request = HttpRequest.newBuilder(uri)
                 .timeout(Duration.ofSeconds(10))
                 .GET()
                 .build();
@@ -157,7 +164,7 @@ public class GeoapifyPlaces implements PlacesProvider {
      * @param root JSON-ответ Places API
      * @return список мест
      */
-    public List<Place> parsePlaces(JsonNode root) {
+    private List<Place> parsePlaces(JsonNode root) {
         List<Place> places = new ArrayList<>();
 
         for (JsonNode feature : root.path("features")) {

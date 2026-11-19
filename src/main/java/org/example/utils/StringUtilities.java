@@ -1,4 +1,6 @@
-package org.example;
+package org.example.utils;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Утилиты для строк
@@ -22,7 +24,7 @@ public class StringUtilities {
      */
     public static String normalizeCityName(String str) {
 
-        if (org.apache.commons.lang3.StringUtils.isBlank(str)) {
+        if (StringUtils.isBlank(str)) {
             return "";
         }
 

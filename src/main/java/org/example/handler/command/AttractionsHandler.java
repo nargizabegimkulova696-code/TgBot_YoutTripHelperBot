@@ -11,6 +11,15 @@ import org.example.session.DialogState;
  */
 public class AttractionsHandler implements ButtonHandler {
     /**
+     * Текстовая команда, которая вызывает этот обработчик
+     */
+    public static final String COMMAND = "/attractions";
+
+    /**
+     * Данные кнопки, которая вызывает этот обработчик
+     */
+    public static final String CALLBACK = "cat:attractions";
+    /**
      * Ответное сообщение при выборе категории
      */
     private static final String ANSWER = "Что вас интересует?";
