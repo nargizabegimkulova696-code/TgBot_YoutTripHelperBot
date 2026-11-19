@@ -13,6 +13,15 @@ import org.example.session.DialogState;
  */
 public class WeatherHandler implements ButtonHandler {
     /**
+     * Текстовая команда, которая вызывает этот обработчик
+     */
+    public static final String COMMAND = "/weather";
+
+    /**
+     * Данные кнопки, которая вызывает этот обработчик
+     */
+    public static final String CALLBACK = "cat:weather";
+    /**
      * Ответ, если кнопку нажали до выбора города
      */
     private static final String NO_CITY = "Сначала выберите город, для этого напишите его название)";
