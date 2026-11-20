@@ -9,8 +9,7 @@ import org.example.response.Button;
 import org.example.response.DialogResponse;
 import org.example.server.CityServer;
 import org.example.server.TripServer;
-import org.example.storage.UserPlaceStorage;
-import org.junit.jupiter.api.AfterEach;
+import org.example.task4.FakeStorage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -111,15 +110,12 @@ class BotLogicTest {
      */
     private final BotLogic logic;
 
-    /**
-     * Хранилище мест пользователей в памяти
-     */
-    private final UserPlaceStorage storage = new UserPlaceStorage("jdbc:sqlite::memory:");
 
     /**
      * Сервер категорий food, culture, attractions, источник мест всегда пустой, потому что не тестируется
      */
-    private final TripServer tripServer = new TripServer((city, tag) -> List.of(), storage);
+    private final TripServer tripServer =
+            new TripServer((city, tag) -> List.of(), new FakeStorage());
 
     /**
      * Инициализация каталога и логики бота
@@ -143,13 +139,6 @@ class BotLogicTest {
         }
     }
 
-    /**
-     * Закрывает базу в памяти после каждого теста
-     */
-    @AfterEach
-    void closeStorage() throws Exception {
-        storage.close();
-    }
 
     /**
      * Тестирование ответного сообщения, которое приходит пользователю

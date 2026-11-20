@@ -1,39 +1,46 @@
 package org.example.task4;
 
 import org.example.storage.UserPlace;
-import org.example.storage.UserPlaceStorage;
+import org.example.storage.UserPlaceRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Фейковая база данных для тестов команд: add_place, edit_place, delete_place
+ * Хранит пользовательские места в памяти в течение одного теста.
  */
-public class FakeStorage extends UserPlaceStorage {
-    /**
-     * ID места
-     */
-    private Long nextId = 0L;
+public class FakeStorage implements UserPlaceRepository {
 
     /**
-     * Фейковая база данных
+     *  Идентификатор, который получит следующее добавленное место.
      */
-    private final Map<Long, ArrayList<UserPlace>> table = new ConcurrentHashMap<>();
+    private long nextId = 1;
 
     /**
-     * Конструктор заглушка для родителя
+     * Связывает место с владельцем и городом.
+     *
+     * @param chatId идентификатор чата владельца
+     * @param city   город, в который добавили место
+     * @param place  сохранённое место
      */
-    public FakeStorage() {
-        super("jdbc:sqlite::memory:");
+    private record Entry(long chatId, String city, UserPlace place) {
     }
+
+    /**
+     * Места всех чатов в порядке добавления.
+     */
+    private final List<Entry> entries = new ArrayList<>();
+
 
     @Override
     public List<UserPlace> getPlaces(long chatId, String city, String tag) {
         List<UserPlace> result = new ArrayList<>();
-        for (UserPlace p : table.computeIfAbsent(chatId, k -> new ArrayList<>())) {
-            result.add(new UserPlace(p.getId(), p.getCategory(), p.getTag(), p.getName(), p.getAddress()));
+        for (Entry entry : entries) {
+            UserPlace place = entry.place();
+            if (entry.chatId() == chatId && entry.city().equals(city) && place.getTag().equals(tag)) {
+                result.add(new UserPlace(place.getId(), place.getCategory(),
+                        place.getTag(), place.getName(), place.getAddress()));
+            }
         }
         return result;
     }
@@ -41,23 +48,16 @@ public class FakeStorage extends UserPlaceStorage {
     @Override
     public void add(long chatId, String city, String category, String tag,
                     String name, String address) {
-        ArrayList<UserPlace> places = table.computeIfAbsent(chatId, array -> new ArrayList<UserPlace>());
         UserPlace place = new UserPlace(nextId++, category, tag, name, address);
-        places.add(place);
+        entries.add(new Entry(chatId, city, place));
     }
 
-    ;
 
     @Override
     public boolean update(long chatId, long id, String name, String address) {
-        ArrayList<UserPlace> places = table.get(chatId);
-
-        if (places == null) {
-            return false;
-        }
-
-        for (UserPlace place : places) {
-            if (place.getId() == id) {
+        for (Entry entry : entries) {
+            UserPlace place = entry.place();
+            if (entry.chatId() == chatId && place.getId() == id) {
                 place.setName(name);
                 place.setAddress(address);
                 return true;
@@ -67,16 +67,9 @@ public class FakeStorage extends UserPlaceStorage {
         return false;
     }
 
-    ;
-
     @Override
     public boolean delete(long chatId, long id) {
-        ArrayList<UserPlace> places = table.get(chatId);
-
-        if (places == null) {
-            return false;
-        }
-
-        return places.removeIf(p -> p.getId() == id);
+        return entries.removeIf(entry -> entry.chatId() == chatId
+                && entry.place().getId() == id);
     }
 }
