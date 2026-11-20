@@ -1,11 +1,15 @@
-package org.example;
+package org.example.task2;
 
-import org.example.catalog.CityCatalog;
-import org.example.catalog.CsvCityCatalog;
+import org.example.BotLogic;
+import org.example.command.city.City;
+import org.example.command.city.CityProvider;
+import org.example.command.city.CsvCatalogCity;
 import org.example.command.weather.WeatherProvider;
 import org.example.response.Button;
 import org.example.response.DialogResponse;
-
+import org.example.server.CityServer;
+import org.example.server.TripServer;
+import org.example.task4.FakeStorage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -69,23 +73,32 @@ class BotLogicTest {
      * Кнопки, которые видит пользователь сразу после выбора города
      */
     private final List<List<Button>> citySelectedButtons = List.of(
-            List.of(new Button("about city", "cat:about_city")),
-            List.of(new Button("weather", "cat:weather")),
-            List.of(new Button("back", "cat:back")));
+            List.of(new Button("о городе", "cat:about_city")),
+            List.of(new Button("погода", "cat:weather")),
+            List.of(new Button("еда", "cat:food")),
+            List.of(new Button("культура", "cat:culture")),
+            List.of(new Button("развлечения", "cat:attractions")),
+            List.of(new Button("назад", "cat:back")));
 
     /**
      * Кнопки, которые видит пользователь в категории about_city
      */
     private final List<List<Button>> aboutCityButtons = List.of(
-            List.of(new Button("weather", "cat:weather")),
-            List.of(new Button("back", "cat:back")));
+            List.of(new Button("погода", "cat:weather")),
+            List.of(new Button("еда", "cat:food")),
+            List.of(new Button("культура", "cat:culture")),
+            List.of(new Button("развлечения", "cat:attractions")),
+            List.of(new Button("назад", "cat:back")));
 
     /**
      * Кнопки, которые видит пользователь в категории weather
      */
     private final List<List<Button>> weatherButtons = List.of(
-            List.of(new Button("about city", "cat:about_city")),
-            List.of(new Button("back", "cat:back")));
+            List.of(new Button("о городе", "cat:about_city")),
+            List.of(new Button("еда", "cat:food")),
+            List.of(new Button("культура", "cat:culture")),
+            List.of(new Button("развлечения", "cat:attractions")),
+            List.of(new Button("назад", "cat:back")));
 
     /**
      * Доступ к каталогу городов из CITY_CATALOG
@@ -99,21 +112,37 @@ class BotLogicTest {
 
 
     /**
+     * Сервер категорий food, culture, attractions, источник мест всегда пустой, потому что не тестируется
+     */
+    private final TripServer tripServer =
+            new TripServer((city, tag) -> List.of(), new FakeStorage());
+
+    /**
      * Инициализация каталога и логики бота
      */
     BotLogicTest() throws IOException {
+
         try (InputStreamReader reader = new InputStreamReader(
                 new ByteArrayInputStream(CITY_CATALOG.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8)) {
 
-            CityCatalog catalog = new CsvCityCatalog(reader);
-            server = new CityServer(catalog);
-            logic = new BotLogic(server, (city, from, to) -> List.of());
+            CityProvider catalog = new CsvCatalogCity(reader);
+            // заглушка API, для имен из каталога
+            CityProvider api = city -> {
+                City found = catalog.getInfo(city);
+                if (found == null) {
+                    throw new IOException("Город не найден");
+                }
+                return found;
+            };
+            server = new CityServer(api, catalog);
+            logic = new BotLogic(server, tripServer, (city, from, to) -> List.of());
         }
     }
 
+
     /**
-     * Тестирование ответа на название города, который есть в каталоге:
-     * текст с названием города + кнопки категорий
+     * Тестирование ответного сообщения, которое приходит пользователю
+     * после выбора города, если он найден в каталоге
      */
     @Test
     void testKnownCityShowsCategories() {
@@ -146,6 +175,7 @@ class BotLogicTest {
         Assertions.assertEquals(START_MESSAGE, response.getAnswer());
         Assertions.assertFalse(response.hasButtons());
     }
+
     /**
      * Тестирование ответного сообщения на некорректное сообщение пользователя,
      * если бот находится в ожидании выбора категории
@@ -291,7 +321,7 @@ class BotLogicTest {
         WeatherProvider provider = (city, from, to) ->
                 List.of(new WeatherProvider.Day(day, -1.0, 7.0, "дождь"));
 
-        BotLogic logicWithForecast = new BotLogic(server, provider);
+        BotLogic logicWithForecast = new BotLogic(server, tripServer, provider);
         logicWithForecast.makeMessage("Москва", CHAT_ID);
         logicWithForecast.makeMessage("cat:weather", CHAT_ID);
 
@@ -311,7 +341,7 @@ class BotLogicTest {
             throw new IOException("нет сети");
         };
 
-        BotLogic logicWithoutWeather = new BotLogic(server, brokenProvider);
+        BotLogic logicWithoutWeather = new BotLogic(server, tripServer, brokenProvider);
         logicWithoutWeather.makeMessage("Москва", CHAT_ID);
         logicWithoutWeather.makeMessage("cat:weather", CHAT_ID);
 

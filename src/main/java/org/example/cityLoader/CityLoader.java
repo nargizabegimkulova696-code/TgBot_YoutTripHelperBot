@@ -1,13 +1,13 @@
-package org.example.catalog.loaderOfCatalog;
+package org.example.cityLoader;
 
-import org.example.catalog.CityCatalog;
+import org.example.command.city.CityProvider;
 
 import java.io.IOException;
 
 /**
  * Интерфейс для загрузчика каталога городов
  */
-public interface CatalogLoader {
+public interface CityLoader {
     /**
      * Загрузить каталог городов.
      *
@@ -15,5 +15,5 @@ public interface CatalogLoader {
      * @throws IOException если файл не был найден или данные,
      *                     прочитанные из файла, не соответствуют ожидаемым
      */
-    CityCatalog load() throws IOException;
+    CityProvider load() throws IOException;
 }

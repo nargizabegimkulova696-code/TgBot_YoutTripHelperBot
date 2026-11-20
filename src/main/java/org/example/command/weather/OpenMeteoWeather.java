@@ -73,7 +73,7 @@ public class OpenMeteoWeather implements WeatherProvider {
     private JsonNode findPlace(String city) throws IOException {
         JsonNode root = get(GEOCODING_URL
                 + "?name=" + URLEncoder.encode(city, StandardCharsets.UTF_8)
-                + "&count=1&language=ru&countryCode=RU"); //возвращает тело оберкти на http запросом
+                + "&count=1&language=ru"); //возвращает тело оберкти на http запросом
 
         JsonNode results = root.path("results");
         if (!results.isArray() || results.isEmpty()) {

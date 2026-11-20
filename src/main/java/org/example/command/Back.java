@@ -3,6 +3,7 @@ package org.example.command;
 import org.example.response.DialogResponse;
 import org.example.response.KeyboardFactory;
 
+import org.example.server.ServiceState;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
 
@@ -11,9 +12,20 @@ import org.example.session.DialogState;
  */
 public class Back {
     /**
+     * Меняет состояние сессии на состояние категории, в которой находится пользователь
+     * т.е. возврат от состояний ADD_PLACE, EDIT_PLACE, DELETE_PLACE к категории
+     */
+    private final ServiceState serviceState = new ServiceState();
+
+    /**
      * Текстовое сообщение, которое получает пользователь, когда возвращается в начало диалога с ботом
      */
     private static final String START_MESSAGE = "Привет, я бот — помощник в путешествиях. В какой город вы хотели бы отправиться?";
+
+    /**
+     * Текстовое сообщение, которое получит пользователь при выборе категорий food, culture, attractions
+     */
+    private static final String CAT_PLACES_MESSAGE = "Что вас интересует?";
 
     /**
      * Метод создает ответное сообщение пользователю при нажатии кнопки back
@@ -22,27 +34,44 @@ public class Back {
      */
     public DialogResponse back(BotSession session) {
         DialogState state = session.getState();
-        DialogResponse newResponse;
         KeyboardFactory keyboard = new KeyboardFactory();
 
         switch (state) {
             case WAITING_FOR_CITY -> {
-                newResponse = new DialogResponse(START_MESSAGE);
+                return new DialogResponse(START_MESSAGE);
             }
 
             case CITY_SELECTED -> {
                 session.setState(DialogState.WAITING_FOR_CITY);
-                newResponse = new DialogResponse(START_MESSAGE, keyboard.build(session.getState()));
+                return new DialogResponse(START_MESSAGE, keyboard.build(session.getState()));
+            }
+
+            case IN_TAG_FOOD -> {
+                session.setState(DialogState.CATEGORY_FOOD);
+                return new DialogResponse(CAT_PLACES_MESSAGE, keyboard.build(session.getState()));
+            }
+
+            case IN_TAG_CULTURE -> {
+                session.setState(DialogState.CATEGORY_CULTURE);
+                return new DialogResponse(CAT_PLACES_MESSAGE, keyboard.build(session.getState()));
+            }
+
+            case IN_TAG_ATTRACTIONS -> {
+                session.setState(DialogState.CATEGORY_ATTRACTIONS);
+                return new DialogResponse(CAT_PLACES_MESSAGE, keyboard.build(session.getState()));
+            }
+
+            case ADD_PLACE, EDIT_PLACE, DELETE_PLACE -> {
+                serviceState.changeOnCategoryState(session);
+                return new DialogResponse(CAT_PLACES_MESSAGE, keyboard.build(session.getState()));
             }
 
             default -> {
                 session.setState(DialogState.CITY_SELECTED);
-                newResponse = new DialogResponse("Выберете категорию для города " + session.getCity() + ":",
+                return new DialogResponse("Выберете категорию для города " + session.getCity() + ":",
                         keyboard.build(session.getState()));
             }
 
         }
-
-        return newResponse;
     }
 }

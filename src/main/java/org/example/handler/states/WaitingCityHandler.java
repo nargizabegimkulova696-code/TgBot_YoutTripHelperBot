@@ -1,9 +1,11 @@
 package org.example.handler.states;
 
-import org.example.CityServer;
+import org.apache.commons.lang3.StringUtils;
 import org.example.handler.StateHandler;
 import org.example.response.DialogResponse;
 import org.example.response.KeyboardFactory;
+import org.example.server.CityServer;
+import org.example.server.ServiceState;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
 
@@ -22,6 +24,11 @@ public class WaitingCityHandler implements StateHandler {
     private final CityServer server;
 
     /**
+     * Сервис для смены состояния сессии
+     */
+    private final ServiceState serviceState = new ServiceState();
+
+    /**
      * Кнопки с категориями
      */
     private final KeyboardFactory keyboard = new KeyboardFactory();
@@ -36,7 +43,7 @@ public class WaitingCityHandler implements StateHandler {
     @Override
     public DialogResponse handle(String text, BotSession session) {
         String city = server.findCityByName(text);
-        if (city == null) {
+        if (StringUtils.isBlank(city)) {
             return new DialogResponse(NOT_FOUND_CITY);
         }
         session.setState(DialogState.CITY_SELECTED);

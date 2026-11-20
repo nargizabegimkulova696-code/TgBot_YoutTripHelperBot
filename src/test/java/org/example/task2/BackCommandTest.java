@@ -1,4 +1,4 @@
-package org.example;
+package org.example.task2;
 
 import org.example.command.Back;
 
@@ -15,7 +15,7 @@ public class BackCommandTest {
     /**
      * Сессия пользователя
      */
-    BotSession session = new BotSession();
+    BotSession session = new BotSession(1);
 
     /**
      * Инициализация back
@@ -48,12 +48,12 @@ public class BackCommandTest {
      */
     @Test
     void BackFromAboutCityAndCatWeather() {
-        session.setState(DialogState.CAT_ABOUT_CITY);
+        session.setState(DialogState.CATEGORY_ABOUT_CITY);
         back.back(session);
 
         Assertions.assertEquals(DialogState.CITY_SELECTED, session.getState());
 
-        session.setState(DialogState.CAT_WEATHER);
+        session.setState(DialogState.CATEGORY_WEATHER);
         back.back(session);
 
         Assertions.assertEquals(DialogState.CITY_SELECTED, session.getState());
@@ -64,13 +64,13 @@ public class BackCommandTest {
      */
     @Test
     void BackFromCatAboutCityAndCatWeatherToStart() {
-        session.setState(DialogState.CAT_ABOUT_CITY);
+        session.setState(DialogState.CATEGORY_ABOUT_CITY);
         back.back(session);
         back.back(session);
 
         Assertions.assertEquals(DialogState.WAITING_FOR_CITY, session.getState());
 
-        session.setState(DialogState.CAT_WEATHER);
+        session.setState(DialogState.CATEGORY_WEATHER);
         back.back(session);
         back.back(session);
 

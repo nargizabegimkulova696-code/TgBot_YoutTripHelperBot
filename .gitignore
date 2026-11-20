@@ -35,4 +35,8 @@ build/
 ### Mac OS ###
 .DS_Store
 
+# база данных SQLite
+*.db
+*.db-journal
+
 tgBot.properties
