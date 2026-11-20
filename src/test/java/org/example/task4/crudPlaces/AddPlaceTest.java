@@ -1,4 +1,4 @@
-package org.example.task4;
+package org.example.task4.crudPlaces;
 
 import org.example.command.places.Place;
 import org.example.command.places.PlacesProvider;
@@ -11,6 +11,7 @@ import org.example.response.DialogResponse;
 import org.example.server.TripServer;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
+import org.example.task4.FakeStorage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -148,6 +149,8 @@ public class AddPlaceTest {
         Assertions.assertEquals("""
                 Место успешно добавлено в список
                 
+                Места, где можно вкусно покушать:
+                
                 1) Французский пекарь, ул. Ленина, 1
                 
                 2) Дом Хлеба, ул. Тургенева, 4
@@ -176,6 +179,8 @@ public class AddPlaceTest {
 
         Assertions.assertEquals("""
                 Место не добавлено в список
+                
+                Места, где можно вкусно покушать:
                 
                 1) Французский пекарь, ул. Ленина, 1
                 

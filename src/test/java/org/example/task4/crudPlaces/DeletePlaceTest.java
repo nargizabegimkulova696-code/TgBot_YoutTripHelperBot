@@ -1,4 +1,4 @@
-package org.example.task4;
+package org.example.task4.crudPlaces;
 
 import org.example.command.places.Place;
 import org.example.command.places.PlacesProvider;
@@ -11,6 +11,7 @@ import org.example.response.DialogResponse;
 import org.example.server.TripServer;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
+import org.example.task4.FakeStorage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -144,6 +145,8 @@ public class DeletePlaceTest {
         Assertions.assertEquals("""
                 Место успешно удалено
                 
+                Места, где можно вкусно покушать:
+                
                 1) Французский пекарь, ул. Ленина, 1
                 
                 2) Поль Бейкери, ул. Ленина, 5
@@ -169,6 +172,8 @@ public class DeletePlaceTest {
 
         Assertions.assertEquals("""
                 Место не удалено
+                
+                Места, где можно вкусно покушать:
                 
                 1) Французский пекарь, ул. Ленина, 1
                 
@@ -206,6 +211,8 @@ public class DeletePlaceTest {
 
         Assertions.assertEquals("""
                 Место успешно удалено
+                
+                Места, где можно вкусно покушать:
                 
                 1) Французский пекарь, ул. Ленина, 1
                 

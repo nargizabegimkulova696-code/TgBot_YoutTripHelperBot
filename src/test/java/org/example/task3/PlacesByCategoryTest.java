@@ -137,9 +137,9 @@ public class PlacesByCategoryTest {
      */
     @ParameterizedTest
     @CsvSource({
-            "Москва, CAT_ABOUT_CITY, /food, CAT_FOOD",
-            "Челябинск, CAT_WEATHER, /culture, CAT_CULTURE",
-            "Томск, IN_TAG_FOOD, /attractions, CAT_ATTRACTIONS"
+            "Москва, CATEGORY_ABOUT_CITY, /food, CATEGORY_FOOD",
+            "Челябинск, CATEGORY_WEATHER, /culture, CATEGORY_CULTURE",
+            "Томск, IN_TAG_FOOD, /attractions, CATEGORY_ATTRACTIONS"
     })
     void TestFoodCommandsInDiffsStates(String city, DialogState state, String command, DialogState expectedState) {
         session.setCity(city);

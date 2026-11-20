@@ -145,7 +145,7 @@ class SessionsAndCommandsTest {
 
         BotSession session = new BotSession(1);
         session.setCity("Москва");
-        session.setState(DialogState.CAT_WEATHER);
+        session.setState(DialogState.CATEGORY_WEATHER);
 
         String dm = DateTimeFormatter.ofPattern("dd.MM").format(day);
         String answer = new WeatherDatesHandler(provider).handle(dm + " - " + dm, session).getAnswer();
