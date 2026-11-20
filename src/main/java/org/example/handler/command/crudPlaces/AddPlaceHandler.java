@@ -1,4 +1,4 @@
-package org.example.handler.command;
+package org.example.handler.command.crudPlaces;
 
 import org.example.handler.ButtonHandler;
 import org.example.response.DialogResponse;

@@ -1,14 +1,12 @@
-package org.example.handler.states;
+package org.example.handler.states.crudPlaces;
 
-import org.example.command.places.Place;
 import org.example.handler.StateHandler;
-import org.example.paging.Page;
-import org.example.paging.PageCallback;
+import org.example.handler.states.TagHandler;
 import org.example.response.DialogResponse;
 import org.example.response.KeyboardFactory;
+import org.example.server.ServiceState;
 import org.example.server.TripServer;
 import org.example.session.BotSession;
-import org.example.session.DialogState;
 import org.example.storage.UserPlace;
 
 /**
@@ -19,6 +17,19 @@ public class AddPlaceStateHandler implements StateHandler {
      * Сервер, для запросов к бд
      */
     private final TripServer server;
+
+    /**
+     * Обработчик тегов создает финальное сообщение
+     * с добавленным или не добавленным местом.
+     * Переводит пользователя обратно в состояние тега.
+     */
+    private final TagHandler tagHandler;
+
+    /**
+     * Меняет состояние сессии на состояние категории, в которой находится пользователь,
+     * чтобы далее управление вернулось к TagHandler
+     */
+    private final ServiceState serviceState;
 
     /**
      * Сообщение, если название и адрес места введены не по формату или на прочие действия,
@@ -44,12 +55,12 @@ public class AddPlaceStateHandler implements StateHandler {
     /**
      * Сообщение при успешном добавлении места
      */
-    private static final String SAVE_ANSWER = "Место успешно добавлено в список";
+    private static final String SAVE_ANSWER = "Место успешно добавлено в список\n\n";
 
     /**
      * Сообщение, если пользователь решил не добавлять место в список
      */
-    private static final String CANCEL_ANSWER = "Место не добавлено в список";
+    private static final String CANCEL_ANSWER = "Место не добавлено в список\n\n";
 
     /**
      * Формат ввода содержит 2 значения: название и адрес
@@ -73,6 +84,8 @@ public class AddPlaceStateHandler implements StateHandler {
      */
     public AddPlaceStateHandler(TripServer server) {
         this.server = server;
+        this.tagHandler = new TagHandler(server);
+        this.serviceState = new ServiceState();
     }
 
     @Override
@@ -80,48 +93,27 @@ public class AddPlaceStateHandler implements StateHandler {
         switch (text) {
             case "com:save" -> {
                 UserPlace place = session.getPlace();
-                String category = foundCategory(session.getCategory());
 
-                if (!server.addPlace(session.getChatId(), session.getCity(), category,
-                        session.getTag(), place.getName(), place.getAddress())) {
+                if (!server.addPlace(session.getChatId(), session.getCity(), place.getCategory(),
+                        place.getTag(), place.getName(), place.getAddress())) {
                     return new DialogResponse(SQL_ERROR, keyboard.build(session.getState()));
                 }
 
-                changeState(session);
+                serviceState.changeOnCategoryState(session);
 
-                PageCallback callback = new PageCallback(session.getTag());
+                DialogResponse response = tagHandler.handle(session.getTag(), session);
 
-                Page<Place> page = server.getPage(session.getChatId(), session.getCity(),
-                        callback.getTag(), callback.getPage());
-
-                if (page == null || page.isEmpty()) {
-                    return new DialogResponse(ERROR, keyboard.build(DialogState.ADD_PLACE));
-                }
-
-                String answer = SAVE_ANSWER + "\n\n" + server.formatted(page)
-                        + "\n\nСтраница " + (page.getNumber() + 1) + " из " + page.getTotalPages();
-
-                return new DialogResponse(answer, keyboard.buildPage(callback.getTag(), page, true));
+                return new DialogResponse(SAVE_ANSWER + response.getAnswer(),
+                        response.getListOfCommands());
             }
 
             case "com:cancel" -> {
-                changeState(session);
+                serviceState.changeOnCategoryState(session);
 
-                PageCallback callback = new PageCallback(session.getTag());
+                DialogResponse response = tagHandler.handle(session.getTag(), session);
 
-                Page<Place> page = server.getPage(session.getChatId(), session.getCity(),
-                        callback.getTag(), callback.getPage());
-
-                if (page == null || page.isEmpty()) {
-                    return new DialogResponse(ERROR, keyboard.build(DialogState.ADD_PLACE));
-                }
-
-                String answer = CANCEL_ANSWER + "\n\n" + server.formatted(page)
-                        + "\n\nСтраница " + (page.getNumber() + 1) + " из " + page.getTotalPages();
-
-                boolean flag = server.hasUserPlaces(session.getChatId(), session.getCity(), session.getTag());
-
-                return new DialogResponse(answer, keyboard.buildPage(callback.getTag(), page, flag));
+                return new DialogResponse(CANCEL_ANSWER + response.getAnswer(),
+                        response.getListOfCommands());
             }
 
             default -> {
@@ -133,7 +125,7 @@ public class AddPlaceStateHandler implements StateHandler {
 
                 String name = newPlace[0].trim();
                 String address = newPlace[1].trim();
-                String category = foundCategory(session.getCategory());
+                String category = session.getCategory();
 
                 UserPlace place = new UserPlace(ID, category,
                         session.getTag(), name, address);
@@ -141,38 +133,6 @@ public class AddPlaceStateHandler implements StateHandler {
                 session.setPlace(place);
 
                 return new DialogResponse(ADD_PLACE + place.format(), keyboard.buildChoose());
-            }
-        }
-    }
-
-    private String foundCategory(DialogState category) {
-        switch (category) {
-            case CAT_FOOD -> {
-                return "food";
-            }
-
-            case CAT_ATTRACTIONS -> {
-                return "attractions";
-            }
-
-            default -> {
-                return "culture";
-            }
-        }
-    }
-
-    private void changeState(BotSession session) {
-        switch (session.getCategory()) {
-            case CAT_FOOD -> {
-                session.setState(DialogState.IN_TAG_FOOD);
-            }
-
-            case CAT_CULTURE -> {
-                session.setState(DialogState.IN_TAG_CULTURE);
-            }
-
-            default -> {
-                session.setState(DialogState.IN_TAG_ATTRACTIONS);
             }
         }
     }

@@ -5,6 +5,7 @@ import org.example.handler.StateHandler;
 import org.example.response.DialogResponse;
 import org.example.response.KeyboardFactory;
 import org.example.server.CityServer;
+import org.example.server.ServiceState;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
 
@@ -21,6 +22,11 @@ public class WaitingCityHandler implements StateHandler {
      * Доступ к каталогу городов
      */
     private final CityServer server;
+
+    /**
+     * Сервис для смены состояния сессии
+     */
+    private final ServiceState serviceState = new ServiceState();
 
     /**
      * Кнопки с категориями

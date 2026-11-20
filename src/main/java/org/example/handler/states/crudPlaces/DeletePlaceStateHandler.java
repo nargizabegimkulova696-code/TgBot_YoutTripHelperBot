@@ -1,14 +1,12 @@
-package org.example.handler.states;
+package org.example.handler.states.crudPlaces;
 
-import org.example.command.places.Place;
 import org.example.handler.StateHandler;
-import org.example.paging.Page;
-import org.example.paging.PageCallback;
+import org.example.handler.states.TagHandler;
 import org.example.response.DialogResponse;
 import org.example.response.KeyboardFactory;
+import org.example.server.ServiceState;
 import org.example.server.TripServer;
 import org.example.session.BotSession;
-import org.example.session.DialogState;
 import org.example.storage.UserPlace;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -64,17 +62,33 @@ public class DeletePlaceStateHandler implements StateHandler {
     private final TripServer server;
 
     /**
+     * Обработчик тегов создает финальное сообщение
+     * с добавленным или не добавленным местом.
+     * Переводит пользователя обратно в состояние тега.
+     */
+    private final TagHandler tagHandler;
+
+    /**
+     * Меняет состояние сессии на состояние категории, в которой находится пользователь,
+     * чтобы далее управление вернулось к TagHandler
+     */
+    private final ServiceState serviceState;
+
+    /**
      * Конструктор класса
      *
      * @param server - TripServer, для работы с бд
      */
     public DeletePlaceStateHandler(TripServer server) {
         this.server = server;
+        this.tagHandler = new TagHandler(server);
+        this.serviceState = new ServiceState();
     }
 
     @Override
     public DialogResponse handle(String text, BotSession session) {
         switch (text) {
+
             case "com:save" -> {
                 UserPlace place = session.getPlace();
 
@@ -82,41 +96,21 @@ public class DeletePlaceStateHandler implements StateHandler {
                     return new DialogResponse(ERROR_DELETE, keyboard.build(session.getState()));
                 }
 
-                changeState(session);
+                serviceState.changeOnCategoryState(session);
 
-                PageCallback callback = new PageCallback(session.getTag());
+                DialogResponse response = tagHandler.handle(session.getTag(), session);
 
-                Page<Place> page = server.getPage(session.getChatId(), session.getCity(),
-                        callback.getTag(), callback.getPage());
-
-                if (page == null || page.isEmpty()) {
-                    return new DialogResponse(ERROR, keyboard.build(session.getState()));
-                }
-
-                String answer = DELETE_ANSWER + server.formatted(page) +
-                        "\n\nСтраница " + (page.getNumber() + 1) + " из " + page.getTotalPages();
-
-                boolean flag = server.hasUserPlaces(session.getChatId(), session.getCity(), session.getTag());
-
-                return new DialogResponse(answer, keyboard.buildPage(callback.getTag(), page, flag));
+                return new DialogResponse(DELETE_ANSWER + response.getAnswer(),
+                        response.getListOfCommands());
             }
 
             case "com:cancel" -> {
-                changeState(session);
+                serviceState.changeOnCategoryState(session);
 
-                PageCallback callback = new PageCallback(session.getTag());
+                DialogResponse response = tagHandler.handle(session.getTag(), session);
 
-                Page<Place> page = server.getPage(session.getChatId(), session.getCity(),
-                        callback.getTag(), callback.getPage());
-
-                if (page == null || page.isEmpty()) {
-                    return new DialogResponse(ERROR, keyboard.build(session.getState()));
-                }
-
-                String answer = CANCEL_ANSWER + server.formatted(page) +
-                        "\n\nСтраница " + (page.getNumber() + 1) + " из " + page.getTotalPages();
-
-                return new DialogResponse(answer, keyboard.buildPage(callback.getTag(), page, true));
+                return new DialogResponse(CANCEL_ANSWER + response.getAnswer(),
+                        response.getListOfCommands());
             }
 
             default -> {
@@ -146,22 +140,6 @@ public class DeletePlaceStateHandler implements StateHandler {
                 } catch (NumberFormatException e) {
                     return new DialogResponse(WRONG_INPUT, keyboard.build(session.getState()));
                 }
-            }
-        }
-    }
-
-    private void changeState(BotSession session) {
-        switch (session.getCategory()) {
-            case CAT_FOOD -> {
-                session.setState(DialogState.IN_TAG_FOOD);
-            }
-
-            case CAT_CULTURE -> {
-                session.setState(DialogState.IN_TAG_CULTURE);
-            }
-
-            default -> {
-                session.setState(DialogState.IN_TAG_ATTRACTIONS);
             }
         }
     }

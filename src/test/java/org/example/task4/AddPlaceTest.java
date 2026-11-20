@@ -4,8 +4,8 @@ import org.example.command.places.Place;
 import org.example.command.places.PlacesProvider;
 import org.example.handler.ButtonHandler;
 import org.example.handler.StateHandler;
-import org.example.handler.command.AddPlaceHandler;
-import org.example.handler.states.AddPlaceStateHandler;
+import org.example.handler.command.crudPlaces.AddPlaceHandler;
+import org.example.handler.states.crudPlaces.AddPlaceStateHandler;
 import org.example.response.Button;
 import org.example.response.DialogResponse;
 import org.example.server.TripServer;
@@ -61,8 +61,8 @@ public class AddPlaceTest {
      */
     AddPlaceTest() {
         session.setCity("Москва");
-        session.setState(DialogState.CAT_FOOD);
-        session.setCategory(DialogState.CAT_FOOD);
+        session.setState(DialogState.CATEGORY_FOOD);
+        session.setCategory("food");
         session.setTag("tag:bakeries");
     }
 

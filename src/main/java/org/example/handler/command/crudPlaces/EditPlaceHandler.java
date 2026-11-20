@@ -1,4 +1,4 @@
-package org.example.handler.command;
+package org.example.handler.command.crudPlaces;
 
 import org.example.handler.ButtonHandler;
 import org.example.response.DialogResponse;
@@ -7,21 +7,21 @@ import org.example.session.BotSession;
 import org.example.session.DialogState;
 
 /**
- * Обработчик кнопки com:delete_place
+ * Обработчик кнопки edit:add_place
  */
-public class DeletePlaceHandler implements ButtonHandler {
+public class EditPlaceHandler implements ButtonHandler {
     /**
      * Пользователь не может менять список мест, если не выбрал категорию и тег
      */
-    private static final String WRONG_INTERACTION = "Сначала выберете категорию и тег, чтобы удалить место)";
+    private static final String WRONG_INTERACTION = "Сначала выберете категорию и тег, чтобы редактировать место)";
 
     /**
-     * Ответное сообщение на команду удалить место
+     * Ответное сообщение на команду изменить место
      */
-    private static final String ANSWER = "Введите номер места, которое хотите удалить";
+    private static final String ANSWER = "Введите номер места, которое хотите изменить";
 
     /**
-     * В состоянии DELETE_PLACE к текстовому сообщению добавляется кнопка "назад"
+     * В состоянии EDIT_PLACE к текстовому сообщению добавляется кнопка "назад"
      */
     private final KeyboardFactory keyboard = new KeyboardFactory();
 
@@ -30,9 +30,8 @@ public class DeletePlaceHandler implements ButtonHandler {
         if (session.getCategory() == null || session.getTag() == null) {
             return new DialogResponse(WRONG_INTERACTION);
         }
-        ;
 
-        session.setState(DialogState.DELETE_PLACE);
+        session.setState(DialogState.EDIT_PLACE);
         return new DialogResponse(ANSWER, keyboard.build(session.getState()));
     }
 }

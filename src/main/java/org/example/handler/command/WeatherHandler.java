@@ -35,7 +35,7 @@ public class WeatherHandler implements ButtonHandler {
             return new DialogResponse(NO_CITY);
         }
 
-        session.setState(DialogState.CAT_WEATHER);
+        session.setState(DialogState.CATEGORY_WEATHER);
         return new DialogResponse(ASK_DATES, keyboard.build(session.getState()));
     }
 }
