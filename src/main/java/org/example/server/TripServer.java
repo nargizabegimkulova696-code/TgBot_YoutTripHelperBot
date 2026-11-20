@@ -4,7 +4,7 @@ import org.example.command.places.Place;
 import org.example.command.places.PlacesProvider;
 import org.example.paging.Page;
 import org.example.storage.UserPlace;
-import org.example.storage.UserPlaceStorage;
+import org.example.storage.UserPlaceRepository;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -25,17 +25,17 @@ public class TripServer {
      */
     private final PlacesProvider provider;
     /**
-     * Хранилище мест, добавленных пользователями
+     * Хранилище мест, добавленных пользователями.
      */
-    private final UserPlaceStorage storage;
+    private final UserPlaceRepository storage;
 
     /**
-     * Конструктор класса
+     * Создаёт сервис для работы с местами городского каталога и местами пользователей.
      *
-     * @param provider - API мест
-     * @param storage  - SQL бд
+     * @param provider источник мест городского каталога
+     * @param storage  хранилище мест, добавленных пользователями
      */
-    public TripServer(PlacesProvider provider, UserPlaceStorage storage) {
+    public TripServer(PlacesProvider provider, UserPlaceRepository storage) {
         this.provider = provider;
         this.storage = storage;
     }

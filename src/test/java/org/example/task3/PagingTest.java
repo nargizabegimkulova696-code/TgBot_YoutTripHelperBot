@@ -11,7 +11,7 @@ import org.example.response.DialogResponse;
 import org.example.server.TripServer;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
-import org.example.storage.UserPlaceStorage;
+import org.example.task4.FakeStorage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -45,8 +45,7 @@ public class PagingTest {
     /**
      * Обработчик тегов с тестовым источником мест
      */
-    private final TagHandler handler = new TagHandler(new TripServer(provider,
-            new UserPlaceStorage("jdbc:sqlite::memory:")));
+    private final TagHandler handler = new TagHandler(new TripServer(provider, new FakeStorage()));
     /**
      * Сессия пользователя
      */
