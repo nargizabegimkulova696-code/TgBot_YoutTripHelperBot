@@ -44,7 +44,7 @@ public class AboutCityHandler implements ButtonHandler {
             return new DialogResponse(NO_CITY);
         }
 
-        session.setState(DialogState.CAT_ABOUT_CITY);
+        session.setState(DialogState.CATEGORY_ABOUT_CITY);
 
         String cityInfo = server.findInfoForCity(city);
 

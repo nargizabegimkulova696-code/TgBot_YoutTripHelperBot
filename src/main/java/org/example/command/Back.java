@@ -3,6 +3,7 @@ package org.example.command;
 import org.example.response.DialogResponse;
 import org.example.response.KeyboardFactory;
 
+import org.example.server.ServiceState;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
 
@@ -10,6 +11,12 @@ import org.example.session.DialogState;
  * Класс, метод которого создает ответное сообщение при нажатии кнопки back
  */
 public class Back {
+    /**
+     * Меняет состояние сессии на состояние категории, в которой находится пользователь
+     * т.е. возврат от состояний ADD_PLACE, EDIT_PLACE, DELETE_PLACE к категории
+     */
+    private final ServiceState serviceState = new ServiceState();
+
     /**
      * Текстовое сообщение, которое получает пользователь, когда возвращается в начало диалога с ботом
      */
@@ -40,22 +47,22 @@ public class Back {
             }
 
             case IN_TAG_FOOD -> {
-                session.setState(DialogState.CAT_FOOD);
+                session.setState(DialogState.CATEGORY_FOOD);
                 return new DialogResponse(CAT_PLACES_MESSAGE, keyboard.build(session.getState()));
             }
 
             case IN_TAG_CULTURE -> {
-                session.setState(DialogState.CAT_CULTURE);
+                session.setState(DialogState.CATEGORY_CULTURE);
                 return new DialogResponse(CAT_PLACES_MESSAGE, keyboard.build(session.getState()));
             }
 
             case IN_TAG_ATTRACTIONS -> {
-                session.setState(DialogState.CAT_ATTRACTIONS);
+                session.setState(DialogState.CATEGORY_ATTRACTIONS);
                 return new DialogResponse(CAT_PLACES_MESSAGE, keyboard.build(session.getState()));
             }
 
             case ADD_PLACE, EDIT_PLACE, DELETE_PLACE -> {
-                session.setState(session.getCategory());
+                serviceState.changeOnCategoryState(session);
                 return new DialogResponse(CAT_PLACES_MESSAGE, keyboard.build(session.getState()));
             }
 

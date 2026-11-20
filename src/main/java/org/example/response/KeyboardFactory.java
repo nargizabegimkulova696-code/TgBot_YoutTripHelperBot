@@ -31,21 +31,21 @@ public class KeyboardFactory {
                 add(keyboard, "развлечения", "cat:attractions");
             }
 
-            case CAT_ABOUT_CITY -> {
+            case CATEGORY_ABOUT_CITY -> {
                 add(keyboard, "погода", "cat:weather");
                 add(keyboard, "еда", "cat:food");
                 add(keyboard, "культура", "cat:culture");
                 add(keyboard, "развлечения", "cat:attractions");
             }
 
-            case CAT_WEATHER -> {
+            case CATEGORY_WEATHER -> {
                 add(keyboard, "о городе", "cat:about_city");
                 add(keyboard, "еда", "cat:food");
                 add(keyboard, "культура", "cat:culture");
                 add(keyboard, "развлечения", "cat:attractions");
             }
 
-            case CAT_FOOD -> {
+            case CATEGORY_FOOD -> {
                 add(keyboard, "рестораны", "tag:restaurants");
                 add(keyboard, "кафе", "tag:cafe");
                 add(keyboard, "пекарни", "tag:bakeries");
@@ -53,7 +53,7 @@ public class KeyboardFactory {
                 add(keyboard, "фастфуд", "tag:fastfood");
             }
 
-            case CAT_CULTURE -> {
+            case CATEGORY_CULTURE -> {
                 add(keyboard, "музеи", "tag:museums");
                 add(keyboard, "храмы", "tag:temples");
                 add(keyboard, "исторические здания", "tag:historical_buildings");
@@ -61,7 +61,7 @@ public class KeyboardFactory {
                 add(keyboard, "театры", "tag:theaters");
             }
 
-            case CAT_ATTRACTIONS -> {
+            case CATEGORY_ATTRACTIONS -> {
                 add(keyboard, "ТРЦ", "tag:shopping");
                 add(keyboard, "парки аттракционов", "tag:attraction_parks");
                 add(keyboard, "кино", "tag:movie");

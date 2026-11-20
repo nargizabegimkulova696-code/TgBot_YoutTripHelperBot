@@ -1,9 +1,9 @@
 package org.example.task3;
 
 import org.example.handler.ButtonHandler;
-import org.example.handler.command.AttractionsHandler;
-import org.example.handler.command.CultureHandler;
-import org.example.handler.command.FoodHandler;
+import org.example.handler.command.categoryByPlaces.AttractionsHandler;
+import org.example.handler.command.categoryByPlaces.CultureHandler;
+import org.example.handler.command.categoryByPlaces.FoodHandler;
 import org.example.response.Button;
 import org.example.response.DialogResponse;
 import org.example.session.BotSession;
@@ -71,7 +71,7 @@ public class PlacesByCategoryTest {
                 "tag:pizzerias",
                 "tag:fastfood",
                 "cat:back"), callbacks(response));
-        Assertions.assertEquals(DialogState.CAT_FOOD, session.getState());
+        Assertions.assertEquals(DialogState.CATEGORY_FOOD, session.getState());
     }
 
     /**
@@ -90,7 +90,7 @@ public class PlacesByCategoryTest {
                 "tag:historical_buildings",
                 "tag:monuments",
                 "tag:theaters", "cat:back"), callbacks(response));
-        Assertions.assertEquals(DialogState.CAT_CULTURE, session.getState());
+        Assertions.assertEquals(DialogState.CATEGORY_CULTURE, session.getState());
     }
 
     /**
@@ -112,7 +112,7 @@ public class PlacesByCategoryTest {
                 "tag:nature",
                 "cat:back"
         ), callbacks(response));
-        Assertions.assertEquals(DialogState.CAT_ATTRACTIONS, session.getState());
+        Assertions.assertEquals(DialogState.CATEGORY_ATTRACTIONS, session.getState());
     }
 
     /**
@@ -137,9 +137,9 @@ public class PlacesByCategoryTest {
      */
     @ParameterizedTest
     @CsvSource({
-            "Москва, CAT_ABOUT_CITY, /food, CAT_FOOD",
-            "Челябинск, CAT_WEATHER, /culture, CAT_CULTURE",
-            "Томск, IN_TAG_FOOD, /attractions, CAT_ATTRACTIONS"
+            "Москва, CATEGORY_ABOUT_CITY, /food, CATEGORY_FOOD",
+            "Челябинск, CATEGORY_WEATHER, /culture, CATEGORY_CULTURE",
+            "Томск, IN_TAG_FOOD, /attractions, CATEGORY_ATTRACTIONS"
     })
     void TestFoodCommandsInDiffsStates(String city, DialogState state, String command, DialogState expectedState) {
         session.setCity(city);

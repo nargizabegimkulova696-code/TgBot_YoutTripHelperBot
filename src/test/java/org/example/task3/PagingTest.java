@@ -56,7 +56,7 @@ public class PagingTest {
      */
     PagingTest() {
         session.setCity("Казань");
-        session.setState(DialogState.CAT_FOOD);
+        session.setState(DialogState.CATEGORY_FOOD);
     }
 
     /**
@@ -148,7 +148,7 @@ public class PagingTest {
         DialogResponse response = handler.handle("привет", session);
 
         Assertions.assertEquals("Выберите, что вас интересует, с помощью кнопок.", response.getAnswer());
-        Assertions.assertEquals(DialogState.CAT_FOOD, session.getState());
+        Assertions.assertEquals(DialogState.CATEGORY_FOOD, session.getState());
         Assertions.assertEquals(List.of("tag:restaurants", "tag:cafe", "tag:bakeries", "tag:pizzerias",
                 "tag:fastfood", "cat:back"), callbacks(response));
     }

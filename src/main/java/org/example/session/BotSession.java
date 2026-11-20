@@ -21,7 +21,7 @@ public class BotSession {
      * Категория, в которой находится пользователь
      * Задействуется для категорий: еда, культура, развлечения
      */
-    private DialogState category;
+    private String category;
 
     /**
      * Тег, в котором находится пользователь
@@ -88,14 +88,14 @@ public class BotSession {
     /**
      * Меняем значение категории
      */
-    public void setCategory(DialogState category) {
+    public void setCategory(String category) {
         this.category = category;
     }
 
     /**
      * Возврат текущей категории
      */
-    public DialogState getCategory() {
+    public String getCategory() {
         return category;
     }
 
@@ -114,14 +114,15 @@ public class BotSession {
     }
 
     /**
-     * Меняем место на другое, которое пользователь хочет добавить
+     * Меняем место на другое, на то, которое пользователь хочет
+     * добавить, изменить или удалить
      */
     public void setPlace(UserPlace place) {
         this.place = place;
     }
 
     /**
-     * Возврат места, которое пользователь хочет добавить
+     * Возврат места
      */
     public UserPlace getPlace() {
         return place;

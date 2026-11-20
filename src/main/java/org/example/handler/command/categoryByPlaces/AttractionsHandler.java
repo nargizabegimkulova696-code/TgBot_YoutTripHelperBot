@@ -1,4 +1,4 @@
-package org.example.handler.command;
+package org.example.handler.command.categoryByPlaces;
 
 import org.example.handler.ButtonHandler;
 import org.example.response.DialogResponse;
@@ -7,9 +7,9 @@ import org.example.session.BotSession;
 import org.example.session.DialogState;
 
 /**
- * Обработчик категории culture
+ * Обработчик категории attractions
  */
-public class CultureHandler implements ButtonHandler {
+public class AttractionsHandler implements ButtonHandler {
     /**
      * Ответное сообщение при выборе категории
      */
@@ -19,6 +19,10 @@ public class CultureHandler implements ButtonHandler {
      * Ответное сообщение, если город не выбран
      */
     private static final String NO_CITY = "Сначала выберите город, для этого напишите его название)";
+    /**
+     * Название категории, в которую перешел пользователь
+     */
+    private static final String CATEGORY_ATTRACTIONS = "attractions";
 
     /**
      * Клавиатура кнопок
@@ -31,8 +35,8 @@ public class CultureHandler implements ButtonHandler {
             return new DialogResponse(NO_CITY);
         }
 
-        session.setState(DialogState.CAT_CULTURE);
-        session.setCategory(DialogState.CAT_CULTURE);
+        session.setState(DialogState.CATEGORY_ATTRACTIONS);
+        session.setCategory(CATEGORY_ATTRACTIONS);
         return new DialogResponse(ANSWER, keyboard.build(session.getState()));
     }
 }

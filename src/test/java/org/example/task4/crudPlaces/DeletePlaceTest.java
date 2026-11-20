@@ -1,16 +1,17 @@
-package org.example.task4;
+package org.example.task4.crudPlaces;
 
 import org.example.command.places.Place;
 import org.example.command.places.PlacesProvider;
 import org.example.handler.StateHandler;
-import org.example.handler.states.AddPlaceStateHandler;
-import org.example.handler.states.DeletePlaceStateHandler;
 import org.example.handler.states.TagHandler;
+import org.example.handler.states.crudPlaces.AddPlaceStateHandler;
+import org.example.handler.states.crudPlaces.DeletePlaceStateHandler;
 import org.example.response.Button;
 import org.example.response.DialogResponse;
 import org.example.server.TripServer;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
+import org.example.task4.FakeStorage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -59,15 +60,15 @@ public class DeletePlaceTest {
      * Обработчик состояния
      */
     private final StateHandler deleteHandler = new DeletePlaceStateHandler(server);
-
+    //убрать подхачиванние так нельзя
     /**
      * Город, тег и категория выбраны, места добавлены
      */
     DeletePlaceTest() {
         session.setCity("Москва");
 
-        session.setState(DialogState.CAT_FOOD);
-        session.setCategory(DialogState.CAT_FOOD);
+        session.setState(DialogState.CATEGORY_FOOD);
+        session.setCategory("food");
         session.setTag("tag:bakeries");
 
         session.setState(DialogState.ADD_PLACE);
@@ -144,6 +145,8 @@ public class DeletePlaceTest {
         Assertions.assertEquals("""
                 Место успешно удалено
                 
+                Места, где можно вкусно покушать:
+                
                 1) Французский пекарь, ул. Ленина, 1
                 
                 2) Поль Бейкери, ул. Ленина, 5
@@ -169,6 +172,8 @@ public class DeletePlaceTest {
 
         Assertions.assertEquals("""
                 Место не удалено
+                
+                Места, где можно вкусно покушать:
                 
                 1) Французский пекарь, ул. Ленина, 1
                 
@@ -206,6 +211,8 @@ public class DeletePlaceTest {
 
         Assertions.assertEquals("""
                 Место успешно удалено
+                
+                Места, где можно вкусно покушать:
                 
                 1) Французский пекарь, ул. Ленина, 1
                 

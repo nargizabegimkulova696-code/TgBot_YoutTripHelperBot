@@ -6,7 +6,18 @@ import org.example.handler.ButtonHandler;
 import org.example.handler.StateHandler;
 import org.example.handler.StateService;
 import org.example.handler.command.*;
-import org.example.handler.states.*;
+import org.example.handler.command.categoryByPlaces.AttractionsHandler;
+import org.example.handler.command.categoryByPlaces.CultureHandler;
+import org.example.handler.command.categoryByPlaces.FoodHandler;
+import org.example.handler.command.crudPlaces.AddPlaceHandler;
+import org.example.handler.command.crudPlaces.DeletePlaceHandler;
+import org.example.handler.command.crudPlaces.EditPlaceHandler;
+import org.example.handler.states.TagHandler;
+import org.example.handler.states.WaitingCityHandler;
+import org.example.handler.states.WeatherDatesHandler;
+import org.example.handler.states.crudPlaces.AddPlaceStateHandler;
+import org.example.handler.states.crudPlaces.DeletePlaceStateHandler;
+import org.example.handler.states.crudPlaces.EditPlaceStateHandler;
 import org.example.response.DialogResponse;
 import org.example.server.CityServer;
 import org.example.server.TripServer;
@@ -71,11 +82,11 @@ public class BotLogic {
         this.buttonHandlers = buttonHandlers;
 
         stateHandlers.put(DialogState.WAITING_FOR_CITY, new WaitingCityHandler(cityServer));
-        stateHandlers.put(DialogState.CAT_WEATHER, new WeatherDatesHandler(weatherProvider));
+        stateHandlers.put(DialogState.CATEGORY_WEATHER, new WeatherDatesHandler(weatherProvider));
 
-        stateHandlers.put(DialogState.CAT_FOOD, tagHandler);
-        stateHandlers.put(DialogState.CAT_CULTURE, tagHandler);
-        stateHandlers.put(DialogState.CAT_ATTRACTIONS, tagHandler);
+        stateHandlers.put(DialogState.CATEGORY_FOOD, tagHandler);
+        stateHandlers.put(DialogState.CATEGORY_CULTURE, tagHandler);
+        stateHandlers.put(DialogState.CATEGORY_ATTRACTIONS, tagHandler);
 
         stateHandlers.put(DialogState.IN_TAG_FOOD, tagHandler);
         stateHandlers.put(DialogState.IN_TAG_CULTURE, tagHandler);

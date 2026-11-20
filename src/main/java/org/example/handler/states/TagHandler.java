@@ -68,14 +68,13 @@ public class TagHandler implements StateHandler {
         }
 
         String title;
-        //написать проверку нужно ли пользователю добавить кнопки edit и delete
         switch (session.getState()) {
-            case CAT_FOOD, IN_TAG_FOOD -> {
+            case CATEGORY_FOOD, IN_TAG_FOOD -> {
                 session.setState(DialogState.IN_TAG_FOOD);
                 session.setTag(callback.getTag());
                 title = FOOD_ANS;
             }
-            case CAT_CULTURE, IN_TAG_CULTURE -> {
+            case CATEGORY_CULTURE, IN_TAG_CULTURE -> {
                 session.setState(DialogState.IN_TAG_CULTURE);
                 session.setTag(callback.getTag());
                 title = CULTURE_ANS;

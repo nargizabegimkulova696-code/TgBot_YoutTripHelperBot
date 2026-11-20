@@ -17,27 +17,27 @@ public enum DialogState {
     /**
      * Ожидание ввода дат для прогноза погоды
      */
-    CAT_WEATHER,
+    CATEGORY_WEATHER,
 
     /**
      * Ожидание выбора следующей категории
      */
-    CAT_ABOUT_CITY,
+    CATEGORY_ABOUT_CITY,
 
     /**
      * Ожидание выбора тега для категории food
      */
-    CAT_FOOD,
+    CATEGORY_FOOD,
 
     /**
      * Ожидание выбора тега для категории culture
      */
-    CAT_CULTURE,
+    CATEGORY_CULTURE,
 
     /**
      * Ожидание выбора тега для категории attractions
      */
-    CAT_ATTRACTIONS,
+    CATEGORY_ATTRACTIONS,
 
     /**
      * Тег для категории food выбран
