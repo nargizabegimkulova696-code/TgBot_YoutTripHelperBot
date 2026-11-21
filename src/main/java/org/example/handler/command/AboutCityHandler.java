@@ -52,6 +52,12 @@ public class AboutCityHandler implements ButtonHandler {
             return new DialogResponse(NO_DATA, keyboard.build(session.getState()));
         }
 
-        return new DialogResponse(cityInfo, keyboard.build(session.getState()));
+        String photoUri = server.getPhotoUriForCity(city);
+
+        if (photoUri == null) {
+            return new DialogResponse(cityInfo, keyboard.build(session.getState()));
+        }
+
+        return new DialogResponse(photoUri, cityInfo, keyboard.build(session.getState()));
     }
 }

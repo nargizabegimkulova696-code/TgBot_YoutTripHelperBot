@@ -40,20 +40,20 @@ public class AboutCityAndCityServerTest {
             }
 
             case "Суздаль" -> {
-                return new City("Суздаль", "", "", "", "", "");
+                return new City("", "Суздаль", "", "", "", "", "");
             }
 
             case "Орск" -> {
-                return new City("Орск", "город в Оренбургской области РФ",
+                return new City("", "Орск", "город в Оренбургской области РФ",
                         "", "185 362", "", "");
             }
 
             case "Москва" -> {
-                return new City("Москва", "", "", "", "", "");
+                return new City("", "Москва", "", "", "", "", "");
             }
 
             default -> {
-                return new City("", "", "", "", "", "");
+                return new City("", "", "", "", "", "", "");
             }
         }
     };
