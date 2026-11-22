@@ -1,4 +1,4 @@
-package org.example.telegramBot;
+package org.example.platform;
 
 import org.example.BotLogic;
 import org.example.response.Button;
@@ -6,6 +6,8 @@ import org.example.response.DialogResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -17,6 +19,7 @@ import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScope
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,13 +44,27 @@ public class TgBot extends TelegramLongPollingBot{
     private final BotLogic botLogic;
 
     /**
-     * Конструктор TgBot присваивает значению полю botUsername и передает token в конструктор родителя
+     * Конструктор TgBot сохраняет имя и логику бота и передает токен в конструктор родителя
      */
     public TgBot(String username, String token, BotLogic botLogic) {
         super(token);
 
         botUsername = username;
         this.botLogic = botLogic;
+    }
+
+    /**
+     * Подключение бота к Telegram
+     */
+    public void start() {
+        try {
+            TelegramBotsApi api = new TelegramBotsApi(DefaultBotSession.class);
+            api.registerBot(this);
+            log.info("Бот Telegram зарегистрирован");
+        } catch (TelegramApiException e) {
+            log.error("Не удалось запустить бота Telegram", e);
+            return;
+        }
 
         menuRegistration();
     }
@@ -118,9 +135,24 @@ public class TgBot extends TelegramLongPollingBot{
     }
 
     /**
+     * Подтверждение нажатия на inline кнопку
+     */
+    private void acknowledgeCallback(CallbackQuery callback) {
+        AnswerCallbackQuery answer = new AnswerCallbackQuery();
+        answer.setCallbackQueryId(callback.getId());
+
+        try {
+            execute(answer);
+        } catch (TelegramApiException e) {
+            log.error("Не удалось подтвердить нажатие на inline кнопку", e);
+        }
+    }
+
+    /**
      * Создание ответного сообщения при нажатии на Inline кнопки
      */
     private void handleCallback(CallbackQuery callback) {
+        acknowledgeCallback(callback);
         long chatId = callback.getMessage().getChatId();
         int messageId = callback.getMessage().getMessageId();
         String data = callback.getData();

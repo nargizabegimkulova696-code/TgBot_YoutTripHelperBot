@@ -1,4 +1,4 @@
-package org.example.telegramBot;
+package org.example;
 
 import java.io.InputStream;
 import java.util.Properties;
@@ -6,7 +6,7 @@ import java.util.Properties;
 /**
  * Предоставляет доступ к токену и имени бота, создан для конфигурации бота
  */
-public class ConfigTgBot {
+public class ConfigBot {
     /**
      * Создано для хранения данных бота в виде пары: "ключ - значение"
      */
@@ -15,12 +15,12 @@ public class ConfigTgBot {
     /**
      * Конструктор класса ConfigTgBot, который читает данные с файла application.properties
      */
-    public ConfigTgBot() {
+    public ConfigBot() {
         properties = new Properties();
 
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream("tgBot.properties")){
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream("bot.properties")) {
             if(input == null){
-                throw new RuntimeException("file tgBot.properties not found");
+                throw new RuntimeException("file bot.properties not found");
             }
             properties.load(input);
         } catch(Exception e){
@@ -47,5 +47,12 @@ public class ConfigTgBot {
      */
     public String getBotToken(){
         return properties.getProperty("tgBotToken");
+    }
+
+    /**
+     * Возвращает токен бота Discord
+     */
+    public String getDiscordToken() {
+        return properties.getProperty("discordBotToken");
     }
 }
