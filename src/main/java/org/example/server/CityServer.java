@@ -1,5 +1,6 @@
 package org.example.server;
 
+import org.apache.commons.lang3.StringUtils;
 import org.example.command.city.City;
 import org.example.command.city.CityProvider;
 
@@ -56,6 +57,26 @@ public class CityServer {
             info = catalog.getInfo(city);
 
             return info.formattedInfoWithBigPop();
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Возвращает ссылку, если для города есть фото.
+     * Возвращает null, если ссылки на фото нет или при запросе к апи произошла ошибка
+     *
+     * @param city - город, для которого делается проверка
+     */
+    public String getPhotoUriForCity(String city) {
+        try {
+            String photoUri = provider.getInfo(city).getPhotoUrl();
+
+            if (StringUtils.isBlank(photoUri)) {
+                return null;
+            }
+
+            return photoUri;
         } catch (IOException e) {
             return null;
         }

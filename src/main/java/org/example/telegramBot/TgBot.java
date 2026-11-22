@@ -8,8 +8,11 @@ import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
@@ -98,22 +101,73 @@ public class TgBot extends TelegramLongPollingBot{
 
         DialogResponse response = botLogic.makeMessage(text, chatId);
 
+        if (response.hasPhotoUri()) {
+            sendPhoto(chatId, response.getPhotoUri());
+        }
+
+        try {
+            execute(createMessage(chatId, response));
+        } catch (TelegramApiException e) {
+            log.error("Не удалось отправить сообщение", e);
+        }
+    }
+
+    /**
+     * Метод отправляет фото города, если оно есть
+     *
+     * @param chatId - идентификатор пользователя, которому отправляем фото
+     * @param uri    - ссылка на фото
+     */
+    private void sendPhoto(long chatId, String uri) {
+        SendPhoto photo = new SendPhoto();
+
+        photo.setChatId(chatId);
+        photo.setPhoto(new InputFile(uri));
+
+        try {
+            execute(photo);
+        } catch (TelegramApiException e) {
+            log.error("Не удалось отправить фото", e);
+        }
+    }
+
+    /**
+     * Создает текстовое сообщение + кнопки, если есть
+     *
+     * @param chatId   - идентификатор пользователя, которому отправится сообщение
+     * @param response - отправляемое сообщение
+     */
+    private SendMessage createMessage(long chatId, DialogResponse response) {
         SendMessage message = new SendMessage();
+
         message.setChatId(chatId);
         message.setText(response.getAnswer());
 
         if (response.hasButtons()) {
             InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
-
             keyboard.setKeyboard(createTGKeyboard(response.getListOfCommands()));
-
             message.setReplyMarkup(keyboard);
         }
+
+        return message;
+    }
+
+    /**
+     * Удаление сообщения
+     * При отправке фото, так как тг редактирует сообщение, если оно CallbackQuery,
+     * сообщение пользователю приходит в виде: текст + фото, а не фото + текст,
+     * поэтому отправляется новое сообщение фото + текст, а предыдущее удаляется
+     */
+    private void delete(long chatId, int messageId) {
+        DeleteMessage message = new DeleteMessage();
+
+        message.setChatId(chatId);
+        message.setMessageId(messageId);
 
         try {
             execute(message);
         } catch (TelegramApiException e) {
-            log.error("Не удалось отправить сообщение", e);
+            log.error("Не удалось удалить сообщение", e);
         }
     }
 
@@ -137,6 +191,19 @@ public class TgBot extends TelegramLongPollingBot{
             keyboard.setKeyboard(createTGKeyboard(response.getListOfCommands()));
 
             editMessage.setReplyMarkup(keyboard);
+        }
+
+        if (response.hasPhotoUri()) {
+            sendPhoto(chatId, response.getPhotoUri());
+
+            try {
+                execute(createMessage(chatId, response));
+                delete(chatId, messageId);
+            } catch (TelegramApiException e) {
+                log.error("Не удалось отправить сообщение с фотографией", e);
+            }
+
+            return;
         }
 
         try {

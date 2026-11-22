@@ -199,7 +199,9 @@ public class WikimediaRestCity implements CityProvider {
         String description = root1.path("description").asText();
         String extract = root1.path("extract").asText();
 
-        return new City(title, description, inception, population, area, extract);
+        String photoUrl = root1.path("thumbnail").path("source").asText("");
+
+        return new City(photoUrl, title, description, inception, population, area, extract);
     }
 
     /**
