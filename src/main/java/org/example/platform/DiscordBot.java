@@ -1,5 +1,6 @@
 package org.example.platform;
 
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
@@ -144,14 +145,12 @@ public class DiscordBot extends ListenerAdapter {
     /**
      * Создание ответа на команду меню или нажатие кнопки
      */
-    private void respond(CompletableFuture<InteractionHook> confirmation,
-                         String command, long userId) {
+    private void respond(CompletableFuture<InteractionHook> confirmation, String command, long userId) {
         enqueue(() -> {
             InteractionHook hook = confirmation.join();
             DialogResponse response = botLogic.makeMessage(command, userId);
 
-            MessageEditData message = MessageEditData.fromCreateData(
-                    createDiscordMessage(response));
+            MessageEditData message = MessageEditData.fromCreateData(createDiscordMessage(response));
             hook.editOriginal(message).complete();
         });
     }
@@ -180,10 +179,16 @@ public class DiscordBot extends ListenerAdapter {
             message.setContent(text);
         } else {
             message.setContent("Полный ответ - в приложенном файле.");
-            message.addFiles(FileUpload.fromData(
-                    text.getBytes(StandardCharsets.UTF_8), "answer.txt"));
+            message.addFiles(FileUpload.fromData(text.getBytes(StandardCharsets.UTF_8), "answer.txt"));
         }
 
+        if (response.hasPhotoUri()) {
+            try {
+                message.setEmbeds(new EmbedBuilder().setImage(response.getPhotoUri()).build());
+            } catch (IllegalArgumentException e) {
+                log.warn("Не удалось добавить фото города в сообщение Discord", e);
+            }
+        }
         message.setAllowedMentions(List.of());
         return message.setComponents(createDiscordKeyboard(response.getListOfCommands())).build();
     }
@@ -197,8 +202,7 @@ public class DiscordBot extends ListenerAdapter {
 
         for (List<org.example.response.Button> buttonRow : keyboard) {
             for (org.example.response.Button button : buttonRow) {
-                Button discordButton = Button.secondary(
-                        button.getCallBackData(), button.getCommandText());
+                Button discordButton = Button.secondary(button.getCallBackData(), button.getCommandText());
                 buttons.add(discordButton);
             }
         }
