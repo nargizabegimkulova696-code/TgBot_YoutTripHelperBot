@@ -11,6 +11,10 @@ import java.util.List;
  */
 public class City {
     /**
+     * От апи возвращается ссылка на фотографию города
+     */
+    private final String photoUrl;
+    /**
      * Название города
      */
     private final String title;
@@ -52,9 +56,11 @@ public class City {
 
     /**
      * Конструктор для городов с населением < 500 тыс.
+     * Конструктор для апи, который возвращает информацию о городе
      */
-    public City(String title, String description, String inception, String population, String area, String extract) {
+    public City(String photoUrl, String title, String description, String inception, String population, String area, String extract) {
 
+        this.photoUrl = photoUrl;
         this.title = title;
         this.description = description;
         this.inception = inception;
@@ -68,6 +74,7 @@ public class City {
 
     /**
      * Конструктор для городов с населением > 500 тыс.
+     * Конструктор для файла. В файле лежит информация о городах
      */
     City(String title, String description, String population,
          String area, String extract, String climate, List<String> facts) {
@@ -81,6 +88,14 @@ public class City {
         this.facts = facts;
 
         this.inception = "";
+        this.photoUrl = "";
+    }
+
+    /**
+     * Возврат ссылки на картинку с городом
+     */
+    public String getPhotoUrl() {
+        return photoUrl;
     }
 
     /**
