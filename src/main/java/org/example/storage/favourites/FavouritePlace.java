@@ -1,4 +1,4 @@
-package org.example.storage;
+package org.example.storage.favourites;
 
 import org.example.command.places.Place;
 

@@ -1,8 +1,8 @@
 package org.example.task5;
 
 import org.example.command.places.Place;
-import org.example.storage.FavouritePlace;
-import org.example.storage.UserFavouriteRepository;
+import org.example.storage.favourites.FavouritePlace;
+import org.example.storage.favourites.UserFavouriteRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

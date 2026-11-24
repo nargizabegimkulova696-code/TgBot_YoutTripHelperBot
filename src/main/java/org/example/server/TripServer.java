@@ -3,8 +3,8 @@ package org.example.server;
 import org.example.command.places.Place;
 import org.example.command.places.PlacesProvider;
 import org.example.paging.Page;
-import org.example.storage.UserPlace;
-import org.example.storage.UserPlaceRepository;
+import org.example.storage.places.UserPlace;
+import org.example.storage.places.UserPlaceRepository;
 
 import java.io.IOException;
 import java.sql.SQLException;

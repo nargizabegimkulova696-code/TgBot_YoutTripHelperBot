@@ -10,7 +10,9 @@ import org.example.platform.DiscordBot;
 import org.example.platform.TgBot;
 import org.example.server.CityServer;
 import org.example.server.TripServer;
-import org.example.storage.UserPlaceStorage;
+import org.example.storage.favourites.UserFavouriteRepository;
+import org.example.storage.favourites.UserFavouriteStorage;
+import org.example.storage.places.UserPlaceStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -44,7 +46,11 @@ public class BotMain {
             CityProvider catalog = cityLoader.load();
 
             CityServer cityServer = new CityServer(new WikimediaRestCity(), catalog);
-            UserPlaceStorage userPlaceStorage = new UserPlaceStorage("jdbc:sqlite:places.db");
+
+            // открываем хранилища пользовательских мест и избранного в одной базе
+            String databaseUrl = "jdbc:sqlite:places.db";
+            UserPlaceStorage userPlaceStorage = new UserPlaceStorage(databaseUrl);
+            UserFavouriteRepository favouriteRepository = new UserFavouriteStorage(databaseUrl);
             TripServer tripServer = new TripServer(new GeoapifyPlaces(geoApiKey), userPlaceStorage);
 
             if (BotName == null || BotName.isBlank() || tgBotToken == null || tgBotToken.isBlank()) {
