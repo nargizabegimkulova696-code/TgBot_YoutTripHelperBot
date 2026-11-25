@@ -1,3 +1,4 @@
 tgBotName = yourBotName
 tgBotToken = yourBotToken
+discordBotToken = yourDiscordBotToken
 geoapifyKey = yourGeoapifyKey

@@ -8,7 +8,7 @@ import org.example.server.ServiceState;
 import org.example.server.TripServer;
 import org.example.session.BotSession;
 import org.example.session.DialogState;
-import org.example.storage.UserPlace;
+import org.example.storage.places.UserPlace;
 import java.io.IOException;
 import java.sql.SQLException;
 

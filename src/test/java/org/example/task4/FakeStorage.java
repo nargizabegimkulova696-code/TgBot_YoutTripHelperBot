@@ -1,7 +1,7 @@
 package org.example.task4;
 
-import org.example.storage.UserPlace;
-import org.example.storage.UserPlaceRepository;
+import org.example.storage.places.UserPlace;
+import org.example.storage.places.UserPlaceRepository;
 
 import java.util.ArrayList;
 import java.util.List;

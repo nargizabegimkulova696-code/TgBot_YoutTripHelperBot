@@ -1,6 +1,6 @@
 package org.example.task4;
 
-import org.example.storage.UserPlace;
+import org.example.storage.places.UserPlace;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

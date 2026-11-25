@@ -7,7 +7,7 @@ import org.example.response.KeyboardFactory;
 import org.example.server.ServiceState;
 import org.example.server.TripServer;
 import org.example.session.BotSession;
-import org.example.storage.UserPlace;
+import org.example.storage.places.UserPlace;
 
 /**
  * Обработчик действий, которые происходят в состоянии ADD_PLACE

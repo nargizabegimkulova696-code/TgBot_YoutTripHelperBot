@@ -1,7 +1,7 @@
 package org.example.session;
 
 
-import org.example.storage.UserPlace;
+import org.example.storage.places.UserPlace;
 
 /**
  * Сессия одного пользователя: хранит текущее состояние и название города

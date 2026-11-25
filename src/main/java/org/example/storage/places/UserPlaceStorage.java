@@ -1,4 +1,4 @@
-package org.example.storage;
+package org.example.storage.places;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ public class UserPlaceStorage implements UserPlaceRepository, AutoCloseable {
     private final Connection connection;
 
     /**
-     * Открывает базу по адресу и создаёт таблицу, если её ещё нет
+     * Открывает базу по адресу и создаёт таблицы, если её ещё нет
      *
      * @param url адрес базы
      * @throws IllegalStateException если базу открыть или создать не удалось
@@ -33,6 +33,17 @@ public class UserPlaceStorage implements UserPlaceRepository, AutoCloseable {
                             name     TEXT NOT NULL,
                             address  TEXT NOT NULL
                         )
+                        """);
+                statement.execute("""
+                                CREATE TABLE IF NOT EXISTS user_favourites (
+                                    id       INTEGER PRIMARY KEY AUTOINCREMENT,
+                                    chat_id  INTEGER NOT NULL,
+                                    city     TEXT NOT NULL,
+                                    category TEXT NOT NULL,
+                                    name     TEXT NOT NULL,
+                                    address  TEXT NOT NULL,
+                                    UNIQUE (chat_id, category, city, name, address)
+                                )
                         """);
             }
         } catch (SQLException e) {

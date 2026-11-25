@@ -1,4 +1,4 @@
-package org.example.storage;
+package org.example.storage.places;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -30,8 +30,7 @@ public interface UserPlaceRepository {
      * @param address  адрес места
      * @throws SQLException ошибка работы с хранилищем
      */
-    void add(long chatId, String city, String category, String tag,
-             String name, String address) throws SQLException;
+    void add(long chatId, String city, String category, String tag, String name, String address) throws SQLException;
 
     /**
      * Меняет название и адрес места, если оно принадлежит этому пользователю (edit_place).

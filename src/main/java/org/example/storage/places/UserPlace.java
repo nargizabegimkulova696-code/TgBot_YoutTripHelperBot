@@ -1,4 +1,4 @@
-package org.example.storage;
+package org.example.storage.places;
 
 import org.example.command.places.Place;
 
